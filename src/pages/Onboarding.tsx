@@ -116,7 +116,7 @@ const Onboarding = () => {
         <div className="container mx-auto px-6">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center gap-2">
-              <div className="h-8 w-8 rounded-lg bg-gradient-proof flex items-center justify-center">
+              <div className="h-8 w-8 rounded-lg icon-gradient-bg flex items-center justify-center">
                 <span className="text-white font-bold text-lg">P</span>
               </div>
               <span className="text-xl font-bold text-foreground">Proof</span>
@@ -165,7 +165,7 @@ const Onboarding = () => {
                 className="text-center"
               >
                 <h1 className="text-4xl font-bold mb-4">
-                  Let's build your <span className="text-gradient">Proof</span>
+                  Let's build your <span className="text-primary">Proof</span>
                 </h1>
                 <p className="text-xl text-muted-foreground mb-12">
                   How would you like to get started?
@@ -285,7 +285,6 @@ const Onboarding = () => {
                         rows={2}
                       />
                       <Button
-                        variant="hero"
                         size="icon"
                         onClick={handleSendMessage}
                         disabled={!currentInput.trim()}
@@ -321,7 +320,7 @@ const Onboarding = () => {
                 className="text-center"
               >
                 <h1 className="text-4xl font-bold mb-4">
-                  Choose your <span className="text-gradient">style</span>
+                  Choose your <span className="text-primary">style</span>
                 </h1>
                 <p className="text-xl text-muted-foreground mb-12">
                   Select the archetype that best represents your professional identity
@@ -336,7 +335,7 @@ const Onboarding = () => {
                       onClick={() => setSelectedArchetype(archetype.id)}
                       className={`p-6 rounded-2xl border text-center transition-all ${
                         selectedArchetype === archetype.id
-                          ? "border-primary bg-primary/10 glow-sm"
+                          ? "border-primary bg-primary/10"
                           : "border-border bg-card hover:border-primary/50"
                       }`}
                     >
@@ -354,7 +353,6 @@ const Onboarding = () => {
                 </div>
 
                 <Button
-                  variant="hero"
                   size="xl"
                   onClick={() => setStep(4)}
                   disabled={!selectedArchetype}
@@ -378,12 +376,12 @@ const Onboarding = () => {
               >
                 {!isGenerating ? (
                   <>
-                    <div className="w-20 h-20 rounded-2xl bg-gradient-proof flex items-center justify-center mx-auto mb-8 glow">
+                    <div className="w-20 h-20 rounded-2xl icon-gradient-bg flex items-center justify-center mx-auto mb-8 shadow-lg shadow-primary/25">
                       <Sparkles className="w-10 h-10 text-white" />
                     </div>
                     <h1 className="text-4xl font-bold mb-4">
                       Ready to generate your{" "}
-                      <span className="text-gradient">Proof</span>
+                      <span className="text-primary">Proof</span>
                     </h1>
                     <p className="text-xl text-muted-foreground mb-8">
                       We'll create your professional profile based on everything you've shared
@@ -417,7 +415,6 @@ const Onboarding = () => {
                     </div>
 
                     <Button
-                      variant="hero"
                       size="xl"
                       onClick={handleGenerate}
                       className="group"
@@ -428,7 +425,7 @@ const Onboarding = () => {
                   </>
                 ) : (
                   <div className="py-12">
-                    <div className="w-24 h-24 rounded-full bg-gradient-proof flex items-center justify-center mx-auto mb-8 animate-pulse">
+                    <div className="w-24 h-24 rounded-full icon-gradient-bg flex items-center justify-center mx-auto mb-8 animate-pulse">
                       <Sparkles className="w-12 h-12 text-white" />
                     </div>
                     <h2 className="text-2xl font-bold mb-4">

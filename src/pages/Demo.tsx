@@ -92,7 +92,7 @@ const Demo = () => {
             <span className="text-sm text-muted-foreground">
               Viewing: sarah.getproof.app
             </span>
-            <Button variant="hero" size="sm">
+            <Button size="sm">
               Edit Profile
             </Button>
           </div>
@@ -113,7 +113,7 @@ const Demo = () => {
               className="flex items-start gap-8"
             >
               {/* Avatar */}
-              <div className="w-32 h-32 rounded-2xl bg-gradient-proof flex items-center justify-center text-4xl font-bold text-white shadow-2xl shadow-primary/20 flex-shrink-0">
+              <div className="w-32 h-32 rounded-2xl icon-gradient-bg flex items-center justify-center text-4xl font-bold text-white shadow-2xl shadow-primary/20 flex-shrink-0">
                 SC
               </div>
 
@@ -139,7 +139,7 @@ const Demo = () => {
 
                 {/* CTA Buttons */}
                 <div className="flex items-center gap-3">
-                  <Button variant="hero" size="lg">
+                  <Button size="lg">
                     <Mail className="w-5 h-5 mr-2" />
                     Get in touch
                   </Button>
@@ -356,7 +356,7 @@ const Demo = () => {
               Interested in working together? I'd love to hear from you.
             </p>
             <div className="flex items-center justify-center gap-4">
-              <Button variant="hero" size="lg">
+              <Button size="lg">
                 <Mail className="w-5 h-5 mr-2" />
                 Get in touch
               </Button>
@@ -375,7 +375,7 @@ const Demo = () => {
           to="/"
           className="flex items-center gap-2 px-4 py-2 rounded-full bg-card border border-border shadow-lg hover:shadow-xl transition-shadow"
         >
-          <div className="w-5 h-5 rounded bg-gradient-proof flex items-center justify-center">
+          <div className="w-5 h-5 rounded icon-gradient-bg flex items-center justify-center">
             <span className="text-white font-bold text-[10px]">P</span>
           </div>
           <span className="text-sm font-medium">Made with Proof</span>

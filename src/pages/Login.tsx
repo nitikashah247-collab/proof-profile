@@ -43,7 +43,7 @@ const Login = () => {
 
           {/* Logo */}
           <div className="flex items-center gap-2 mb-8">
-            <div className="h-10 w-10 rounded-xl bg-gradient-proof flex items-center justify-center">
+            <div className="h-10 w-10 rounded-xl icon-gradient-bg flex items-center justify-center">
               <span className="text-white font-bold text-xl">P</span>
             </div>
             <span className="text-2xl font-bold text-foreground">Proof</span>
@@ -110,7 +110,6 @@ const Login = () => {
 
             <Button
               type="submit"
-              variant="hero"
               size="lg"
               className="w-full"
               disabled={isLoading}
@@ -172,8 +171,8 @@ const Login = () => {
       {/* Right Panel - Decorative */}
       <div className="hidden lg:flex flex-1 bg-muted/30 items-center justify-center p-12 relative overflow-hidden">
         <div className="absolute inset-0 bg-grid-pattern bg-[size:40px_40px] opacity-[0.03]" />
-        <div className="absolute top-1/4 right-1/4 w-64 h-64 bg-primary/20 rounded-full blur-[100px]" />
-        <div className="absolute bottom-1/4 left-1/4 w-64 h-64 bg-[hsl(262,83%,58%)]/20 rounded-full blur-[100px]" />
+        <div className="absolute top-1/4 right-1/4 w-64 h-64 bg-primary/10 rounded-full blur-[100px]" />
+        <div className="absolute bottom-1/4 left-1/4 w-64 h-64 bg-primary/10 rounded-full blur-[100px]" />
         
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
@@ -181,7 +180,7 @@ const Login = () => {
           transition={{ duration: 0.8, delay: 0.2 }}
           className="relative z-10 text-center max-w-md"
         >
-          <div className="mb-6 inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-gradient-proof glow">
+          <div className="mb-6 inline-flex items-center justify-center w-20 h-20 rounded-2xl icon-gradient-bg shadow-lg shadow-primary/25">
             <span className="text-white text-4xl font-bold">P</span>
           </div>
           <h2 className="text-3xl font-bold mb-4">Your career, on your terms</h2>
