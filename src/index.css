@@ -16,8 +16,8 @@
     --popover: 0 0% 100%;
     --popover-foreground: 0 0% 0%;
 
-    /* Electric Blue - vibrant, energetic */
-    --primary: 199 89% 48%;
+    /* Pure Blue - vibrant, energetic */
+    --primary: 240 100% 50%;
     --primary-foreground: 0 0% 100%;
 
     --secondary: 220 14% 98%;
@@ -26,7 +26,7 @@
     --muted: 220 14% 98%;
     --muted-foreground: 220 9% 46%;
 
-    --accent: 199 89% 48%;
+    --accent: 240 100% 50%;
     --accent-foreground: 0 0% 100%;
 
     --destructive: 0 84% 60%;
@@ -34,7 +34,7 @@
 
     --border: 220 13% 91%;
     --input: 220 13% 91%;
-    --ring: 199 89% 48%;
+    --ring: 240 100% 50%;
 
     --radius: 0.5rem;
 
@@ -44,18 +44,18 @@
     --proof-surface-elevated: 220 14% 98%;
 
     /* Gradient colors for icons */
-    --gradient-start: 199 92% 61%;
-    --gradient-end: 199 89% 48%;
+    --gradient-start: 240 100% 60%;
+    --gradient-end: 240 100% 50%;
 
     /* Sidebar tokens */
     --sidebar-background: 220 14% 98%;
     --sidebar-foreground: 0 0% 0%;
-    --sidebar-primary: 199 89% 48%;
+    --sidebar-primary: 240 100% 50%;
     --sidebar-primary-foreground: 0 0% 100%;
     --sidebar-accent: 220 14% 96%;
     --sidebar-accent-foreground: 0 0% 0%;
     --sidebar-border: 220 13% 91%;
-    --sidebar-ring: 199 89% 48%;
+    --sidebar-ring: 240 100% 50%;
   }
 }
 
@@ -73,14 +73,14 @@
 @layer components {
   /* Gradient icon styles */
   .icon-gradient {
-    background: linear-gradient(180deg, hsl(199 92% 61%) 0%, hsl(199 89% 48%) 100%);
+    background: linear-gradient(180deg, hsl(240 100% 60%) 0%, hsl(240 100% 50%) 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
   }
 
   .icon-gradient-bg {
-    background: linear-gradient(180deg, hsl(199 92% 61%) 0%, hsl(199 89% 48%) 100%);
+    background: linear-gradient(180deg, hsl(240 100% 60%) 0%, hsl(240 100% 50%) 100%);
   }
 }
 
