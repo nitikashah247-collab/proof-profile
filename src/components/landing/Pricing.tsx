@@ -42,7 +42,7 @@ const plans = [
 
 export const Pricing = () => {
   return (
-    <section id="pricing" className="py-24 relative bg-background">
+    <section id="pricing" className="py-28 relative bg-muted/30">
       <div className="container mx-auto px-6">
         {/* Section Header */}
         <motion.div
@@ -52,11 +52,11 @@ export const Pricing = () => {
           transition={{ duration: 0.6 }}
           className="text-center mb-16"
         >
-          <h2 className="text-4xl md:text-5xl font-bold mb-4 text-foreground">
+          <h2 className="text-4xl md:text-5xl font-bold mb-6">
             Simple, transparent{" "}
             <span className="text-primary">pricing</span>
           </h2>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+          <p className="text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
             Start free. Upgrade when you're ready to stand out even more.
           </p>
         </motion.div>
@@ -70,44 +70,44 @@ export const Pricing = () => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: index * 0.1 }}
-              className={`relative rounded-xl border p-8 bg-card ${
+              className={`relative rounded-2xl border-2 p-8 bg-card ${
                 plan.popular
-                  ? "border-primary shadow-sm"
+                  ? "border-primary shadow-xl shadow-primary/10"
                   : "border-border"
               }`}
             >
               {plan.popular && (
                 <div className="absolute -top-4 left-1/2 -translate-x-1/2">
-                  <span className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-primary text-primary-foreground text-sm font-medium">
+                  <span className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full icon-gradient-bg text-white text-sm font-medium shadow-lg shadow-primary/25">
                     Most Popular
                   </span>
                 </div>
               )}
 
-              <div className="mb-6">
-                <h3 className="text-2xl font-bold mb-2 text-foreground">{plan.name}</h3>
+              <div className="mb-8">
+                <h3 className="text-2xl font-bold mb-2">{plan.name}</h3>
                 <div className="flex items-baseline gap-1">
-                  <span className="text-5xl font-bold text-foreground">{plan.price}</span>
-                  <span className="text-muted-foreground">{plan.period}</span>
+                  <span className="text-5xl font-bold">{plan.price}</span>
+                  <span className="text-muted-foreground text-lg">{plan.period}</span>
                 </div>
-                <p className="text-muted-foreground mt-2">{plan.description}</p>
+                <p className="text-muted-foreground mt-3">{plan.description}</p>
               </div>
 
-              <ul className="space-y-3 mb-8">
+              <ul className="space-y-4 mb-8">
                 {plan.features.map((feature) => (
                   <li key={feature} className="flex items-center gap-3">
-                    <div className="w-5 h-5 rounded-full bg-proof-success/10 flex items-center justify-center flex-shrink-0">
-                      <Check className="w-3 h-3 text-proof-success" />
+                    <div className="w-5 h-5 rounded-full icon-gradient-bg flex items-center justify-center flex-shrink-0">
+                      <Check className="w-3 h-3 text-white" />
                     </div>
                     <span className="text-foreground/80">{feature}</span>
                   </li>
                 ))}
               </ul>
 
-              <Link to="/signup">
+              <Link to="/signup" className="block">
                 <Button
                   variant={plan.variant}
-                  className="w-full"
+                  className={`w-full ${plan.popular ? 'shadow-lg shadow-primary/25' : ''}`}
                   size="lg"
                 >
                   {plan.cta}

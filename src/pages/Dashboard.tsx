@@ -57,7 +57,7 @@ const Dashboard = () => {
       <aside className="fixed left-0 top-0 bottom-0 w-64 border-r border-border bg-sidebar p-4 flex flex-col">
         {/* Logo */}
         <Link to="/" className="flex items-center gap-2 mb-8">
-          <div className="h-8 w-8 rounded-lg bg-gradient-proof flex items-center justify-center">
+          <div className="h-8 w-8 rounded-lg icon-gradient-bg flex items-center justify-center">
             <span className="text-white font-bold text-lg">P</span>
           </div>
           <span className="text-xl font-bold text-foreground">Proof</span>
@@ -66,7 +66,7 @@ const Dashboard = () => {
         {/* User Info */}
         <div className="p-3 rounded-xl bg-sidebar-accent mb-6">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-gradient-proof flex items-center justify-center text-white font-semibold">
+            <div className="w-10 h-10 rounded-full icon-gradient-bg flex items-center justify-center text-white font-semibold">
               SC
             </div>
             <div className="flex-1 min-w-0">
@@ -104,12 +104,12 @@ const Dashboard = () => {
         </nav>
 
         {/* Upgrade Card */}
-        <div className="p-4 rounded-xl bg-gradient-to-br from-primary/10 to-[hsl(262,83%,58%)]/10 border border-primary/20 mb-4">
+        <div className="p-4 rounded-xl bg-primary/5 border border-primary/20 mb-4">
           <p className="text-sm font-medium mb-1">Free Plan</p>
           <p className="text-xs text-muted-foreground mb-3">
             2 of 3 versions used
           </p>
-          <Button variant="hero" size="sm" className="w-full">
+          <Button size="sm" className="w-full">
             Upgrade to Pro
           </Button>
         </div>
@@ -136,7 +136,7 @@ const Dashboard = () => {
               </p>
             </div>
             <Link to="/onboarding">
-              <Button variant="hero">
+              <Button>
                 <Plus className="w-5 h-5 mr-2" />
                 New Version
               </Button>
@@ -172,7 +172,7 @@ const Dashboard = () => {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.1 }}
                 className={`p-6 rounded-2xl border bg-card ${
-                  profile.isBase ? "border-primary/30 glow-sm" : "border-border"
+                  profile.isBase ? "border-primary/30" : "border-border"
                 }`}
               >
                 <div className="flex items-center justify-between">
@@ -180,7 +180,7 @@ const Dashboard = () => {
                     <div
                       className={`w-12 h-12 rounded-xl flex items-center justify-center ${
                         profile.isBase
-                          ? "bg-gradient-proof"
+                          ? "icon-gradient-bg"
                           : "bg-secondary"
                       }`}
                     >

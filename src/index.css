@@ -2,38 +2,39 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Proof Design System - Clean, Light, Professional */
+/* Proof Design System - SuperSkills Inspired */
 
 @layer base {
   :root {
-    /* Light theme - Notion/Linear inspired */
+    /* Light theme - Clean, modern, energetic */
     --background: 0 0% 100%;
-    --foreground: 220 13% 9%;
+    --foreground: 0 0% 0%;
 
     --card: 0 0% 100%;
-    --card-foreground: 220 13% 9%;
+    --card-foreground: 0 0% 0%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 220 13% 9%;
+    --popover-foreground: 0 0% 0%;
 
-    --primary: 224 76% 40%;
+    /* Electric Blue - vibrant, energetic */
+    --primary: 199 89% 48%;
     --primary-foreground: 0 0% 100%;
 
     --secondary: 220 14% 98%;
-    --secondary-foreground: 220 13% 9%;
+    --secondary-foreground: 0 0% 0%;
 
     --muted: 220 14% 98%;
     --muted-foreground: 220 9% 46%;
 
-    --accent: 220 14% 96%;
-    --accent-foreground: 220 13% 9%;
+    --accent: 199 89% 48%;
+    --accent-foreground: 0 0% 100%;
 
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 220 13% 90%;
-    --input: 220 13% 90%;
-    --ring: 224 76% 40%;
+    --border: 220 13% 91%;
+    --input: 220 13% 91%;
+    --ring: 199 89% 48%;
 
     --radius: 0.5rem;
 
@@ -42,15 +43,19 @@
     --proof-warning: 38 92% 50%;
     --proof-surface-elevated: 220 14% 98%;
 
+    /* Gradient colors for icons */
+    --gradient-start: 199 92% 61%;
+    --gradient-end: 199 89% 48%;
+
     /* Sidebar tokens */
     --sidebar-background: 220 14% 98%;
-    --sidebar-foreground: 220 13% 9%;
-    --sidebar-primary: 224 76% 40%;
+    --sidebar-foreground: 0 0% 0%;
+    --sidebar-primary: 199 89% 48%;
     --sidebar-primary-foreground: 0 0% 100%;
     --sidebar-accent: 220 14% 96%;
-    --sidebar-accent-foreground: 220 13% 9%;
-    --sidebar-border: 220 13% 90%;
-    --sidebar-ring: 224 76% 40%;
+    --sidebar-accent-foreground: 0 0% 0%;
+    --sidebar-border: 220 13% 91%;
+    --sidebar-ring: 199 89% 48%;
   }
 }
 
@@ -65,8 +70,22 @@
   }
 }
 
+@layer components {
+  /* Gradient icon styles */
+  .icon-gradient {
+    background: linear-gradient(180deg, hsl(199 92% 61%) 0%, hsl(199 89% 48%) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .icon-gradient-bg {
+    background: linear-gradient(180deg, hsl(199 92% 61%) 0%, hsl(199 89% 48%) 100%);
+  }
+}
+
 @layer utilities {
-  .text-accent-navy {
+  .text-accent-blue {
     @apply text-primary;
   }
 
