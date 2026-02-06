@@ -27,7 +27,7 @@ export const Hero = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
-            className="text-5xl md:text-7xl font-bold tracking-tight mb-6 leading-[1.1]"
+            className="text-5xl md:text-7xl font-normal tracking-tight mb-6 leading-[1.1]"
           >
             Show them who you are,{" "}
             <span className="text-primary">not just what you've done.</span>
