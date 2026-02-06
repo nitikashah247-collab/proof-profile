@@ -60,7 +60,6 @@ export default {
         proof: {
           success: "hsl(var(--proof-success))",
           warning: "hsl(var(--proof-warning))",
-          glow: "hsl(var(--proof-glow))",
         },
       },
       borderRadius: {
@@ -93,9 +92,6 @@ export default {
           from: { opacity: "0", transform: "scale(0.95)" },
           to: { opacity: "1", transform: "scale(1)" },
         },
-        shimmer: {
-          "100%": { transform: "translateX(100%)" },
-        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -103,11 +99,6 @@ export default {
         "fade-in": "fade-in 0.5s ease-out forwards",
         "fade-in-up": "fade-in-up 0.6s ease-out forwards",
         "scale-in": "scale-in 0.3s ease-out forwards",
-      },
-      backgroundImage: {
-        'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
-        'gradient-proof': 'linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(262, 83%, 58%) 100%)',
-        'grid-pattern': 'linear-gradient(to right, hsl(var(--border)) 1px, transparent 1px), linear-gradient(to bottom, hsl(var(--border)) 1px, transparent 1px)',
       },
     },
   },

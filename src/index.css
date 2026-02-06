@@ -2,89 +2,55 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Proof Design System - Premium Professional Identity Platform */
+/* Proof Design System - Clean, Light, Professional */
 
 @layer base {
   :root {
-    /* Dark mode by default - Linear/Stripe inspired */
-    --background: 222 47% 6%;
-    --foreground: 210 40% 98%;
-
-    --card: 222 47% 8%;
-    --card-foreground: 210 40% 98%;
-
-    --popover: 222 47% 10%;
-    --popover-foreground: 210 40% 98%;
-
-    --primary: 217 91% 60%;
-    --primary-foreground: 222 47% 6%;
-
-    --secondary: 217 33% 17%;
-    --secondary-foreground: 210 40% 98%;
-
-    --muted: 217 33% 14%;
-    --muted-foreground: 215 20% 55%;
-
-    --accent: 217 91% 60%;
-    --accent-foreground: 222 47% 6%;
-
-    --destructive: 0 84% 60%;
-    --destructive-foreground: 210 40% 98%;
-
-    --border: 217 33% 17%;
-    --input: 217 33% 17%;
-    --ring: 217 91% 60%;
-
-    --radius: 0.75rem;
-
-    /* Custom Proof tokens */
-    --proof-gradient-start: 217 91% 60%;
-    --proof-gradient-end: 262 83% 58%;
-    --proof-success: 160 84% 39%;
-    --proof-warning: 38 92% 50%;
-    --proof-surface-elevated: 222 47% 11%;
-    --proof-glow: 217 91% 60%;
-
-    /* Sidebar tokens */
-    --sidebar-background: 222 47% 5%;
-    --sidebar-foreground: 210 40% 98%;
-    --sidebar-primary: 217 91% 60%;
-    --sidebar-primary-foreground: 222 47% 6%;
-    --sidebar-accent: 217 33% 14%;
-    --sidebar-accent-foreground: 210 40% 98%;
-    --sidebar-border: 217 33% 17%;
-    --sidebar-ring: 217 91% 60%;
-  }
-
-  /* Light mode option */
-  .light {
+    /* Light theme - Notion/Linear inspired */
     --background: 0 0% 100%;
-    --foreground: 222 47% 11%;
+    --foreground: 220 13% 9%;
 
     --card: 0 0% 100%;
-    --card-foreground: 222 47% 11%;
+    --card-foreground: 220 13% 9%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 222 47% 11%;
+    --popover-foreground: 220 13% 9%;
 
-    --primary: 217 91% 50%;
+    --primary: 224 76% 40%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 220 14% 96%;
-    --secondary-foreground: 222 47% 11%;
+    --secondary: 220 14% 98%;
+    --secondary-foreground: 220 13% 9%;
 
-    --muted: 220 14% 96%;
+    --muted: 220 14% 98%;
     --muted-foreground: 220 9% 46%;
 
     --accent: 220 14% 96%;
-    --accent-foreground: 222 47% 11%;
+    --accent-foreground: 220 13% 9%;
 
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 220 13% 91%;
-    --input: 220 13% 91%;
-    --ring: 217 91% 50%;
+    --border: 220 13% 90%;
+    --input: 220 13% 90%;
+    --ring: 224 76% 40%;
+
+    --radius: 0.5rem;
+
+    /* Custom Proof tokens */
+    --proof-success: 160 84% 39%;
+    --proof-warning: 38 92% 50%;
+    --proof-surface-elevated: 220 14% 98%;
+
+    /* Sidebar tokens */
+    --sidebar-background: 220 14% 98%;
+    --sidebar-foreground: 220 13% 9%;
+    --sidebar-primary: 224 76% 40%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 220 14% 96%;
+    --sidebar-accent-foreground: 220 13% 9%;
+    --sidebar-border: 220 13% 90%;
+    --sidebar-ring: 224 76% 40%;
   }
 }
 
@@ -100,24 +66,12 @@
 }
 
 @layer utilities {
-  .text-gradient {
-    @apply bg-clip-text text-transparent bg-gradient-to-r from-primary to-[hsl(262,83%,58%)];
-  }
-
-  .bg-gradient-proof {
-    @apply bg-gradient-to-r from-primary to-[hsl(262,83%,58%)];
+  .text-accent-navy {
+    @apply text-primary;
   }
 
   .bg-surface-elevated {
     @apply bg-[hsl(var(--proof-surface-elevated))];
-  }
-
-  .glow {
-    box-shadow: 0 0 40px -10px hsl(var(--proof-glow) / 0.4);
-  }
-
-  .glow-sm {
-    box-shadow: 0 0 20px -5px hsl(var(--proof-glow) / 0.3);
   }
 
   .animate-float {
