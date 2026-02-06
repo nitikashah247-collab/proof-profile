@@ -8,16 +8,16 @@ export const Navbar = () => {
       initial={{ opacity: 0, y: -20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
-      className="fixed top-0 left-0 right-0 z-50 border-b border-border/50 bg-background/80 backdrop-blur-xl"
+      className="fixed top-0 left-0 right-0 z-50 border-b border-border bg-background/95 backdrop-blur-sm"
     >
       <div className="container mx-auto px-6">
         <div className="flex h-16 items-center justify-between">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-2">
-            <div className="h-8 w-8 rounded-lg bg-gradient-proof flex items-center justify-center">
-              <span className="text-white font-bold text-lg">P</span>
+            <div className="h-8 w-8 rounded-md bg-primary flex items-center justify-center">
+              <span className="text-primary-foreground font-bold text-lg">P</span>
             </div>
-            <span className="text-xl font-bold text-foreground">Proof</span>
+            <span className="text-xl font-semibold text-foreground">Proof</span>
           </Link>
 
           {/* Nav Links */}
@@ -41,7 +41,7 @@ export const Navbar = () => {
               </Button>
             </Link>
             <Link to="/signup">
-              <Button variant="hero" size="sm">
+              <Button size="sm">
                 Get Started
               </Button>
             </Link>

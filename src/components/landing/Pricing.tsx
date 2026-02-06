@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { Check, Sparkles } from "lucide-react";
+import { Check } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const plans = [
@@ -35,14 +35,14 @@ const plans = [
       "Export to PDF",
     ],
     cta: "Start 14-day trial",
-    variant: "hero" as const,
+    variant: "default" as const,
     popular: true,
   },
 ];
 
 export const Pricing = () => {
   return (
-    <section id="pricing" className="py-32 relative">
+    <section id="pricing" className="py-24 relative bg-background">
       <div className="container mx-auto px-6">
         {/* Section Header */}
         <motion.div
@@ -52,9 +52,9 @@ export const Pricing = () => {
           transition={{ duration: 0.6 }}
           className="text-center mb-16"
         >
-          <h2 className="text-4xl md:text-5xl font-bold mb-4">
+          <h2 className="text-4xl md:text-5xl font-bold mb-4 text-foreground">
             Simple, transparent{" "}
-            <span className="text-gradient">pricing</span>
+            <span className="text-primary">pricing</span>
           </h2>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
             Start free. Upgrade when you're ready to stand out even more.
@@ -70,25 +70,24 @@ export const Pricing = () => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: index * 0.1 }}
-              className={`relative rounded-2xl border p-8 ${
+              className={`relative rounded-xl border p-8 bg-card ${
                 plan.popular
-                  ? "border-primary bg-card glow"
-                  : "border-border bg-card/50"
+                  ? "border-primary shadow-sm"
+                  : "border-border"
               }`}
             >
               {plan.popular && (
                 <div className="absolute -top-4 left-1/2 -translate-x-1/2">
-                  <span className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-gradient-proof text-white text-sm font-medium">
-                    <Sparkles className="w-4 h-4" />
+                  <span className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-primary text-primary-foreground text-sm font-medium">
                     Most Popular
                   </span>
                 </div>
               )}
 
               <div className="mb-6">
-                <h3 className="text-2xl font-bold mb-2">{plan.name}</h3>
+                <h3 className="text-2xl font-bold mb-2 text-foreground">{plan.name}</h3>
                 <div className="flex items-baseline gap-1">
-                  <span className="text-5xl font-bold">{plan.price}</span>
+                  <span className="text-5xl font-bold text-foreground">{plan.price}</span>
                   <span className="text-muted-foreground">{plan.period}</span>
                 </div>
                 <p className="text-muted-foreground mt-2">{plan.description}</p>
@@ -97,7 +96,7 @@ export const Pricing = () => {
               <ul className="space-y-3 mb-8">
                 {plan.features.map((feature) => (
                   <li key={feature} className="flex items-center gap-3">
-                    <div className="w-5 h-5 rounded-full bg-proof-success/20 flex items-center justify-center flex-shrink-0">
+                    <div className="w-5 h-5 rounded-full bg-proof-success/10 flex items-center justify-center flex-shrink-0">
                       <Check className="w-3 h-3 text-proof-success" />
                     </div>
                     <span className="text-foreground/80">{feature}</span>

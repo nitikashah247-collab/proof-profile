@@ -58,7 +58,7 @@ const itemVariants = {
 
 export const Features = () => {
   return (
-    <section id="features" className="py-32 relative">
+    <section id="features" className="py-24 relative bg-secondary">
       <div className="container mx-auto px-6">
         {/* Section Header */}
         <motion.div
@@ -68,9 +68,9 @@ export const Features = () => {
           transition={{ duration: 0.6 }}
           className="text-center mb-16"
         >
-          <h2 className="text-4xl md:text-5xl font-bold mb-4">
+          <h2 className="text-4xl md:text-5xl font-bold mb-4 text-foreground">
             Everything you need to{" "}
-            <span className="text-gradient">stand out</span>
+            <span className="text-primary">stand out</span>
           </h2>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
             Stop rewriting resumes. Start building a living portfolio that adapts to every opportunity.
@@ -89,14 +89,13 @@ export const Features = () => {
             <motion.div
               key={feature.title}
               variants={itemVariants}
-              className="group relative p-6 rounded-2xl border border-border bg-card hover:bg-card/80 transition-all duration-300 hover:border-primary/30"
+              className="group relative p-6 rounded-xl border border-border bg-card hover:shadow-md transition-all duration-300"
             >
-              <div className="absolute inset-0 rounded-2xl bg-gradient-to-b from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
               <div className="relative">
-                <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center mb-4 group-hover:bg-primary/20 transition-colors">
+                <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4">
                   <feature.icon className="w-6 h-6 text-primary" />
                 </div>
-                <h3 className="text-xl font-semibold mb-2">{feature.title}</h3>
+                <h3 className="text-xl font-semibold mb-2 text-foreground">{feature.title}</h3>
                 <p className="text-muted-foreground">{feature.description}</p>
               </div>
             </motion.div>
