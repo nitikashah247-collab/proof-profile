@@ -73,8 +73,8 @@ export const Hero = () => {
             transition={{ duration: 0.6, delay: 0.2 }}
             className="text-5xl md:text-7xl font-normal tracking-tight mb-6 leading-[1.1]"
           >
-            One platform,{" "}
-            <span className="text-primary">infinite possibilities.</span>
+            Resumes are dead.{" "}
+            <span className="text-primary">Show them who you really are.</span>
           </motion.h1>
 
           {/* Subheadline */}
@@ -84,8 +84,8 @@ export const Hero = () => {
             transition={{ duration: 0.6, delay: 0.3 }}
             className="text-xl md:text-2xl text-muted-foreground max-w-2xl mx-auto mb-12 leading-relaxed"
           >
-            Create dynamic career profiles that adapt to every opportunity.
-            Profiles that look completely different — because every career is.
+            Create a living profile that adapts to every opportunity.
+            One identity, infinite versions.
           </motion.p>
 
           {/* CTA Buttons */}
