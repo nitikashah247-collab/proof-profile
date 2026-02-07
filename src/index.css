@@ -106,3 +106,54 @@
     animation: pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
   }
 }
+
+/* Executive Finance Theme Override */
+.theme-executive {
+  --background: 0 0% 99%;
+  --foreground: 222 47% 11%;
+
+  --card: 0 0% 100%;
+  --card-foreground: 222 47% 11%;
+
+  --popover: 0 0% 100%;
+  --popover-foreground: 222 47% 11%;
+
+  /* Dark charcoal primary */
+  --primary: 222 47% 11%;
+  --primary-foreground: 0 0% 100%;
+
+  --secondary: 210 20% 96%;
+  --secondary-foreground: 222 47% 11%;
+
+  --muted: 210 20% 96%;
+  --muted-foreground: 215 16% 47%;
+
+  /* Gold accent */
+  --accent: 38 92% 50%;
+  --accent-foreground: 222 47% 11%;
+
+  --destructive: 0 84% 60%;
+  --destructive-foreground: 0 0% 100%;
+
+  --border: 214 17% 90%;
+  --input: 214 17% 90%;
+  --ring: 222 47% 11%;
+
+  /* Executive-specific tokens */
+  --exec-gold: 38 92% 50%;
+  --exec-gold-light: 38 92% 70%;
+  --exec-charcoal: 222 47% 11%;
+  --exec-charcoal-light: 215 25% 27%;
+  --exec-slate: 215 16% 47%;
+}
+
+.theme-executive .icon-gradient-bg {
+  background: linear-gradient(180deg, hsl(222 47% 18%) 0%, hsl(222 47% 11%) 100%);
+}
+
+.theme-executive .icon-gradient {
+  background: linear-gradient(180deg, hsl(222 47% 18%) 0%, hsl(222 47% 11%) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
