@@ -311,6 +311,7 @@ export type Database = {
           location: string | null
           marketing_opted_in: boolean
           onboarding_completed: boolean
+          slug: string | null
           stripe_customer_id: string | null
           stripe_subscription_id: string | null
           updated_at: string
@@ -329,6 +330,7 @@ export type Database = {
           location?: string | null
           marketing_opted_in?: boolean
           onboarding_completed?: boolean
+          slug?: string | null
           stripe_customer_id?: string | null
           stripe_subscription_id?: string | null
           updated_at?: string
@@ -347,6 +349,7 @@ export type Database = {
           location?: string | null
           marketing_opted_in?: boolean
           onboarding_completed?: boolean
+          slug?: string | null
           stripe_customer_id?: string | null
           stripe_subscription_id?: string | null
           updated_at?: string
@@ -481,7 +484,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      generate_profile_slug: { Args: { full_name: string }; Returns: string }
     }
     Enums: {
       [_ in never]: never

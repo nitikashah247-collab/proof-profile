@@ -82,7 +82,7 @@ const Onboarding = () => {
       return [
         {
           role: "ai",
-          content: `Great, I've analyzed your resume, ${data.full_name}! I can see you've worked as ${rolesSummary}. Let me ask a few questions to go deeper and surface the stories that make you stand out.`,
+          content: `Great, I've analysed your resume, ${data.full_name}! I can see you've worked as ${rolesSummary}. Let me ask a few questions to go deeper and surface the stories that make you stand out.`,
         },
         { role: "ai", content: baseChatQuestions[0] },
       ];
@@ -459,7 +459,7 @@ const Onboarding = () => {
                             <Check className="w-5 h-5 text-proof-success" />
                           </div>
                           <div className="text-left">
-                            <p className="font-medium">Resume analyzed</p>
+                            <p className="font-medium">Resume analysed</p>
                             <p className="text-sm text-muted-foreground">
                               {resumeData.full_name} — {resumeData.roles?.length || 0} roles extracted
                             </p>
@@ -510,7 +510,7 @@ const Onboarding = () => {
                       Crafting your Proof...
                     </h2>
                     <p className="text-muted-foreground">
-                      Our AI is analyzing your information and building your profile
+                      Our AI is analysing your information and building your profile
                     </p>
                   </div>
                 )}

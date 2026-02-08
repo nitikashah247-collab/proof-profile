@@ -32,12 +32,12 @@ const features = [
   {
     icon: Zap,
     title: "Instant JD Analysis",
-    description: "Paste any job description. AI automatically reweights your profile to match.",
+    description: "Paste any job description. AI automatically re-weights your profile to match.",
   },
   {
     icon: Share2,
     title: "Custom URLs",
-    description: "Your profile lives at username.getproof.app. Share one link that tells your whole story.",
+    description: "Your profile lives at name.showproof.app. Share one link that tells your whole story.",
   },
 ];
 

@@ -21,7 +21,7 @@ const profilePreviews: Record<
   }
 > = {
   marketing: {
-    url: "sarah.getproof.app",
+    url: "sarah-chen.showproof.app",
     demoPath: "/demo",
     initials: "SC",
     name: "Sarah Chen",
@@ -32,7 +32,7 @@ const profilePreviews: Record<
     avatarBg: "icon-gradient-bg",
   },
   finance: {
-    url: "michael.getproof.app",
+    url: "michael-zhang.showproof.app",
     demoPath: "/demo/finance",
     initials: "MZ",
     name: "Michael Zhang",
