@@ -14,7 +14,382 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      career_timeline: {
+        Row: {
+          company: string
+          created_at: string
+          description: string | null
+          end_date: string | null
+          id: string
+          key_achievement: string | null
+          profile_id: string
+          role: string
+          sort_order: number
+          start_date: string
+          user_id: string
+        }
+        Insert: {
+          company: string
+          created_at?: string
+          description?: string | null
+          end_date?: string | null
+          id?: string
+          key_achievement?: string | null
+          profile_id: string
+          role: string
+          sort_order?: number
+          start_date: string
+          user_id: string
+        }
+        Update: {
+          company?: string
+          created_at?: string
+          description?: string | null
+          end_date?: string | null
+          id?: string
+          key_achievement?: string | null
+          profile_id?: string
+          role?: string
+          sort_order?: number
+          start_date?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "career_timeline_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      case_studies: {
+        Row: {
+          approach: string | null
+          challenge: string | null
+          created_at: string
+          id: string
+          metrics: Json | null
+          profile_id: string
+          results: string | null
+          sort_order: number
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          approach?: string | null
+          challenge?: string | null
+          created_at?: string
+          id?: string
+          metrics?: Json | null
+          profile_id: string
+          results?: string | null
+          sort_order?: number
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          approach?: string | null
+          challenge?: string | null
+          created_at?: string
+          id?: string
+          metrics?: Json | null
+          profile_id?: string
+          results?: string | null
+          sort_order?: number
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "case_studies_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      onboarding_conversations: {
+        Row: {
+          created_at: string
+          extracted_data: Json | null
+          id: string
+          messages: Json
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          extracted_data?: Json | null
+          id?: string
+          messages?: Json
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          extracted_data?: Json | null
+          id?: string
+          messages?: Json
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      profile_versions: {
+        Row: {
+          created_at: string
+          customized_bio: string | null
+          customized_headline: string | null
+          id: string
+          is_default: boolean
+          is_published: boolean
+          profile_id: string
+          slug: string | null
+          target_company: string | null
+          target_role: string | null
+          updated_at: string
+          user_id: string
+          version_name: string
+        }
+        Insert: {
+          created_at?: string
+          customized_bio?: string | null
+          customized_headline?: string | null
+          id?: string
+          is_default?: boolean
+          is_published?: boolean
+          profile_id: string
+          slug?: string | null
+          target_company?: string | null
+          target_role?: string | null
+          updated_at?: string
+          user_id: string
+          version_name?: string
+        }
+        Update: {
+          created_at?: string
+          customized_bio?: string | null
+          customized_headline?: string | null
+          id?: string
+          is_default?: boolean
+          is_published?: boolean
+          profile_id?: string
+          slug?: string | null
+          target_company?: string | null
+          target_role?: string | null
+          updated_at?: string
+          user_id?: string
+          version_name?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "profile_versions_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profile_views: {
+        Row: {
+          id: string
+          profile_id: string
+          profile_version_id: string
+          referrer: string | null
+          sections_viewed: string[] | null
+          time_on_page_seconds: number | null
+          viewed_at: string
+          viewer_ip: string | null
+          viewer_user_agent: string | null
+        }
+        Insert: {
+          id?: string
+          profile_id: string
+          profile_version_id: string
+          referrer?: string | null
+          sections_viewed?: string[] | null
+          time_on_page_seconds?: number | null
+          viewed_at?: string
+          viewer_ip?: string | null
+          viewer_user_agent?: string | null
+        }
+        Update: {
+          id?: string
+          profile_id?: string
+          profile_version_id?: string
+          referrer?: string | null
+          sections_viewed?: string[] | null
+          time_on_page_seconds?: number | null
+          viewed_at?: string
+          viewer_ip?: string | null
+          viewer_user_agent?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "profile_views_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "profile_views_profile_version_id_fkey"
+            columns: ["profile_version_id"]
+            isOneToOne: false
+            referencedRelation: "profile_versions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          bio: string | null
+          created_at: string
+          full_name: string
+          headline: string | null
+          id: string
+          industry: string | null
+          is_pro: boolean
+          location: string | null
+          onboarding_completed: boolean
+          stripe_customer_id: string | null
+          stripe_subscription_id: string | null
+          updated_at: string
+          user_id: string
+          years_experience: number | null
+        }
+        Insert: {
+          avatar_url?: string | null
+          bio?: string | null
+          created_at?: string
+          full_name?: string
+          headline?: string | null
+          id?: string
+          industry?: string | null
+          is_pro?: boolean
+          location?: string | null
+          onboarding_completed?: boolean
+          stripe_customer_id?: string | null
+          stripe_subscription_id?: string | null
+          updated_at?: string
+          user_id: string
+          years_experience?: number | null
+        }
+        Update: {
+          avatar_url?: string | null
+          bio?: string | null
+          created_at?: string
+          full_name?: string
+          headline?: string | null
+          id?: string
+          industry?: string | null
+          is_pro?: boolean
+          location?: string | null
+          onboarding_completed?: boolean
+          stripe_customer_id?: string | null
+          stripe_subscription_id?: string | null
+          updated_at?: string
+          user_id?: string
+          years_experience?: number | null
+        }
+        Relationships: []
+      }
+      skills: {
+        Row: {
+          category: string | null
+          created_at: string
+          id: string
+          name: string
+          proficiency: number | null
+          profile_id: string
+          sort_order: number
+          user_id: string
+        }
+        Insert: {
+          category?: string | null
+          created_at?: string
+          id?: string
+          name: string
+          proficiency?: number | null
+          profile_id: string
+          sort_order?: number
+          user_id: string
+        }
+        Update: {
+          category?: string | null
+          created_at?: string
+          id?: string
+          name?: string
+          proficiency?: number | null
+          profile_id?: string
+          sort_order?: number
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "skills_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      testimonials: {
+        Row: {
+          author_company: string | null
+          author_name: string
+          author_role: string | null
+          created_at: string
+          id: string
+          profile_id: string
+          quote: string
+          sort_order: number
+          user_id: string
+        }
+        Insert: {
+          author_company?: string | null
+          author_name: string
+          author_role?: string | null
+          created_at?: string
+          id?: string
+          profile_id: string
+          quote: string
+          sort_order?: number
+          user_id: string
+        }
+        Update: {
+          author_company?: string | null
+          author_name?: string
+          author_role?: string | null
+          created_at?: string
+          id?: string
+          profile_id?: string
+          quote?: string
+          sort_order?: number
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "testimonials_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
