@@ -12,6 +12,7 @@ import Dashboard from "./pages/Dashboard";
 import Onboarding from "./pages/Onboarding";
 import Demo from "./pages/Demo";
 import DemoFinance from "./pages/DemoFinance";
+import EditProfile from "./pages/EditProfile";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -40,6 +41,14 @@ const App = () => (
               element={
                 <ProtectedRoute>
                   <Onboarding />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/dashboard/edit-profile"
+              element={
+                <ProtectedRoute>
+                  <EditProfile />
                 </ProtectedRoute>
               }
             />

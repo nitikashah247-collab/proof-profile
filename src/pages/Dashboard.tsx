@@ -12,6 +12,7 @@ import {
   MoreHorizontal,
   Copy,
   Trash2,
+  Pencil,
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -205,6 +206,12 @@ const Dashboard = () => {
                     </div>
 
                     <div className="flex items-center gap-2">
+                      <Button variant="outline" size="sm" asChild>
+                        <Link to="/dashboard/edit-profile">
+                          <Pencil className="w-4 h-4 mr-2" />
+                          Edit Sections
+                        </Link>
+                      </Button>
                       {version.slug && (
                         <Button variant="outline" size="sm" asChild>
                           <a href={`/p/${version.slug}`} target="_blank" rel="noopener noreferrer">
