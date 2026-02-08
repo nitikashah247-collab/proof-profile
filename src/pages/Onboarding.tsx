@@ -15,8 +15,6 @@ import {
   Code,
   Megaphone,
   LineChart,
-  Upload,
-  Mic,
 } from "lucide-react";
 import { ResumeUpload, ResumeData } from "@/components/onboarding/ResumeUpload";
 import { VoiceMemo } from "@/components/onboarding/VoiceMemo";
@@ -27,6 +25,9 @@ import {
   type RoleCategory,
   type InterviewQuestion,
 } from "@/lib/interviewQuestions";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
+import { toast } from "@/hooks/use-toast";
 
 const archetypes = [
   {
@@ -67,10 +68,14 @@ const archetypes = [
 ];
 
 const Onboarding = () => {
+  const { user } = useAuth();
   const [step, setStep] = useState(1);
-  const [uploadMethod, setUploadMethod] = useState<"resume" | "linkedin" | "manual" | null>(null);
+  const [selectedMethods, setSelectedMethods] = useState<Set<"resume" | "linkedin">>(new Set());
+  const [activeUpload, setActiveUpload] = useState<"resume" | "linkedin" | null>(null);
   const [resumeData, setResumeData] = useState<ResumeData | null>(null);
   const [resumeFileUrl, setResumeFileUrl] = useState<string | null>(null);
+  const [resumeComplete, setResumeComplete] = useState(false);
+  const [linkedinComplete, setLinkedinComplete] = useState(false);
   const [chatMessages, setChatMessages] = useState<Array<{ role: "ai" | "user"; content: string }>>([]);
   const [currentInput, setCurrentInput] = useState("");
   const [questionIndex, setQuestionIndex] = useState(0);
@@ -100,26 +105,71 @@ const Onboarding = () => {
     ];
   };
 
-  const handleResumeComplete = (data: ResumeData, fileUrl: string) => {
-    setResumeData(data);
-    setResumeFileUrl(fileUrl);
-    const detectedRole = detectRoleCategory(data);
-    setRoleCategory(detectedRole);
-    const roleQuestions = getQuestionsForRole(detectedRole);
-    setQuestions(roleQuestions);
-    const initialMessages = buildInitialMessages(data, detectedRole, roleQuestions);
-    setChatMessages(initialMessages);
-    setStep(2);
-  };
+
 
   const handleStartFresh = () => {
-    setUploadMethod("manual");
     const roleQuestions = getQuestionsForRole("general");
     setQuestions(roleQuestions);
     setRoleCategory("general");
     const initialMessages = buildInitialMessages(null, "general", roleQuestions);
     setChatMessages(initialMessages);
     setStep(2);
+  };
+
+  const toggleMethod = (method: "resume" | "linkedin") => {
+    setSelectedMethods((prev) => {
+      const next = new Set(prev);
+      if (next.has(method)) {
+        next.delete(method);
+      } else {
+        next.add(method);
+      }
+      return next;
+    });
+  };
+
+  const handleProceedToUploads = () => {
+    if (selectedMethods.size === 0) return;
+    // Show the first selected upload
+    if (selectedMethods.has("resume")) {
+      setActiveUpload("resume");
+    } else if (selectedMethods.has("linkedin")) {
+      setActiveUpload("linkedin");
+    }
+  };
+
+  const handleResumeUploadDone = (data: ResumeData, fileUrl: string) => {
+    setResumeData(data);
+    setResumeFileUrl(fileUrl);
+    setResumeComplete(true);
+    // If LinkedIn is also selected and not done, show that next
+    if (selectedMethods.has("linkedin") && !linkedinComplete) {
+      setActiveUpload("linkedin");
+    } else {
+      // All uploads done, proceed to interview
+      const detectedRole = detectRoleCategory(data);
+      setRoleCategory(detectedRole);
+      const roleQuestions = getQuestionsForRole(detectedRole);
+      setQuestions(roleQuestions);
+      const initialMessages = buildInitialMessages(data, detectedRole, roleQuestions);
+      setChatMessages(initialMessages);
+      setStep(2);
+    }
+  };
+
+  const handleLinkedinSkip = () => {
+    setLinkedinComplete(true);
+    if (resumeData) {
+      const detectedRole = detectRoleCategory(resumeData);
+      setRoleCategory(detectedRole);
+      const roleQuestions = getQuestionsForRole(detectedRole);
+      setQuestions(roleQuestions);
+      const initialMessages = buildInitialMessages(resumeData, detectedRole, roleQuestions);
+      setChatMessages(initialMessages);
+      setStep(2);
+    } else {
+      handleStartFresh();
+    }
   };
 
   const handleSendMessage = (messageText?: string) => {
@@ -176,10 +226,132 @@ const Onboarding = () => {
   };
 
   const handleGenerate = async () => {
+    if (!user) return;
     setIsGenerating(true);
-    await new Promise((resolve) => setTimeout(resolve, 2500));
-    setIsGenerating(false);
-    navigate("/demo");
+
+    try {
+      // 1. Fetch the user's profile
+      const { data: profile, error: profileError } = await supabase
+        .from("profiles")
+        .select("*")
+        .eq("user_id", user.id)
+        .maybeSingle();
+
+      if (profileError || !profile) {
+        throw new Error("Could not find your profile. Please try again.");
+      }
+
+      // 2. Update profile with resume data & mark onboarding complete
+      const updatePayload: Record<string, unknown> = {
+        onboarding_completed: true,
+        industry: resumeData?.industry || profile.industry,
+        years_experience: resumeData?.years_experience || profile.years_experience,
+        location: resumeData?.location || profile.location,
+        bio: resumeData?.bio || profile.bio,
+        headline: resumeData?.headline || profile.headline,
+      };
+
+      if (resumeData?.full_name && !profile.full_name) {
+        updatePayload.full_name = resumeData.full_name;
+      }
+
+      const { error: updateError } = await supabase
+        .from("profiles")
+        .update(updatePayload)
+        .eq("id", profile.id);
+
+      if (updateError) {
+        console.error("Profile update error:", updateError);
+        throw new Error("Failed to update profile.");
+      }
+
+      // 3. Create a default profile version
+      const { error: versionError } = await supabase
+        .from("profile_versions")
+        .insert({
+          user_id: user.id,
+          profile_id: profile.id,
+          version_name: "Base Profile",
+          is_default: true,
+          is_published: true,
+          slug: profile.slug,
+        });
+
+      if (versionError) {
+        console.error("Version creation error:", versionError);
+        // Don't throw — profile is saved, version is secondary
+      }
+
+      // 4. Save career timeline from resume
+      if (resumeData?.roles && resumeData.roles.length > 0) {
+        const timelineEntries = resumeData.roles.map((role, index) => ({
+          user_id: user.id,
+          profile_id: profile.id,
+          role: role.title,
+          company: role.company,
+          start_date: role.start_date || "2020-01",
+          end_date: role.end_date || null,
+          description: role.description || null,
+          key_achievement: role.key_achievement || null,
+          sort_order: index,
+        }));
+
+        const { error: timelineError } = await supabase
+          .from("career_timeline")
+          .insert(timelineEntries);
+
+        if (timelineError) console.error("Timeline insert error:", timelineError);
+      }
+
+      // 5. Save skills from resume
+      if (resumeData?.skills && resumeData.skills.length > 0) {
+        const skillEntries = resumeData.skills.map((skill, index) => ({
+          user_id: user.id,
+          profile_id: profile.id,
+          name: skill.name,
+          category: skill.category || null,
+          sort_order: index,
+        }));
+
+        const { error: skillsError } = await supabase
+          .from("skills")
+          .insert(skillEntries);
+
+        if (skillsError) console.error("Skills insert error:", skillsError);
+      }
+
+      // 6. Save interview conversation
+      if (chatMessages.length > 0) {
+        const { error: convoError } = await supabase
+          .from("onboarding_conversations")
+          .insert([{
+            user_id: user.id,
+            messages: JSON.parse(JSON.stringify(chatMessages)),
+            status: "completed",
+            extracted_data: resumeData ? JSON.parse(JSON.stringify(resumeData)) : null,
+          }]);
+
+        if (convoError) console.error("Conversation save error:", convoError);
+      }
+
+      setIsGenerating(false);
+
+      toast({
+        title: "Your profile is live! 🎉",
+        description: "You can now share it with anyone.",
+      });
+
+      // Redirect to their public profile
+      navigate(`/p/${profile.slug}`);
+    } catch (err) {
+      console.error("Profile generation error:", err);
+      setIsGenerating(false);
+      toast({
+        title: "Generation failed",
+        description: err instanceof Error ? err.message : "Something went wrong. Please try again.",
+        variant: "destructive",
+      });
+    }
   };
 
   return (
@@ -241,84 +413,117 @@ const Onboarding = () => {
                   How would you like to get started?
                 </p>
 
-                {!uploadMethod ? (
-                  <div className="grid md:grid-cols-3 gap-4 max-w-3xl mx-auto">
-                    {[
-                      {
-                        id: "resume" as const,
-                        icon: FileText,
-                        title: "Upload Resume",
-                        description: "Drop a PDF or DOCX and we'll extract everything",
-                      },
-                      {
-                        id: "linkedin" as const,
-                        icon: Linkedin,
-                        title: "Import LinkedIn",
-                        description: "Paste your profile URL",
-                      },
-                      {
-                        id: "manual" as const,
-                        icon: Upload,
-                        title: "Start Fresh",
-                        description: "Enter your info manually",
-                      },
-                    ].map((option) => (
-                      <motion.button
-                        key={option.id}
-                        whileHover={{ scale: 1.02 }}
-                        whileTap={{ scale: 0.98 }}
-                        onClick={() => {
-                          if (option.id === "manual") {
-                            handleStartFresh();
-                          } else {
-                            setUploadMethod(option.id);
-                          }
-                        }}
-                        className="p-6 rounded-2xl border border-border bg-card hover:border-primary/50 text-left transition-all"
+                {!activeUpload ? (
+                  <div className="space-y-8">
+                    {/* Selection cards */}
+                    <div className="grid md:grid-cols-2 gap-4 max-w-2xl mx-auto">
+                      {[
+                        {
+                          id: "resume" as const,
+                          icon: FileText,
+                          title: "Upload Resume",
+                          description: "Drop a PDF or DOCX and we'll extract everything",
+                        },
+                        {
+                          id: "linkedin" as const,
+                          icon: Linkedin,
+                          title: "Import LinkedIn",
+                          description: "Paste your profile URL (coming soon)",
+                        },
+                      ].map((option) => (
+                        <motion.button
+                          key={option.id}
+                          whileHover={{ scale: 1.02 }}
+                          whileTap={{ scale: 0.98 }}
+                          onClick={() => toggleMethod(option.id)}
+                          className={`p-6 rounded-2xl border-2 text-left transition-all relative ${
+                            selectedMethods.has(option.id)
+                              ? "border-primary bg-primary/5"
+                              : "border-border bg-card hover:border-primary/50"
+                          }`}
+                        >
+                          {selectedMethods.has(option.id) && (
+                            <div className="absolute top-3 right-3 w-6 h-6 rounded-full bg-primary flex items-center justify-center">
+                              <Check className="w-4 h-4 text-primary-foreground" />
+                            </div>
+                          )}
+                          <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center mb-4">
+                            <option.icon className="w-6 h-6 text-primary" />
+                          </div>
+                          <h3 className="font-semibold mb-1">{option.title}</h3>
+                          <p className="text-sm text-muted-foreground">
+                            {option.description}
+                          </p>
+                        </motion.button>
+                      ))}
+                    </div>
+
+                    <p className="text-sm text-muted-foreground">
+                      Select one or both — more data means a better profile
+                    </p>
+
+                    <div className="flex flex-col items-center gap-3">
+                      <Button
+                        size="lg"
+                        onClick={handleProceedToUploads}
+                        disabled={selectedMethods.size === 0}
+                        className="group"
                       >
-                        <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center mb-4">
-                          <option.icon className="w-6 h-6 text-primary" />
-                        </div>
-                        <h3 className="font-semibold mb-1">{option.title}</h3>
-                        <p className="text-sm text-muted-foreground">
-                          {option.description}
-                        </p>
-                      </motion.button>
-                    ))}
+                        Continue
+                        <ArrowRight className="w-5 h-5 ml-2 transition-transform group-hover:translate-x-1" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        onClick={handleStartFresh}
+                        className="text-muted-foreground"
+                      >
+                        Skip — start from scratch
+                      </Button>
+                    </div>
                   </div>
-                ) : uploadMethod === "resume" ? (
+                ) : activeUpload === "resume" ? (
                   <motion.div
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     className="max-w-lg mx-auto"
                   >
-                    <ResumeUpload onComplete={handleResumeComplete} />
+                    <ResumeUpload onComplete={handleResumeUploadDone} />
                     <div className="text-center mt-6">
                       <Button
                         variant="ghost"
-                        onClick={() => setUploadMethod(null)}
+                        onClick={() => setActiveUpload(null)}
                         className="text-muted-foreground"
                       >
                         ← Back to options
                       </Button>
                     </div>
                   </motion.div>
-                ) : uploadMethod === "linkedin" ? (
+                ) : activeUpload === "linkedin" ? (
                   <motion.div
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="max-w-lg mx-auto text-left"
+                    className="max-w-lg mx-auto text-center"
                   >
-                    <p className="text-muted-foreground text-center mb-4">
-                      LinkedIn import is coming soon. For now, try uploading your resume or starting fresh.
+                    {resumeComplete && (
+                      <div className="flex items-center gap-2 justify-center mb-6 p-3 rounded-xl bg-primary/5 border border-primary/20">
+                        <Check className="w-5 h-5 text-primary" />
+                        <span className="text-sm font-medium">Resume uploaded successfully</span>
+                      </div>
+                    )}
+                    <p className="text-muted-foreground mb-4">
+                      LinkedIn import is coming soon. You can skip this step for now.
                     </p>
-                    <div className="text-center">
+                    <div className="flex justify-center gap-3">
                       <Button
                         variant="ghost"
-                        onClick={() => setUploadMethod(null)}
+                        onClick={() => setActiveUpload(null)}
                         className="text-muted-foreground"
                       >
-                        ← Back to options
+                        ← Back
+                      </Button>
+                      <Button onClick={handleLinkedinSkip}>
+                        Continue without LinkedIn
+                        <ArrowRight className="w-4 h-4 ml-2" />
                       </Button>
                     </div>
                   </motion.div>
