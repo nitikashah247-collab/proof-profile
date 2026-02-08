@@ -2,7 +2,9 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Play } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "@/hooks/useAuth";
+import { useToast } from "@/hooks/use-toast";
 
 type ProfileTab = "marketing" | "finance";
 
@@ -47,6 +49,18 @@ const profilePreviews: Record<
 export const Hero = () => {
   const [activeTab, setActiveTab] = useState<ProfileTab>("marketing");
   const profile = profilePreviews[activeTab];
+  const { user } = useAuth();
+  const navigate = useNavigate();
+  const { toast } = useToast();
+
+  const handleCreateProof = () => {
+    if (user) {
+      toast({ title: "You already have a profile!", description: "Redirecting to your dashboard." });
+      navigate("/dashboard");
+    } else {
+      navigate("/signup");
+    }
+  };
 
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-20 bg-background">
@@ -95,12 +109,10 @@ export const Hero = () => {
             transition={{ duration: 0.6, delay: 0.4 }}
             className="flex flex-col sm:flex-row items-center justify-center gap-4"
           >
-            <Link to="/signup">
-              <Button size="lg" className="group shadow-lg shadow-primary/25">
-                Create your Proof
-                <ArrowRight className="w-5 h-5 transition-transform group-hover:translate-x-1" />
-              </Button>
-            </Link>
+            <Button size="lg" className="group shadow-lg shadow-primary/25" onClick={handleCreateProof}>
+              Create your Proof
+              <ArrowRight className="w-5 h-5 transition-transform group-hover:translate-x-1" />
+            </Button>
             <Link to={profile.demoPath}>
               <Button variant="outline" size="lg">
                 <Play className="w-4 h-4" />

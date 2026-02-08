@@ -1,10 +1,10 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { ArrowLeft, Mail, Lock, User, Eye, EyeOff, Check } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
@@ -87,8 +87,17 @@ const Signup = () => {
   const [marketingOptedIn, setMarketingOptedIn] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [emailSent, setEmailSent] = useState(false);
-  const { signUp } = useAuth();
+  const { signUp, user } = useAuth();
   const { toast } = useToast();
+  const navigate = useNavigate();
+
+  // Redirect if already logged in
+  useEffect(() => {
+    if (user) {
+      toast({ title: "You already have a profile!", description: "Redirecting to your dashboard." });
+      navigate("/dashboard", { replace: true });
+    }
+  }, [user, navigate, toast]);
 
   const isPasswordValid =
     password.length >= 8 && /\d/.test(password) && /[a-zA-Z]/.test(password);
@@ -104,7 +113,15 @@ const Signup = () => {
     setIsLoading(false);
 
     if (error) {
-      toast({ title: "Signup failed", description: error.message, variant: "destructive" });
+      const isExisting = error.message?.toLowerCase().includes("already registered") || 
+                         error.message?.toLowerCase().includes("already been registered");
+      toast({ 
+        title: isExisting ? "Account already exists" : "Signup failed", 
+        description: isExisting 
+          ? "An account with this email already exists. Log in instead?" 
+          : error.message, 
+        variant: "destructive" 
+      });
     } else {
       setEmailSent(true);
       toast({
@@ -241,7 +258,7 @@ const Signup = () => {
                 </Label>
                 <p className="text-xs text-muted-foreground">
                   You can unsubscribe anytime. See our{" "}
-                  <a href="#" className="text-primary hover:underline">Privacy Policy</a>.
+                  <Link to="/privacy" className="text-primary hover:underline">Privacy Policy</Link>.
                 </p>
               </div>
             </div>
@@ -279,9 +296,9 @@ const Signup = () => {
 
           <p className="text-center mt-6 text-sm text-muted-foreground">
             By creating an account, you agree to our{" "}
-            <a href="#" className="text-primary hover:underline">Terms of Service</a>{" "}
+            <Link to="/terms" className="text-primary hover:underline">Terms of Service</Link>{" "}
             and{" "}
-            <a href="#" className="text-primary hover:underline">Privacy Policy</a>
+            <Link to="/privacy" className="text-primary hover:underline">Privacy Policy</Link>
           </p>
 
           <p className="text-center mt-4 text-muted-foreground">

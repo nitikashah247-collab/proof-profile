@@ -244,6 +244,12 @@ export const ResumeUpload = ({ onComplete }: ResumeUploadProps) => {
           Upload & Analyse Resume
         </Button>
       )}
+
+      <p className="text-xs text-muted-foreground text-center flex items-center justify-center gap-1.5">
+        <span>🔒</span>
+        Your resume is encrypted and only visible to you. We never share your data.{" "}
+        <a href="/privacy" className="text-primary hover:underline">Privacy Policy</a>
+      </p>
     </div>
   );
 };

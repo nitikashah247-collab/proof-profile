@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
+import DataExport from "@/components/dashboard/DataExport";
 import { Button } from "@/components/ui/button";
 import { Link, useNavigate } from "react-router-dom";
 import {
@@ -250,6 +251,11 @@ const Dashboard = () => {
               ))}
             </div>
           )}
+
+          {/* Data Export Section */}
+          <div className="mt-12">
+            <DataExport />
+          </div>
         </div>
       </main>
     </div>
