@@ -5,6 +5,7 @@ import { ArrowRight, Play } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
+import { IndustryCarousel } from "@/components/landing/IndustryCarousel";
 
 type ProfileTab = "marketing" | "finance";
 
@@ -122,28 +123,7 @@ export const Hero = () => {
           </motion.div>
 
           {/* Social Proof */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.8, delay: 0.6 }}
-            className="mt-20 pt-8 border-t border-border"
-          >
-            <p className="text-sm text-muted-foreground mb-6">
-              Adapts to any role, any industry
-            </p>
-            <div className="flex items-center justify-center gap-10 md:gap-16">
-              {["Marketing", "Finance", "Engineering", "Design", "Operations"].map(
-                (role) => (
-                  <span
-                    key={role}
-                    className="text-lg font-semibold text-muted-foreground/60 hover:text-muted-foreground transition-colors"
-                  >
-                    {role}
-                  </span>
-                )
-              )}
-            </div>
-          </motion.div>
+          <IndustryCarousel />
         </div>
 
         {/* Profile Preview Card with Tabs */}
