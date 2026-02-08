@@ -1,11 +1,9 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useNavigate } from "react-router-dom";
 import {
-  Upload,
   FileText,
   Linkedin,
   Sparkles,
@@ -17,7 +15,9 @@ import {
   Code,
   Megaphone,
   LineChart,
+  Upload,
 } from "lucide-react";
+import { ResumeUpload, ResumeData } from "@/components/onboarding/ResumeUpload";
 
 const archetypes = [
   {
@@ -57,7 +57,7 @@ const archetypes = [
   },
 ];
 
-const chatQuestions = [
+const baseChatQuestions = [
   "Tell me about a project you're most proud of and why?",
   "What do people come to you for? What's your edge?",
   "Walk me through a time you had to influence without authority.",
@@ -67,15 +67,46 @@ const chatQuestions = [
 const Onboarding = () => {
   const [step, setStep] = useState(1);
   const [uploadMethod, setUploadMethod] = useState<"resume" | "linkedin" | "manual" | null>(null);
-  const [chatMessages, setChatMessages] = useState<Array<{ role: "ai" | "user"; content: string }>>([
-    { role: "ai", content: "Hi! I'm here to help surface the stories and achievements that make you stand out. Let's start with something you're proud of." },
-    { role: "ai", content: chatQuestions[0] },
-  ]);
+  const [resumeData, setResumeData] = useState<ResumeData | null>(null);
+  const [resumeFileUrl, setResumeFileUrl] = useState<string | null>(null);
+  const [chatMessages, setChatMessages] = useState<Array<{ role: "ai" | "user"; content: string }>>([]);
   const [currentInput, setCurrentInput] = useState("");
   const [questionIndex, setQuestionIndex] = useState(0);
   const [selectedArchetype, setSelectedArchetype] = useState<string | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
   const navigate = useNavigate();
+
+  const buildInitialMessages = (data: ResumeData | null): Array<{ role: "ai" | "user"; content: string }> => {
+    if (data && data.full_name) {
+      const rolesSummary = data.roles?.slice(0, 2).map((r) => `${r.title} at ${r.company}`).join(", ") || "your experience";
+      return [
+        {
+          role: "ai",
+          content: `Great, I've analyzed your resume, ${data.full_name}! I can see you've worked as ${rolesSummary}. Let me ask a few questions to go deeper and surface the stories that make you stand out.`,
+        },
+        { role: "ai", content: baseChatQuestions[0] },
+      ];
+    }
+    return [
+      { role: "ai", content: "Hi! I'm here to help surface the stories and achievements that make you stand out. Let's start with something you're proud of." },
+      { role: "ai", content: baseChatQuestions[0] },
+    ];
+  };
+
+  const handleResumeComplete = (data: ResumeData, fileUrl: string) => {
+    setResumeData(data);
+    setResumeFileUrl(fileUrl);
+    const initialMessages = buildInitialMessages(data);
+    setChatMessages(initialMessages);
+    setStep(2);
+  };
+
+  const handleStartFresh = () => {
+    setUploadMethod("manual");
+    const initialMessages = buildInitialMessages(null);
+    setChatMessages(initialMessages);
+    setStep(2);
+  };
 
   const handleSendMessage = () => {
     if (!currentInput.trim()) return;
@@ -83,13 +114,12 @@ const Onboarding = () => {
     setChatMessages((prev) => [...prev, { role: "user", content: currentInput }]);
     setCurrentInput("");
 
-    // Simulate AI response
     setTimeout(() => {
-      if (questionIndex < chatQuestions.length - 1) {
+      if (questionIndex < baseChatQuestions.length - 1) {
         setChatMessages((prev) => [
           ...prev,
           { role: "ai", content: "That's great insight! Let me ask you another question..." },
-          { role: "ai", content: chatQuestions[questionIndex + 1] },
+          { role: "ai", content: baseChatQuestions[questionIndex + 1] },
         ]);
         setQuestionIndex((prev) => prev + 1);
       } else {
@@ -122,7 +152,6 @@ const Onboarding = () => {
               <span className="text-xl font-bold text-foreground">Proof</span>
             </div>
 
-            {/* Progress Steps */}
             <div className="flex items-center gap-4">
               {[1, 2, 3, 4].map((s) => (
                 <div key={s} className="flex items-center gap-2">
@@ -137,9 +166,7 @@ const Onboarding = () => {
                   </div>
                   {s < 4 && (
                     <div
-                      className={`w-12 h-0.5 ${
-                        step > s ? "bg-primary" : "bg-muted"
-                      }`}
+                      className={`w-12 h-0.5 ${step > s ? "bg-primary" : "bg-muted"}`}
                     />
                   )}
                 </div>
@@ -171,51 +198,89 @@ const Onboarding = () => {
                   How would you like to get started?
                 </p>
 
-                <div className="grid md:grid-cols-3 gap-4 max-w-3xl mx-auto">
-                  {[
-                    {
-                      id: "resume" as const,
-                      icon: FileText,
-                      title: "Upload Resume",
-                      description: "Drop a PDF and we'll extract everything",
-                    },
-                    {
-                      id: "linkedin" as const,
-                      icon: Linkedin,
-                      title: "Import LinkedIn",
-                      description: "Paste your profile URL",
-                    },
-                    {
-                      id: "manual" as const,
-                      icon: Upload,
-                      title: "Start Fresh",
-                      description: "Enter your info manually",
-                    },
-                  ].map((option) => (
-                    <motion.button
-                      key={option.id}
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                      onClick={() => {
-                        setUploadMethod(option.id);
-                        setStep(2);
-                      }}
-                      className={`p-6 rounded-2xl border text-left transition-all ${
-                        uploadMethod === option.id
-                          ? "border-primary bg-primary/10"
-                          : "border-border bg-card hover:border-primary/50"
-                      }`}
-                    >
-                      <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center mb-4">
-                        <option.icon className="w-6 h-6 text-primary" />
-                      </div>
-                      <h3 className="font-semibold mb-1">{option.title}</h3>
-                      <p className="text-sm text-muted-foreground">
-                        {option.description}
-                      </p>
-                    </motion.button>
-                  ))}
-                </div>
+                {/* Show upload method options or selected upload flow */}
+                {!uploadMethod ? (
+                  <div className="grid md:grid-cols-3 gap-4 max-w-3xl mx-auto">
+                    {[
+                      {
+                        id: "resume" as const,
+                        icon: FileText,
+                        title: "Upload Resume",
+                        description: "Drop a PDF or DOCX and we'll extract everything",
+                      },
+                      {
+                        id: "linkedin" as const,
+                        icon: Linkedin,
+                        title: "Import LinkedIn",
+                        description: "Paste your profile URL",
+                      },
+                      {
+                        id: "manual" as const,
+                        icon: Upload,
+                        title: "Start Fresh",
+                        description: "Enter your info manually",
+                      },
+                    ].map((option) => (
+                      <motion.button
+                        key={option.id}
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                        onClick={() => {
+                          if (option.id === "manual") {
+                            handleStartFresh();
+                          } else {
+                            setUploadMethod(option.id);
+                          }
+                        }}
+                        className="p-6 rounded-2xl border border-border bg-card hover:border-primary/50 text-left transition-all"
+                      >
+                        <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center mb-4">
+                          <option.icon className="w-6 h-6 text-primary" />
+                        </div>
+                        <h3 className="font-semibold mb-1">{option.title}</h3>
+                        <p className="text-sm text-muted-foreground">
+                          {option.description}
+                        </p>
+                      </motion.button>
+                    ))}
+                  </div>
+                ) : uploadMethod === "resume" ? (
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="max-w-lg mx-auto"
+                  >
+                    <ResumeUpload onComplete={handleResumeComplete} />
+                    <div className="text-center mt-6">
+                      <Button
+                        variant="ghost"
+                        onClick={() => setUploadMethod(null)}
+                        className="text-muted-foreground"
+                      >
+                        ← Back to options
+                      </Button>
+                    </div>
+                  </motion.div>
+                ) : uploadMethod === "linkedin" ? (
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="max-w-lg mx-auto text-left"
+                  >
+                    <p className="text-muted-foreground text-center mb-4">
+                      LinkedIn import is coming soon. For now, try uploading your resume or starting fresh.
+                    </p>
+                    <div className="text-center">
+                      <Button
+                        variant="ghost"
+                        onClick={() => setUploadMethod(null)}
+                        className="text-muted-foreground"
+                      >
+                        ← Back to options
+                      </Button>
+                    </div>
+                  </motion.div>
+                ) : null}
               </motion.div>
             )}
 
@@ -238,7 +303,9 @@ const Onboarding = () => {
                     Let's surface your best stories
                   </h1>
                   <p className="text-muted-foreground">
-                    Answer a few questions to help me understand your impact
+                    {resumeData
+                      ? "We've pre-loaded your resume info. Answer a few more questions to go deeper."
+                      : "Answer a few questions to help me understand your impact"}
                   </p>
                 </div>
 
@@ -268,7 +335,6 @@ const Onboarding = () => {
                     ))}
                   </div>
 
-                  {/* Input */}
                   <div className="border-t border-border p-4">
                     <div className="flex items-center gap-3">
                       <Textarea
@@ -295,7 +361,6 @@ const Onboarding = () => {
                   </div>
                 </div>
 
-                {/* Skip Button */}
                 <div className="text-center mt-6">
                   <Button
                     variant="ghost"
@@ -388,6 +453,19 @@ const Onboarding = () => {
                     </p>
 
                     <div className="space-y-4 mb-12">
+                      {resumeData && (
+                        <div className="flex items-center gap-3 p-4 rounded-xl bg-card border border-border">
+                          <div className="w-10 h-10 rounded-lg bg-proof-success/20 flex items-center justify-center">
+                            <Check className="w-5 h-5 text-proof-success" />
+                          </div>
+                          <div className="text-left">
+                            <p className="font-medium">Resume analyzed</p>
+                            <p className="text-sm text-muted-foreground">
+                              {resumeData.full_name} — {resumeData.roles?.length || 0} roles extracted
+                            </p>
+                          </div>
+                        </div>
+                      )}
                       <div className="flex items-center gap-3 p-4 rounded-xl bg-card border border-border">
                         <div className="w-10 h-10 rounded-lg bg-proof-success/20 flex items-center justify-center">
                           <Check className="w-5 h-5 text-proof-success" />
@@ -395,7 +473,7 @@ const Onboarding = () => {
                         <div className="text-left">
                           <p className="font-medium">Profile information captured</p>
                           <p className="text-sm text-muted-foreground">
-                            From your resume and interview
+                            From your {resumeData ? "resume and " : ""}interview
                           </p>
                         </div>
                       </div>
