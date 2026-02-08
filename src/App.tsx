@@ -14,6 +14,7 @@ import Demo from "./pages/Demo";
 import DemoFinance from "./pages/DemoFinance";
 import EditProfile from "./pages/EditProfile";
 import NotFound from "./pages/NotFound";
+import PublicProfile from "./pages/PublicProfile";
 
 const queryClient = new QueryClient();
 
@@ -54,6 +55,7 @@ const App = () => (
             />
             <Route path="/demo" element={<Demo />} />
             <Route path="/demo/finance" element={<DemoFinance />} />
+            <Route path="/p/:slug" element={<PublicProfile />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

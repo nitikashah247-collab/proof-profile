@@ -114,7 +114,7 @@ serve(async (req) => {
       const errText = await claudeResponse.text();
       console.error("Claude API error:", claudeResponse.status, errText);
       return new Response(
-        JSON.stringify({ error: "Failed to analyze resume with AI" }),
+        JSON.stringify({ error: "Failed to analyse resume with AI" }),
         { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }

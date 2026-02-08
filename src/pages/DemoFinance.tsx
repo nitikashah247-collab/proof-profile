@@ -263,7 +263,7 @@ const DemoFinance = () => {
           </Link>
           <div className="flex items-center gap-3">
             <span className="text-sm text-muted-foreground">
-              Viewing: michael.getproof.app
+              Viewing: michael-zhang.showproof.app
             </span>
             <Button size="sm">Edit Profile</Button>
           </div>
@@ -356,7 +356,7 @@ const DemoFinance = () => {
 
       {/* Actions CTA */}
       <ProfileActions
-        profileUrl="michael.getproof.app"
+        profileUrl="michael-zhang.showproof.app"
         name={profileData.name}
       />
 

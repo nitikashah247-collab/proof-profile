@@ -103,7 +103,7 @@ export const ResumeUpload = ({ onComplete }: ResumeUploadProps) => {
 
       if (!response.ok) {
         const errData = await response.json().catch(() => ({}));
-        throw new Error(errData.error || "Failed to analyze resume");
+        throw new Error(errData.error || "Failed to analyse resume");
       }
 
       const result = await response.json();
@@ -146,8 +146,8 @@ export const ResumeUpload = ({ onComplete }: ResumeUploadProps) => {
         <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center mb-6 animate-pulse">
           <Loader2 className="w-8 h-8 text-primary animate-spin" />
         </div>
-        <h3 className="text-lg font-semibold mb-2">
-          {state === "uploading" ? "Uploading your resume..." : "Analyzing your resume..."}
+     <h3 className="text-lg font-semibold mb-2">
+          {state === "uploading" ? "Uploading your resume..." : "Analysing your resume..."}
         </h3>
         <p className="text-sm text-muted-foreground text-center max-w-sm">
           {state === "uploading"
@@ -168,7 +168,7 @@ export const ResumeUpload = ({ onComplete }: ResumeUploadProps) => {
         <div className="w-16 h-16 rounded-2xl bg-proof-success/20 flex items-center justify-center mb-6">
           <CheckCircle2 className="w-8 h-8 text-proof-success" />
         </div>
-        <h3 className="text-lg font-semibold mb-2">Resume analyzed!</h3>
+        <h3 className="text-lg font-semibold mb-2">Resume analysed!</h3>
         <p className="text-sm text-muted-foreground">Moving to the next step...</p>
       </motion.div>
     );
@@ -241,7 +241,7 @@ export const ResumeUpload = ({ onComplete }: ResumeUploadProps) => {
       {file && state === "idle" && (
         <Button onClick={handleUploadAndParse} className="w-full" size="lg">
           <FileText className="w-4 h-4 mr-2" />
-          Upload & Analyze Resume
+          Upload & Analyse Resume
         </Button>
       )}
     </div>

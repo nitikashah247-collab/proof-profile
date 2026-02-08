@@ -196,7 +196,7 @@ const Demo = () => {
           </Link>
           <div className="flex items-center gap-3">
             <span className="text-sm text-muted-foreground">
-              Viewing: sarah.getproof.app
+              Viewing: sarah-chen.showproof.app
             </span>
             <Button size="sm">
               Edit Profile
@@ -291,7 +291,7 @@ const Demo = () => {
 
       {/* Profile Actions (CTA + Downloads) */}
       <ProfileActions
-        profileUrl="sarah.getproof.app"
+        profileUrl="sarah-chen.showproof.app"
         name={profileData.name}
       />
 
