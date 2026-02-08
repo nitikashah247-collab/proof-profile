@@ -144,6 +144,50 @@ export type Database = {
         }
         Relationships: []
       }
+      profile_sections: {
+        Row: {
+          created_at: string
+          id: string
+          is_visible: boolean
+          profile_id: string
+          section_data: Json
+          section_order: number
+          section_type: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_visible?: boolean
+          profile_id: string
+          section_data?: Json
+          section_order?: number
+          section_type: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_visible?: boolean
+          profile_id?: string
+          section_data?: Json
+          section_order?: number
+          section_type?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "profile_sections_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profile_versions: {
         Row: {
           created_at: string
@@ -159,6 +203,7 @@ export type Database = {
           updated_at: string
           user_id: string
           version_name: string
+          visible_sections: Json | null
         }
         Insert: {
           created_at?: string
@@ -174,6 +219,7 @@ export type Database = {
           updated_at?: string
           user_id: string
           version_name?: string
+          visible_sections?: Json | null
         }
         Update: {
           created_at?: string
@@ -189,6 +235,7 @@ export type Database = {
           updated_at?: string
           user_id?: string
           version_name?: string
+          visible_sections?: Json | null
         }
         Relationships: [
           {
@@ -302,6 +349,42 @@ export type Database = {
           updated_at?: string
           user_id?: string
           years_experience?: number | null
+        }
+        Relationships: []
+      }
+      section_templates: {
+        Row: {
+          created_at: string
+          description: string
+          display_name: string
+          icon_name: string
+          id: string
+          is_core: boolean
+          recommended_for: string[]
+          section_type: string
+          template_structure: Json
+        }
+        Insert: {
+          created_at?: string
+          description?: string
+          display_name: string
+          icon_name?: string
+          id?: string
+          is_core?: boolean
+          recommended_for?: string[]
+          section_type: string
+          template_structure?: Json
+        }
+        Update: {
+          created_at?: string
+          description?: string
+          display_name?: string
+          icon_name?: string
+          id?: string
+          is_core?: boolean
+          recommended_for?: string[]
+          section_type?: string
+          template_structure?: Json
         }
         Relationships: []
       }
