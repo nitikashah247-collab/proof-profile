@@ -8,7 +8,7 @@ import { Link } from "react-router-dom";
 import { ArrowLeft, Mail, Lock, User, Eye, EyeOff, Check } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
-import { supabase } from "@/integrations/supabase/client";
+
 
 const PasswordRequirements = ({ password }: { password: string }) => {
   const requirements = [
@@ -98,27 +98,14 @@ const Signup = () => {
     if (!isPasswordValid) return;
 
     setIsLoading(true);
-    const { error } = await signUp(email, password, name);
+    const { error } = await signUp(email, password, name, {
+      marketing_opted_in: marketingOptedIn,
+    });
     setIsLoading(false);
 
     if (error) {
       toast({ title: "Signup failed", description: error.message, variant: "destructive" });
     } else {
-      // Save marketing preference to profile once it's created by the trigger
-      if (marketingOptedIn) {
-        // The profile is created by the DB trigger on auth.users insert.
-        // We update it with the marketing preference via a listener approach:
-        // Since the user isn't confirmed yet, we store the preference in user metadata
-        // and sync it when they first sign in. For now, update directly.
-        const { data: { user } } = await supabase.auth.getUser();
-        if (user) {
-          await supabase
-            .from("profiles")
-            .update({ marketing_opted_in: marketingOptedIn })
-            .eq("user_id", user.id);
-        }
-      }
-
       setEmailSent(true);
       toast({
         title: "Check your email",
