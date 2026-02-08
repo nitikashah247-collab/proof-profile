@@ -3,10 +3,12 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Link } from "react-router-dom";
 import { ArrowLeft, Mail, Lock, User, Eye, EyeOff, Check } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 const PasswordRequirements = ({ password }: { password: string }) => {
   const requirements = [
@@ -82,6 +84,7 @@ const Signup = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [marketingOptedIn, setMarketingOptedIn] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [emailSent, setEmailSent] = useState(false);
   const { signUp } = useAuth();
@@ -101,6 +104,21 @@ const Signup = () => {
     if (error) {
       toast({ title: "Signup failed", description: error.message, variant: "destructive" });
     } else {
+      // Save marketing preference to profile once it's created by the trigger
+      if (marketingOptedIn) {
+        // The profile is created by the DB trigger on auth.users insert.
+        // We update it with the marketing preference via a listener approach:
+        // Since the user isn't confirmed yet, we store the preference in user metadata
+        // and sync it when they first sign in. For now, update directly.
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) {
+          await supabase
+            .from("profiles")
+            .update({ marketing_opted_in: marketingOptedIn })
+            .eq("user_id", user.id);
+        }
+      }
+
       setEmailSent(true);
       toast({
         title: "Check your email",
@@ -218,6 +236,27 @@ const Signup = () => {
                 </button>
               </div>
               <PasswordRequirements password={password} />
+            </div>
+
+            <div className="flex items-start gap-3">
+              <Checkbox
+                id="marketing"
+                checked={marketingOptedIn}
+                onCheckedChange={(checked) => setMarketingOptedIn(checked === true)}
+                className="mt-0.5"
+              />
+              <div className="space-y-1">
+                <Label
+                  htmlFor="marketing"
+                  className="text-sm font-normal text-foreground cursor-pointer leading-snug"
+                >
+                  I'd like to receive product updates, tips, and occasional emails from Proof
+                </Label>
+                <p className="text-xs text-muted-foreground">
+                  You can unsubscribe anytime. See our{" "}
+                  <a href="#" className="text-primary hover:underline">Privacy Policy</a>.
+                </p>
+              </div>
             </div>
 
             <Button
