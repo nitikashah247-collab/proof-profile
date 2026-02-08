@@ -309,6 +309,7 @@ export type Database = {
           industry: string | null
           is_pro: boolean
           location: string | null
+          marketing_opted_in: boolean
           onboarding_completed: boolean
           stripe_customer_id: string | null
           stripe_subscription_id: string | null
@@ -326,6 +327,7 @@ export type Database = {
           industry?: string | null
           is_pro?: boolean
           location?: string | null
+          marketing_opted_in?: boolean
           onboarding_completed?: boolean
           stripe_customer_id?: string | null
           stripe_subscription_id?: string | null
@@ -343,6 +345,7 @@ export type Database = {
           industry?: string | null
           is_pro?: boolean
           location?: string | null
+          marketing_opted_in?: boolean
           onboarding_completed?: boolean
           stripe_customer_id?: string | null
           stripe_subscription_id?: string | null

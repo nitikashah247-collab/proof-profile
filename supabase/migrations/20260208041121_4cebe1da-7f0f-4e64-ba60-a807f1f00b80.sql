@@ -1,0 +1,1 @@
+ALTER TABLE public.profiles ADD COLUMN marketing_opted_in boolean NOT NULL DEFAULT false;
