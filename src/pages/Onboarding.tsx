@@ -16,8 +16,17 @@ import {
   Megaphone,
   LineChart,
   Upload,
+  Mic,
 } from "lucide-react";
 import { ResumeUpload, ResumeData } from "@/components/onboarding/ResumeUpload";
+import { VoiceMemo } from "@/components/onboarding/VoiceMemo";
+import {
+  detectRoleCategory,
+  getQuestionsForRole,
+  findFollowUp,
+  type RoleCategory,
+  type InterviewQuestion,
+} from "@/lib/interviewQuestions";
 
 const archetypes = [
   {
@@ -57,13 +66,6 @@ const archetypes = [
   },
 ];
 
-const baseChatQuestions = [
-  "Tell me about a project you're most proud of and why?",
-  "What do people come to you for? What's your edge?",
-  "Walk me through a time you had to influence without authority.",
-  "What metrics or outcomes best demonstrate your impact?",
-];
-
 const Onboarding = () => {
   const [step, setStep] = useState(1);
   const [uploadMethod, setUploadMethod] = useState<"resume" | "linkedin" | "manual" | null>(null);
@@ -72,64 +74,105 @@ const Onboarding = () => {
   const [chatMessages, setChatMessages] = useState<Array<{ role: "ai" | "user"; content: string }>>([]);
   const [currentInput, setCurrentInput] = useState("");
   const [questionIndex, setQuestionIndex] = useState(0);
+  const [roleCategory, setRoleCategory] = useState<RoleCategory>("general");
+  const [questions, setQuestions] = useState<InterviewQuestion[]>([]);
+  const [pendingFollowUp, setPendingFollowUp] = useState(false);
   const [selectedArchetype, setSelectedArchetype] = useState<string | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
   const navigate = useNavigate();
 
-  const buildInitialMessages = (data: ResumeData | null): Array<{ role: "ai" | "user"; content: string }> => {
+  const buildInitialMessages = (data: ResumeData | null, role: RoleCategory, roleQuestions: InterviewQuestion[]): Array<{ role: "ai" | "user"; content: string }> => {
+    const roleName = role === "general" ? "professional" : role;
+    
     if (data && data.full_name) {
       const rolesSummary = data.roles?.slice(0, 2).map((r) => `${r.title} at ${r.company}`).join(", ") || "your experience";
       return [
         {
           role: "ai",
-          content: `Great, I've analysed your resume, ${data.full_name}! I can see you've worked as ${rolesSummary}. Let me ask a few questions to go deeper and surface the stories that make you stand out.`,
+          content: `Great, I've analysed your resume, ${data.full_name}! I can see you've worked as ${rolesSummary}. I've tailored my questions for your ${roleName} background — let's surface the stories that make you stand out.`,
         },
-        { role: "ai", content: baseChatQuestions[0] },
+        { role: "ai", content: roleQuestions[0].question },
       ];
     }
     return [
-      { role: "ai", content: "Hi! I'm here to help surface the stories and achievements that make you stand out. Let's start with something you're proud of." },
-      { role: "ai", content: baseChatQuestions[0] },
+      { role: "ai", content: `Hi! I'm here to help surface the stories and achievements that make you stand out. I'll ask questions tailored for ${roleName} professionals. Let's start!` },
+      { role: "ai", content: roleQuestions[0].question },
     ];
   };
 
   const handleResumeComplete = (data: ResumeData, fileUrl: string) => {
     setResumeData(data);
     setResumeFileUrl(fileUrl);
-    const initialMessages = buildInitialMessages(data);
+    const detectedRole = detectRoleCategory(data);
+    setRoleCategory(detectedRole);
+    const roleQuestions = getQuestionsForRole(detectedRole);
+    setQuestions(roleQuestions);
+    const initialMessages = buildInitialMessages(data, detectedRole, roleQuestions);
     setChatMessages(initialMessages);
     setStep(2);
   };
 
   const handleStartFresh = () => {
     setUploadMethod("manual");
-    const initialMessages = buildInitialMessages(null);
+    const roleQuestions = getQuestionsForRole("general");
+    setQuestions(roleQuestions);
+    setRoleCategory("general");
+    const initialMessages = buildInitialMessages(null, "general", roleQuestions);
     setChatMessages(initialMessages);
     setStep(2);
   };
 
-  const handleSendMessage = () => {
-    if (!currentInput.trim()) return;
+  const handleSendMessage = (messageText?: string) => {
+    const text = messageText || currentInput;
+    if (!text.trim()) return;
 
-    setChatMessages((prev) => [...prev, { role: "user", content: currentInput }]);
+    setChatMessages((prev) => [...prev, { role: "user", content: text }]);
     setCurrentInput("");
 
     setTimeout(() => {
-      if (questionIndex < baseChatQuestions.length - 1) {
+      const currentQuestion = questions[questionIndex];
+      
+      // Check for adaptive follow-up based on user response
+      if (!pendingFollowUp && currentQuestion) {
+        const followUp = findFollowUp(currentQuestion, text);
+        if (followUp) {
+          setPendingFollowUp(true);
+          setChatMessages((prev) => [
+            ...prev,
+            { role: "ai", content: "That's fascinating — let me dig deeper on that..." },
+            { role: "ai", content: followUp },
+          ]);
+          return;
+        }
+      }
+
+      // Reset follow-up state
+      setPendingFollowUp(false);
+
+      if (questionIndex < questions.length - 1) {
+        const nextIdx = questionIndex + 1;
         setChatMessages((prev) => [
           ...prev,
-          { role: "ai", content: "That's great insight! Let me ask you another question..." },
-          { role: "ai", content: baseChatQuestions[questionIndex + 1] },
+          { role: "ai", content: "Great insight! Let me ask you something else..." },
+          { role: "ai", content: questions[nextIdx].question },
         ]);
-        setQuestionIndex((prev) => prev + 1);
+        setQuestionIndex(nextIdx);
       } else {
         setChatMessages((prev) => [
           ...prev,
-          { role: "ai", content: "Perfect! I've got everything I need. Let's move on to choosing your profile style." },
+          { role: "ai", content: "Brilliant! I've got everything I need. Let's move on to choosing your profile style." },
         ]);
         setTimeout(() => setStep(3), 1500);
       }
-    }, 1000);
+    }, 800);
+  };
+
+  const handleVoiceTranscript = (text: string) => {
+    setCurrentInput(text);
+    // Auto-send after a brief delay so user can see the transcript
+    setTimeout(() => {
+      handleSendMessage(text);
+    }, 500);
   };
 
   const handleGenerate = async () => {
@@ -198,7 +241,6 @@ const Onboarding = () => {
                   How would you like to get started?
                 </p>
 
-                {/* Show upload method options or selected upload flow */}
                 {!uploadMethod ? (
                   <div className="grid md:grid-cols-3 gap-4 max-w-3xl mx-auto">
                     {[
@@ -304,7 +346,7 @@ const Onboarding = () => {
                   </h1>
                   <p className="text-muted-foreground">
                     {resumeData
-                      ? "We've pre-loaded your resume info. Answer a few more questions to go deeper."
+                      ? `We've tailored questions for your ${roleCategory === "general" ? "professional" : roleCategory} background. Answer a few more to go deeper.`
                       : "Answer a few questions to help me understand your impact"}
                   </p>
                 </div>
@@ -335,7 +377,10 @@ const Onboarding = () => {
                     ))}
                   </div>
 
-                  <div className="border-t border-border p-4">
+                  <div className="border-t border-border p-4 space-y-3">
+                    <p className="text-xs text-muted-foreground text-center">
+                      💬 Type your answer or 🎤 record a voice memo (faster and easier!)
+                    </p>
                     <div className="flex items-center gap-3">
                       <Textarea
                         placeholder="Type your answer..."
@@ -352,12 +397,13 @@ const Onboarding = () => {
                       />
                       <Button
                         size="icon"
-                        onClick={handleSendMessage}
+                        onClick={() => handleSendMessage()}
                         disabled={!currentInput.trim()}
                       >
                         <Send className="w-5 h-5" />
                       </Button>
                     </div>
+                    <VoiceMemo onTranscript={handleVoiceTranscript} />
                   </div>
                 </div>
 

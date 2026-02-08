@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { Shield } from "lucide-react";
 
 export const Footer = () => {
   return (
@@ -13,9 +14,13 @@ export const Footer = () => {
               </div>
               <span className="text-xl font-semibold text-foreground">Proof</span>
             </Link>
-            <p className="text-muted-foreground max-w-xs">
+            <p className="text-muted-foreground max-w-xs mb-4">
               Dynamic career profiles that adapt to every opportunity. Show them who you really are.
             </p>
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <Shield className="w-4 h-4 text-primary" />
+              <span>Your data is encrypted and secure</span>
+            </div>
           </div>
 
           {/* Product */}
@@ -45,14 +50,14 @@ export const Footer = () => {
             <h4 className="font-semibold mb-4 text-foreground">Legal</h4>
             <ul className="space-y-2">
               <li>
-                <a href="#" className="text-muted-foreground hover:text-foreground transition-colors">
+                <Link to="/privacy" className="text-muted-foreground hover:text-foreground transition-colors">
                   Privacy Policy
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="#" className="text-muted-foreground hover:text-foreground transition-colors">
+                <Link to="/terms" className="text-muted-foreground hover:text-foreground transition-colors">
                   Terms of Service
-                </a>
+                </Link>
               </li>
             </ul>
           </div>

@@ -15,6 +15,8 @@ import DemoFinance from "./pages/DemoFinance";
 import EditProfile from "./pages/EditProfile";
 import NotFound from "./pages/NotFound";
 import PublicProfile from "./pages/PublicProfile";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
+import TermsOfService from "./pages/TermsOfService";
 
 const queryClient = new QueryClient();
 
@@ -29,6 +31,8 @@ const App = () => (
             <Route path="/" element={<Index />} />
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
+            <Route path="/privacy" element={<PrivacyPolicy />} />
+            <Route path="/terms" element={<TermsOfService />} />
             <Route
               path="/dashboard"
               element={
