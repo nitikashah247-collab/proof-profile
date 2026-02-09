@@ -11,6 +11,7 @@ import { SectionLibrary } from "@/components/editor/SectionLibrary";
 import { SectionList } from "@/components/editor/SectionList";
 import { SectionEditModal } from "@/components/editor/SectionEditModal";
 import { SectionPreview } from "@/components/editor/SectionPreview";
+import { CareerCoachDrawer } from "@/components/editor/CareerCoachDrawer";
 
 const EditProfile = () => {
   const { user } = useAuth();
@@ -153,6 +154,14 @@ const EditProfile = () => {
         open={!!editingSection}
         onClose={() => setEditingSection(null)}
         onSave={handleSaveSection}
+      />
+
+      {/* AI Career Coach */}
+      <CareerCoachDrawer
+        profileData={profile}
+        sections={sections}
+        activeSectionTypes={sections.map((s) => s.section_type)}
+        onAddSection={handleAddSection}
       />
     </div>
   );

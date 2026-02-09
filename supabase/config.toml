@@ -1,1 +1,4 @@
 project_id = "qpprfmhuwfgpvanafcco"
+
+[functions.career-coach]
+verify_jwt = false
