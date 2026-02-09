@@ -16,6 +16,11 @@ import { WorkStyleVisual, defaultWorkStyleDimensions } from "@/components/profil
 import { PortfolioGallery } from "@/components/profile/PortfolioGallery";
 import { ProfileActions } from "@/components/profile/ProfileActions";
 import { AnalyticsPreview } from "@/components/profile/AnalyticsPreview";
+import { VisualPortfolio } from "@/components/profile/VisualPortfolio";
+import { BrandLogos } from "@/components/profile/BrandLogos";
+import { PersonalProjects } from "@/components/profile/PersonalProjects";
+import { LifestyleGallery } from "@/components/profile/LifestyleGallery";
+import { SpeakingWriting } from "@/components/profile/SpeakingWriting";
 
 // Demo profile data
 const profileData = {
@@ -130,7 +135,7 @@ const profileData = {
   ],
   testimonials: [
     {
-      quote: "Sarah has an exceptional ability to take complex technical products and distill them into narratives that resonate with buyers. She's one of the best PMM leaders I've worked with in 20 years.",
+      quote: "Sarah has an exceptional ability to take complex technical products and distil them into narratives that resonate with buyers. She's one of the best PMM leaders I've worked with in 20 years.",
       author: "Alex Rivera",
       role: "CEO",
       company: "Acme Corp",
@@ -145,6 +150,18 @@ const profileData = {
       quote: "Sarah built our PMM function from the ground up. Her leadership style creates high-performing teams that actually enjoy coming to work. Everyone she hired is still thriving.",
       author: "Morgan Lee",
       role: "COO",
+      company: "Previous Startup",
+    },
+    {
+      quote: "I've worked with dozens of marketing leaders — Sarah stands out for her rigour. Every initiative she runs has clear KPIs, measurable outcomes, and a plan B. She's the strategic PMM every growth-stage company needs.",
+      author: "Priya Gupta",
+      role: "VP Product",
+      company: "Acme Corp",
+    },
+    {
+      quote: "Sarah mentored me from IC to team lead. She has this rare combination of strategic clarity and genuine care for the people around her. I wouldn't be where I am without her.",
+      author: "Tom Nguyen",
+      role: "Sr. PMM",
       company: "Previous Startup",
     },
   ],
@@ -163,6 +180,134 @@ const profileData = {
     { id: "4", title: "Case Study Video", description: "Customer success story for enterprise segment", type: "link" as const },
     { id: "5", title: "Sales Battlecard", description: "Competitive positioning for sales team", type: "pdf" as const },
     { id: "6", title: "Launch Blog Post", description: "Product announcement blog on company site", type: "link" as const },
+  ],
+  visualPortfolio: [
+    {
+      imageUrl: "https://images.unsplash.com/photo-1611532736597-de2d4265fba3?w=800&h=600&fit=crop",
+      title: "Enterprise Rebrand Campaign",
+      caption: "Complete visual identity overhaul for Acme's enterprise product line, including web, collateral, and trade show materials",
+      metric: "+45% engagement",
+    },
+    {
+      imageUrl: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&h=600&fit=crop",
+      title: "AI Launch Campaign",
+      caption: "Multi-channel campaign for AI feature release — social, email, landing pages, and press materials",
+      metric: "2M impressions",
+    },
+    {
+      imageUrl: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&h=600&fit=crop",
+      title: "Annual Customer Report",
+      caption: "Data-driven content piece showcasing customer success metrics, shared across 12K+ social interactions",
+      metric: "12K shares",
+    },
+    {
+      imageUrl: "https://images.unsplash.com/photo-1542744173-8e7e53415bb0?w=800&h=600&fit=crop",
+      title: "Sales Enablement Toolkit",
+      caption: "Modular battlecards, competitive matrices, and objection-handling playbooks for 200+ sales reps",
+      metric: "93% adoption",
+    },
+    {
+      imageUrl: "https://images.unsplash.com/photo-1558655146-9f40138edfeb?w=800&h=600&fit=crop",
+      title: "Product Positioning Framework",
+      caption: "Visual framework mapping competitive landscape and Acme's differentiated positioning",
+      metric: "38% growth",
+    },
+    {
+      imageUrl: "https://images.unsplash.com/photo-1563986768609-322da13575f2?w=800&h=600&fit=crop",
+      title: "SaaStr Conference Booth",
+      caption: "Designed and managed Acme's flagship presence at SaaStr Annual — 2,000+ leads captured",
+      metric: "2K+ leads",
+    },
+  ],
+  brands: [
+    { name: "Salesforce" },
+    { name: "HubSpot" },
+    { name: "Notion" },
+    { name: "Figma" },
+    { name: "Stripe" },
+    { name: "Slack" },
+    { name: "Atlassian" },
+    { name: "Datadog" },
+    { name: "Twilio" },
+    { name: "Segment" },
+  ],
+  personalProjects: [
+    {
+      title: "The GTM Playbook",
+      type: "newsletter" as const,
+      description: "Weekly newsletter — 4,200+ subscribers",
+      detail: "Tactical go-to-market insights for B2B marketers. Covers positioning, competitive intel, and launch strategy with real examples from my career.",
+      url: "#",
+    },
+    {
+      title: "Brand Identity Work",
+      type: "design" as const,
+      description: "Freelance brand strategy",
+      detail: "Pro-bono branding and messaging work for 3 early-stage startups in the climate tech space. Helped them define positioning and visual identity.",
+    },
+    {
+      title: "Women in PMM",
+      type: "community" as const,
+      description: "Community of 800+ product marketers",
+      detail: "Founded and run a Slack community for women in product marketing. Monthly AMAs, career workshops, and mentorship matching.",
+      url: "#",
+    },
+  ],
+  lifestyle: [
+    {
+      imageUrl: "https://images.unsplash.com/photo-1559027615-cd4628902d4a?w=600&h=600&fit=crop",
+      caption: "Teaching marketing at Girls Who Code",
+      emoji: "💻",
+    },
+    {
+      imageUrl: "https://images.unsplash.com/photo-1501785888041-af3ef285b470?w=600&h=600&fit=crop",
+      caption: "Exploring Patagonia — my creative reset",
+      emoji: "🏔️",
+    },
+    {
+      imageUrl: "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=600&h=600&fit=crop",
+      caption: "Amateur food photographer",
+      emoji: "📸",
+    },
+    {
+      imageUrl: "https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=600&h=600&fit=crop",
+      caption: "Morning trail runs in Marin",
+      emoji: "🏃‍♀️",
+    },
+  ],
+  speakingWriting: [
+    {
+      type: "talk" as const,
+      title: "The Death of Feature Marketing: Why Stories Win",
+      venue: "SaaStr Annual 2025",
+      date: "Sep 2025",
+      description: "Keynote on shifting from feature-led to narrative-led positioning in B2B SaaS, with frameworks from the Acme repositioning project.",
+      url: "#",
+    },
+    {
+      type: "article" as const,
+      title: "How We Repositioned a $50M Product in 90 Days",
+      venue: "First Round Review",
+      date: "Jun 2025",
+      description: "Deep-dive into the Acme repositioning playbook — customer research methodology, messaging frameworks, and cross-functional rollout.",
+      url: "#",
+    },
+    {
+      type: "podcast" as const,
+      title: "Building PMM Teams That Scale",
+      venue: "The Product Marketing Podcast",
+      date: "Mar 2025",
+      description: "Discussion on hiring, culture, and operating rhythms for high-growth PMM teams. Covered my 2-to-12 scaling journey.",
+      url: "#",
+    },
+    {
+      type: "article" as const,
+      title: "The Competitive Intelligence Stack for 2025",
+      venue: "Lenny's Newsletter (Guest Post)",
+      date: "Jan 2025",
+      description: "Tools, templates, and processes for building a CI function from scratch. Includes the battlecard framework I developed at Acme.",
+      url: "#",
+    },
   ],
   analytics: {
     totalViews: 1247,
@@ -267,6 +412,12 @@ const Demo = () => {
         </div>
       </section>
 
+      {/* Visual Portfolio */}
+      <VisualPortfolio pieces={profileData.visualPortfolio} />
+
+      {/* Brand Logos */}
+      <BrandLogos brands={profileData.brands} />
+
       {/* Skills Matrix */}
       <SkillsMatrix
         skills={profileData.skillsData}
@@ -280,13 +431,22 @@ const Demo = () => {
       {/* Testimonials Carousel */}
       <TestimonialsCarousel testimonials={profileData.testimonials} />
 
+      {/* Speaking & Writing */}
+      <SpeakingWriting items={profileData.speakingWriting} />
+
+      {/* Personal Projects */}
+      <PersonalProjects projects={profileData.personalProjects} />
+
+      {/* Beyond Work / Lifestyle */}
+      <LifestyleGallery items={profileData.lifestyle} />
+
       {/* Work Style */}
       <WorkStyleVisual
         dimensions={defaultWorkStyleDimensions}
         traits={profileData.workStyleTraits}
       />
 
-      {/* Portfolio Gallery */}
+      {/* Work Samples */}
       <PortfolioGallery items={profileData.portfolio} />
 
       {/* Profile Actions (CTA + Downloads) */}
