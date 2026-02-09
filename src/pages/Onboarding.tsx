@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -15,9 +15,21 @@ import {
   Code,
   Megaphone,
   LineChart,
+  Wand2,
+  Loader2,
 } from "lucide-react";
 import { ResumeUpload, ResumeData } from "@/components/onboarding/ResumeUpload";
 import { VoiceMemo } from "@/components/onboarding/VoiceMemo";
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from "@/components/ui/hover-card";
+import archetypeExecutiveImg from "@/assets/archetype-executive.jpg";
+import archetypeCreativeImg from "@/assets/archetype-creative.jpg";
+import archetypeTechnicalImg from "@/assets/archetype-technical.jpg";
+import archetypeSalesImg from "@/assets/archetype-sales.jpg";
+import archetypeOperationsImg from "@/assets/archetype-operations.jpg";
 import {
   detectRoleCategory,
   getQuestionsForRole,
@@ -28,6 +40,14 @@ import {
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "@/hooks/use-toast";
+
+const archetypePreviewImages: Record<string, string> = {
+  executive: archetypeExecutiveImg,
+  creative: archetypeCreativeImg,
+  technical: archetypeTechnicalImg,
+  sales: archetypeSalesImg,
+  operations: archetypeOperationsImg,
+};
 
 const archetypes = [
   {
@@ -84,6 +104,8 @@ const Onboarding = () => {
   const [pendingFollowUp, setPendingFollowUp] = useState(false);
   const [selectedArchetype, setSelectedArchetype] = useState<string | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
+  const [aiSuggesting, setAiSuggesting] = useState(false);
+  const [aiSuggestion, setAiSuggestion] = useState<{ archetype: string; reason: string } | null>(null);
   const navigate = useNavigate();
 
   const buildInitialMessages = (data: ResumeData | null, role: RoleCategory, roleQuestions: InterviewQuestion[]): Array<{ role: "ai" | "user"; content: string }> => {
@@ -224,6 +246,45 @@ const Onboarding = () => {
       handleSendMessage(text);
     }, 500);
   };
+
+  const handleAiSuggest = useCallback(async () => {
+    setAiSuggesting(true);
+    setSelectedArchetype(null);
+    setAiSuggestion(null);
+
+    try {
+      const { data, error } = await supabase.functions.invoke("suggest-archetype", {
+        body: { resumeData, roleCategory },
+      });
+
+      if (error) throw error;
+
+      const archetype = data?.archetype || "executive";
+      const reason = data?.reason || "Selected as a versatile default for your background.";
+
+      setAiSuggestion({ archetype, reason });
+      setSelectedArchetype(archetype);
+    } catch (err) {
+      console.error("AI suggestion error:", err);
+      // Fallback: map roleCategory to archetype
+      const fallbackMap: Record<string, string> = {
+        marketing: "creative",
+        finance: "executive",
+        technical: "technical",
+        sales: "sales",
+        operations: "operations",
+        general: "executive",
+      };
+      const fallback = fallbackMap[roleCategory] || "executive";
+      setAiSuggestion({
+        archetype: fallback,
+        reason: `Based on your ${roleCategory} background, we've selected ${archetypes.find(a => a.id === fallback)?.name || "Executive"}.`,
+      });
+      setSelectedArchetype(fallback);
+    } finally {
+      setAiSuggesting(false);
+    }
+  }, [resumeData, roleCategory]);
 
   const handleGenerate = async () => {
     if (!user) return;
@@ -638,35 +699,119 @@ const Onboarding = () => {
                 <h1 className="text-4xl font-bold mb-4">
                   Choose your <span className="text-primary">style</span>
                 </h1>
-                <p className="text-xl text-muted-foreground mb-12">
+                <p className="text-xl text-muted-foreground mb-8">
                   Select the archetype that best represents your professional identity
                 </p>
 
-                <div className="grid grid-cols-2 md:grid-cols-5 gap-4 max-w-4xl mx-auto mb-12">
-                  {archetypes.map((archetype) => (
-                    <motion.button
-                      key={archetype.id}
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                      onClick={() => setSelectedArchetype(archetype.id)}
-                      className={`p-6 rounded-2xl border text-center transition-all ${
-                        selectedArchetype === archetype.id
-                          ? "border-primary bg-primary/10"
-                          : "border-border bg-card hover:border-primary/50"
-                      }`}
-                    >
-                      <div
-                        className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${archetype.color} flex items-center justify-center mx-auto mb-4`}
-                      >
-                        <archetype.icon className="w-7 h-7 text-white" />
+                {/* AI Suggest Card */}
+                <div className="max-w-md mx-auto mb-8">
+                  <motion.button
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={handleAiSuggest}
+                    disabled={aiSuggesting}
+                    className={`w-full p-5 rounded-2xl border-2 text-left transition-all relative overflow-hidden ${
+                      aiSuggestion
+                        ? "border-primary bg-primary/5"
+                        : "border-dashed border-primary/40 bg-gradient-to-r from-primary/5 to-primary/10 hover:border-primary"
+                    }`}
+                  >
+                    <div className="flex items-center gap-4">
+                      <div className="w-12 h-12 rounded-xl bg-primary/15 flex items-center justify-center shrink-0">
+                        {aiSuggesting ? (
+                          <Loader2 className="w-6 h-6 text-primary animate-spin" />
+                        ) : (
+                          <Wand2 className="w-6 h-6 text-primary" />
+                        )}
                       </div>
-                      <h3 className="font-semibold mb-1">{archetype.name}</h3>
-                      <p className="text-xs text-muted-foreground">
-                        {archetype.description}
-                      </p>
-                    </motion.button>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2">
+                          <h3 className="font-semibold">
+                            {aiSuggesting ? "Analysing your background..." : "✨ Let AI decide"}
+                          </h3>
+                          {!aiSuggestion && !aiSuggesting && (
+                            <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-primary/20 text-primary">
+                              Recommended
+                            </span>
+                          )}
+                        </div>
+                        <p className="text-sm text-muted-foreground mt-0.5">
+                          {aiSuggestion
+                            ? aiSuggestion.reason
+                            : "We'll analyse your background and pick the best template. You can change it later."}
+                        </p>
+                      </div>
+                      {aiSuggestion && (
+                        <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center shrink-0">
+                          <Check className="w-5 h-5 text-primary-foreground" />
+                        </div>
+                      )}
+                    </div>
+                  </motion.button>
+                </div>
+
+                <p className="text-sm text-muted-foreground mb-6">— or pick one yourself —</p>
+
+                {/* Archetype Grid with Previews */}
+                <div className="grid grid-cols-2 md:grid-cols-5 gap-4 max-w-4xl mx-auto mb-6">
+                  {archetypes.map((archetype) => (
+                    <HoverCard key={archetype.id} openDelay={200} closeDelay={100}>
+                      <HoverCardTrigger asChild>
+                        <motion.button
+                          whileHover={{ scale: 1.05 }}
+                          whileTap={{ scale: 0.95 }}
+                          onClick={() => {
+                            setSelectedArchetype(archetype.id);
+                            setAiSuggestion(null);
+                          }}
+                          className={`p-4 rounded-2xl border-2 text-center transition-all relative ${
+                            selectedArchetype === archetype.id
+                              ? "border-primary bg-primary/10 shadow-md shadow-primary/10"
+                              : "border-border bg-card hover:border-primary/50"
+                          }`}
+                        >
+                          {selectedArchetype === archetype.id && (
+                            <div className="absolute top-2 right-2 w-5 h-5 rounded-full bg-primary flex items-center justify-center">
+                              <Check className="w-3 h-3 text-primary-foreground" />
+                            </div>
+                          )}
+                          {/* Thumbnail */}
+                          <div className="w-full aspect-[3/4] rounded-lg overflow-hidden mb-3 border border-border/50">
+                            <img
+                              src={archetypePreviewImages[archetype.id]}
+                              alt={`${archetype.name} preview`}
+                              className="w-full h-full object-cover"
+                            />
+                          </div>
+                          <div
+                            className={`w-10 h-10 rounded-xl bg-gradient-to-br ${archetype.color} flex items-center justify-center mx-auto mb-2`}
+                          >
+                            <archetype.icon className="w-5 h-5 text-white" />
+                          </div>
+                          <h3 className="font-semibold text-sm mb-0.5">{archetype.name}</h3>
+                          <p className="text-[11px] text-muted-foreground leading-tight">
+                            {archetype.description}
+                          </p>
+                        </motion.button>
+                      </HoverCardTrigger>
+                      <HoverCardContent side="top" className="w-64 p-2">
+                        <img
+                          src={archetypePreviewImages[archetype.id]}
+                          alt={`${archetype.name} preview`}
+                          className="w-full rounded-lg"
+                        />
+                        <p className="text-xs text-center text-muted-foreground mt-2 font-medium">
+                          {archetype.name} — {archetype.description}
+                        </p>
+                      </HoverCardContent>
+                    </HoverCard>
                   ))}
                 </div>
+
+                {/* Reassurance text */}
+                <p className="text-xs text-muted-foreground/70 mb-8">
+                  Don't worry, you can update your profile style anytime from settings
+                </p>
 
                 <Button
                   size="xl"
