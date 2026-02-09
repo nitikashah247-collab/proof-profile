@@ -16,6 +16,9 @@ import { WorkStyleVisual } from "@/components/profile/WorkStyleVisual";
 import { ProfileActions } from "@/components/profile/ProfileActions";
 import { AnalyticsPreview } from "@/components/profile/AnalyticsPreview";
 import { CredentialsSection } from "@/components/profile/CredentialsSection";
+import { DealExperience } from "@/components/profile/DealExperience";
+import { AdvisoryRoles } from "@/components/profile/AdvisoryRoles";
+import { ProcessFrameworks } from "@/components/profile/ProcessFrameworks";
 
 // Michael Zhang - CFO Profile Data
 const profileData = {
@@ -90,6 +93,79 @@ const profileData = {
         "Forecasting accuracy improved from ±40% to ±5%. Monthly close reduced from 15 to 5 days. Built a team of 12 with zero regrettable attrition. Finance function rated 'best-in-class' by board advisor.",
       skills: ["ERP Systems", "Team Leadership", "FP&A"],
     },
+    {
+      title: "Strategic Acquisition Integration — $120M Exit",
+      company: "ScaleUp Inc.",
+      keyMetric: "$120M",
+      summary:
+        "Led financial due diligence and integration planning for a successful $120M acquisition.",
+      challenge:
+        "Three potential acquirers were evaluating ScaleUp simultaneously. Each had different valuation methodologies and data room requirements. Timeline was compressed to 8 weeks.",
+      approach:
+        "Built comprehensive data room with 400+ documents, created acquirer-specific financial models showing synergy potential, negotiated earn-out structures, and managed communication with existing investors throughout the process.",
+      outcome:
+        "Closed at $120M — 18x revenue multiple, exceeding board expectations by 35%. All employee equity holders received full payouts. Integration completed in 60 days with zero revenue disruption.",
+      skills: ["M&A", "Financial Modeling", "Capital Raising"],
+    },
+  ],
+  deals: [
+    { type: "Series C", company: "TechVentures", size: "$50M", year: "2024", role: "CFO — Lead", outcome: "Closed at 14x ARR" },
+    { type: "Series B", company: "TechVentures", size: "$35M", year: "2023", role: "CFO — Lead", outcome: "Closed at 12x ARR" },
+    { type: "Acquisition", company: "ScaleUp Inc.", size: "$120M", year: "2020", role: "VP Finance — Lead", outcome: "18x revenue multiple" },
+    { type: "Series A", company: "ScaleUp Inc.", size: "$15M", year: "2017", role: "VP Finance — Support", outcome: "Fully subscribed in 3 weeks" },
+    { type: "Debt Facility", company: "TechVentures", size: "$10M", year: "2024", role: "CFO — Lead", outcome: "SVB venture debt, minimal covenants" },
+    { type: "M&A (Buy-side)", company: "TechVentures", size: "$8M", year: "2025", role: "CFO — Lead", outcome: "Acqui-hire, 12 engineers integrated" },
+  ],
+  advisoryRoles: [
+    {
+      company: "FinLedger",
+      stage: "Seed",
+      focus: "Financial Infrastructure",
+      description: "Advising on financial modelling, fundraising strategy, and building their first FP&A function. Helped refine their investor pitch deck and unit economics narrative.",
+    },
+    {
+      company: "CarbonTrack",
+      stage: "Series A",
+      focus: "Climate Tech",
+      description: "Board observer role. Providing guidance on scaling finance operations, vendor management, and preparing for institutional fundraising rounds.",
+    },
+    {
+      company: "MedBridge",
+      stage: "Pre-Seed",
+      focus: "HealthTech",
+      description: "Mentoring the founding team on financial planning, burn rate management, and building investor-ready financial models from day one.",
+    },
+    {
+      company: "NZ Tech Association",
+      stage: "Non-profit",
+      focus: "Industry Body",
+      description: "Finance committee member. Contributing to governance, annual audit oversight, and financial strategy for the national technology industry association.",
+    },
+  ],
+  processFrameworks: [
+    {
+      title: "The Finance Operating Rhythm",
+      subtitle: "A repeatable cadence for scaling finance teams from startup to growth stage",
+      steps: [
+        { label: "Weekly Flash", description: "Cash, burn, key metrics" },
+        { label: "Monthly Close", description: "5-day close, variance analysis" },
+        { label: "Dept Reviews", description: "Unit economics by team" },
+        { label: "Board Pack", description: "Automated, narrative-driven" },
+        { label: "Quarterly Plan", description: "Rolling forecast + reforecast" },
+      ],
+    },
+    {
+      title: "Fundraising Process Framework",
+      subtitle: "Structured approach to running a competitive fundraise in any market",
+      steps: [
+        { label: "Model Prep", description: "Bottom-up, scenario-driven" },
+        { label: "Investor Map", description: "Tier 1/2/3, warm intros" },
+        { label: "Data Room", description: "400+ documents, indexed" },
+        { label: "Process Mgmt", description: "Weekly tracking, FOMO" },
+        { label: "Term Negotiation", description: "Protect dilution, alignment" },
+        { label: "Close & Comms", description: "Legal, investor updates" },
+      ],
+    },
   ],
   timeline: [
     {
@@ -142,10 +218,10 @@ const profileData = {
     },
   ],
   skillsData: [
-    { name: "Financial Modeling", level: 5, yearsOfExperience: 15, relatedCaseStudies: [0] },
+    { name: "Financial Modeling", level: 5, yearsOfExperience: 15, relatedCaseStudies: [0, 3] },
     { name: "FP&A", level: 5, yearsOfExperience: 12, relatedCaseStudies: [0, 1, 2] },
-    { name: "Capital Raising", level: 5, yearsOfExperience: 8, relatedCaseStudies: [0] },
-    { name: "M&A", level: 4, yearsOfExperience: 6, relatedCaseStudies: [] },
+    { name: "Capital Raising", level: 5, yearsOfExperience: 8, relatedCaseStudies: [0, 3] },
+    { name: "M&A", level: 4, yearsOfExperience: 6, relatedCaseStudies: [3] },
     { name: "ERP Systems", level: 4, yearsOfExperience: 7, relatedCaseStudies: [2] },
     { name: "Team Leadership", level: 5, yearsOfExperience: 10, relatedCaseStudies: [1, 2] },
   ],
@@ -153,22 +229,32 @@ const profileData = {
     {
       icon: "certification" as const,
       title: "Certified Public Accountant (CPA)",
-      subtitle: "New Zealand Institute of Chartered Accountants",
+      subtitle: "New Zealand Institute of Chartered Accountants — Active since 2011",
     },
     {
       icon: "education" as const,
       title: "MBA, Finance & Strategy",
-      subtitle: "University of Auckland Business School — Dean's List",
+      subtitle: "University of Auckland Business School — Dean's List, Valedictorian",
+    },
+    {
+      icon: "certification" as const,
+      title: "Chartered Financial Analyst (CFA) Level II",
+      subtitle: "CFA Institute — Passed 2014",
     },
     {
       icon: "advisory" as const,
-      title: "Board Advisor — 2 Early-Stage Startups",
-      subtitle: "Advising on financial strategy, fundraising, and governance",
+      title: "Board Advisor — 3 Early-Stage Startups",
+      subtitle: "FinLedger (Seed), CarbonTrack (Series A), MedBridge (Pre-Seed)",
     },
     {
       icon: "speaking" as const,
       title: "Guest Lecturer — Startup Finance",
-      subtitle: "University of Auckland, Annual SaaS Finance Summit speaker",
+      subtitle: "University of Auckland, Annual SaaS Finance Summit, NZ CFO Forum",
+    },
+    {
+      icon: "certification" as const,
+      title: "GAICD — Governance Institute",
+      subtitle: "Graduate, Australian Institute of Company Directors — Board-ready certification",
     },
   ],
   testimonials: [
@@ -181,7 +267,7 @@ const profileData = {
     },
     {
       quote:
-        "Strategic thinker who balances growth ambition with fiscal responsibility. Michael brought rigor and credibility to our financial story that was critical during our fundraise.",
+        "Strategic thinker who balances growth ambition with fiscal responsibility. Michael brought rigour and credibility to our financial story that was critical during our fundraise.",
       author: "Jennifer Wu",
       role: "Board Member",
       company: "TechVentures",
@@ -192,6 +278,20 @@ const profileData = {
       author: "Sarah Mitchell",
       role: "COO",
       company: "TechVentures",
+    },
+    {
+      quote:
+        "Working under Michael accelerated my career by years. He gives you real responsibility, coaches without micromanaging, and creates an environment where you can do your best work. I went from analyst to senior manager in 3 years.",
+      author: "Rachel Torres",
+      role: "Sr. Finance Manager",
+      company: "TechVentures",
+    },
+    {
+      quote:
+        "In the acquisition process, Michael was the most prepared CFO I've encountered. His data room was flawless, his models were bulletproof, and he navigated a complex multi-party negotiation with remarkable composure.",
+      author: "James Chen",
+      role: "Managing Director",
+      company: "Meridian Capital",
     },
   ],
   workStyleDimensions: [
@@ -332,8 +432,17 @@ const DemoFinance = () => {
         </div>
       </section>
 
+      {/* Deal Experience Table */}
+      <DealExperience deals={profileData.deals} />
+
       {/* Credentials */}
       <CredentialsSection credentials={profileData.credentials} />
+
+      {/* Advisory Roles */}
+      <AdvisoryRoles roles={profileData.advisoryRoles} />
+
+      {/* Process Frameworks */}
+      <ProcessFrameworks frameworks={profileData.processFrameworks} />
 
       {/* Skills Matrix */}
       <SkillsMatrix
