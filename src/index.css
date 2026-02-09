@@ -107,6 +107,48 @@
   }
 }
 
+/* Marquee ticker */
+.marquee-container {
+  overflow: hidden;
+  width: 100%;
+  -webkit-mask-image: linear-gradient(to right, transparent 0%, black 4%, black 96%, transparent 100%);
+  mask-image: linear-gradient(to right, transparent 0%, black 4%, black 96%, transparent 100%);
+}
+
+.marquee-track {
+  display: flex;
+  width: max-content;
+  animation: marquee 40s linear infinite;
+}
+
+.marquee-item {
+  flex-shrink: 0;
+  padding: 0 1.75rem;
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: hsl(var(--muted-foreground) / 0.55);
+  white-space: nowrap;
+}
+
+@media (max-width: 640px) {
+  .marquee-item {
+    padding: 0 1rem;
+    font-size: 0.875rem;
+  }
+  .marquee-track {
+    animation-duration: 30s;
+  }
+}
+
+@keyframes marquee {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
 /* Executive Finance Theme Override */
 .theme-executive {
   --background: 0 0% 99%;
