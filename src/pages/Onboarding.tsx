@@ -338,7 +338,7 @@ const Onboarding = () => {
       const updatePayload: Record<string, unknown> = {
         onboarding_completed: true,
         industry: resumeData?.industry || profile.industry,
-        years_experience: resumeData?.years_experience || profile.years_experience,
+        years_experience: generated?.hero_stats?.years_experience || resumeData?.years_experience || profile.years_experience,
         location: resumeData?.location || profile.location,
         bio: generated?.bio || resumeData?.bio || profile.bio,
         headline: generated?.headline || resumeData?.headline || profile.headline,
@@ -374,24 +374,35 @@ const Onboarding = () => {
         console.error("Version creation error:", versionError);
       }
 
-      // 5. Save career timeline from resume
-      if (resumeData?.roles && resumeData.roles.length > 0) {
-        const timelineEntries = resumeData.roles.map((role, index) => ({
-          user_id: user.id,
-          profile_id: profile.id,
-          role: role.title,
-          company: role.company,
-          start_date: role.start_date || "2020-01",
-          end_date: role.end_date || null,
-          description: role.description || null,
-          key_achievement: role.key_achievement || null,
-          sort_order: index,
-        }));
+      // 5. Save career timeline from AI-enriched data or resume
+      const timelineSource = generated?.career_timeline?.length > 0
+        ? generated.career_timeline.map((entry: any, index: number) => ({
+            user_id: user.id,
+            profile_id: profile.id,
+            role: entry.role,
+            company: entry.company,
+            start_date: entry.start_year || "2020",
+            end_date: entry.end_year === "Present" ? null : entry.end_year,
+            description: entry.achievements?.slice(0, 2).join(". ") || null,
+            key_achievement: entry.achievements?.[0] || null,
+            sort_order: index,
+          }))
+        : (resumeData?.roles || []).map((role: any, index: number) => ({
+            user_id: user.id,
+            profile_id: profile.id,
+            role: role.title,
+            company: role.company,
+            start_date: role.start_date || "2020-01",
+            end_date: role.end_date || null,
+            description: role.description || null,
+            key_achievement: role.key_achievement || null,
+            sort_order: index,
+          }));
 
+      if (timelineSource.length > 0) {
         const { error: timelineError } = await supabase
           .from("career_timeline")
-          .insert(timelineEntries);
-
+          .insert(timelineSource);
         if (timelineError) console.error("Timeline insert error:", timelineError);
       }
 
@@ -402,6 +413,7 @@ const Onboarding = () => {
             profile_id: profile.id,
             name: skill.name,
             category: skill.category || null,
+            proficiency: Math.round((skill.level || 4) * 20),
             sort_order: index,
           }))
         : (resumeData?.skills || []).map((skill: any, index: number) => ({
@@ -416,11 +428,47 @@ const Onboarding = () => {
         const { error: skillsError } = await supabase
           .from("skills")
           .insert(skillsToSave);
-
         if (skillsError) console.error("Skills insert error:", skillsError);
       }
 
-      // 7. Create profile_sections from AI-generated content
+      // 7. Save case studies
+      if (generated?.case_studies?.length > 0) {
+        const caseStudyEntries = generated.case_studies.map((cs: any, idx: number) => ({
+          user_id: user.id,
+          profile_id: profile.id,
+          title: cs.title || `Case Study ${idx + 1}`,
+          challenge: cs.challenge || "",
+          approach: cs.approach || "",
+          results: cs.results || "",
+          metrics: cs.metrics || [],
+          sort_order: idx,
+        }));
+
+        const { error: csError } = await supabase
+          .from("case_studies")
+          .insert(caseStudyEntries);
+        if (csError) console.error("Case studies insert error:", csError);
+      }
+
+      // 8. Save testimonials
+      if (generated?.testimonials?.length > 0) {
+        const testimonialEntries = generated.testimonials.map((t: any, idx: number) => ({
+          user_id: user.id,
+          profile_id: profile.id,
+          quote: t.quote,
+          author_name: t.author,
+          author_role: t.role || "",
+          author_company: t.company || "",
+          sort_order: idx,
+        }));
+
+        const { error: testError } = await supabase
+          .from("testimonials")
+          .insert(testimonialEntries);
+        if (testError) console.error("Testimonials insert error:", testError);
+      }
+
+      // 9. Create profile_sections with rich data
       const sectionsToCreate: Array<{
         user_id: string;
         profile_id: string;
@@ -432,7 +480,7 @@ const Onboarding = () => {
 
       let order = 0;
 
-      // Hero section
+      // Hero section with stats
       sectionsToCreate.push({
         user_id: user.id,
         profile_id: profile.id,
@@ -440,21 +488,51 @@ const Onboarding = () => {
         section_order: order++,
         section_data: {
           positioning_statement: generated?.positioning_statement || "",
+          hero_stats: generated?.hero_stats || null,
         },
         is_visible: true,
       });
 
-      // Career timeline section
-      if (resumeData?.roles?.length > 0) {
+      // Impact charts with visualization configs
+      if (generated?.visualizations?.length > 0 || generated?.impact_metrics?.length > 0) {
         sectionsToCreate.push({
           user_id: user.id,
           profile_id: profile.id,
-          section_type: "career_timeline",
+          section_type: "impact_charts",
           section_order: order++,
-          section_data: {},
+          section_data: {
+            metrics: generated.impact_metrics || [],
+            visualizations: generated.visualizations || [],
+          },
           is_visible: true,
         });
       }
+
+      // Case studies section
+      if (generated?.case_studies?.length > 0) {
+        sectionsToCreate.push({
+          user_id: user.id,
+          profile_id: profile.id,
+          section_type: "case_studies",
+          section_order: order++,
+          section_data: {
+            case_studies: generated.case_studies,
+          },
+          is_visible: true,
+        });
+      }
+
+      // Career timeline section
+      sectionsToCreate.push({
+        user_id: user.id,
+        profile_id: profile.id,
+        section_type: "career_timeline",
+        section_order: order++,
+        section_data: {
+          timeline: generated?.career_timeline || [],
+        },
+        is_visible: true,
+      });
 
       // Skills matrix section
       if (skillsToSave.length > 0) {
@@ -470,45 +548,27 @@ const Onboarding = () => {
         });
       }
 
-      // Case studies section
-      if (generated?.case_studies?.length > 0) {
-        // Save to case_studies table
-        const caseStudyEntries = generated.case_studies.map((cs: any, idx: number) => ({
-          user_id: user.id,
-          profile_id: profile.id,
-          title: cs.title || `Case Study ${idx + 1}`,
-          challenge: cs.challenge || "",
-          approach: cs.approach || "",
-          results: cs.results || "",
-          metrics: cs.metrics || [],
-          sort_order: idx,
-        }));
-
-        const { error: csError } = await supabase
-          .from("case_studies")
-          .insert(caseStudyEntries);
-
-        if (csError) console.error("Case studies insert error:", csError);
-
+      // Testimonials section
+      if (generated?.testimonials?.length > 0) {
         sectionsToCreate.push({
           user_id: user.id,
           profile_id: profile.id,
-          section_type: "case_studies",
+          section_type: "testimonials",
           section_order: order++,
           section_data: {},
           is_visible: true,
         });
       }
 
-      // Impact charts section
-      if (generated?.impact_metrics?.length > 0) {
+      // Work style section
+      if (generated?.work_style?.dimensions?.length > 0) {
         sectionsToCreate.push({
           user_id: user.id,
           profile_id: profile.id,
-          section_type: "impact_charts",
+          section_type: "work_style",
           section_order: order++,
           section_data: {
-            metrics: generated.impact_metrics,
+            work_style: generated.work_style,
           },
           is_visible: true,
         });
@@ -524,7 +584,7 @@ const Onboarding = () => {
         else console.log("Created", sectionsToCreate.length, "profile sections");
       }
 
-      // 8. Save interview conversation
+      // 10. Save interview conversation
       if (chatMessages.length > 0) {
         const { error: convoError } = await supabase
           .from("onboarding_conversations")
