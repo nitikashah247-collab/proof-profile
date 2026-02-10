@@ -3,35 +3,17 @@ import { useParams, Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Loader2, MapPin, Briefcase, Award, TrendingUp, Star } from "lucide-react";
-import { Card } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import { ArrowLeft, Loader2 } from "lucide-react";
+import { Users, Zap, Brain, MessageSquare } from "lucide-react";
 
-interface CaseStudy {
-  id: string;
-  title: string;
-  challenge: string;
-  approach: string;
-  results: string;
-  metrics: Array<{ label: string; value: string }>;
-}
-
-interface TimelineEntry {
-  id: string;
-  role: string;
-  company: string;
-  start_date: string;
-  end_date: string | null;
-  description: string | null;
-  key_achievement: string | null;
-}
-
-interface Skill {
-  id: string;
-  name: string;
-  category: string | null;
-  proficiency: number | null;
-}
+// Reuse demo-quality components
+import { ProfileHero } from "@/components/profile/ProfileHero";
+import { DynamicImpactCharts } from "@/components/profile/DynamicImpactCharts";
+import { CaseStudyCard } from "@/components/profile/CaseStudyCard";
+import { CareerTimeline } from "@/components/profile/CareerTimeline";
+import { SkillsMatrix } from "@/components/profile/SkillsMatrix";
+import { TestimonialsCarousel } from "@/components/profile/TestimonialsCarousel";
+import { WorkStyleVisual } from "@/components/profile/WorkStyleVisual";
 
 interface ProfileSection {
   id: string;
@@ -41,15 +23,24 @@ interface ProfileSection {
   section_data: Record<string, any>;
 }
 
+const WORK_STYLE_ICONS: Record<string, React.ElementType> = {
+  "Collaboration Style": Users,
+  "Decision Making": Zap,
+  "Problem Solving": Brain,
+  "Communication": MessageSquare,
+};
+
 const PublicProfile = () => {
   const { slug } = useParams<{ slug: string }>();
   const [profile, setProfile] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
   const [sections, setSections] = useState<ProfileSection[]>([]);
-  const [timeline, setTimeline] = useState<TimelineEntry[]>([]);
-  const [skills, setSkills] = useState<Skill[]>([]);
-  const [caseStudies, setCaseStudies] = useState<CaseStudy[]>([]);
+  const [timeline, setTimeline] = useState<any[]>([]);
+  const [skills, setSkills] = useState<any[]>([]);
+  const [caseStudies, setCaseStudies] = useState<any[]>([]);
+  const [testimonials, setTestimonials] = useState<any[]>([]);
+  const [activeSkill, setActiveSkill] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -74,7 +65,7 @@ const PublicProfile = () => {
       setProfile(data);
 
       // Fetch all related data in parallel
-      const [sectionsRes, timelineRes, skillsRes, caseStudiesRes] = await Promise.all([
+      const [sectionsRes, timelineRes, skillsRes, caseStudiesRes, testimonialsRes] = await Promise.all([
         supabase
           .from("profile_sections")
           .select("*")
@@ -96,12 +87,18 @@ const PublicProfile = () => {
           .select("*")
           .eq("profile_id", data.id)
           .order("sort_order", { ascending: true }),
+        supabase
+          .from("testimonials")
+          .select("*")
+          .eq("profile_id", data.id)
+          .order("sort_order", { ascending: true }),
       ]);
 
       setSections((sectionsRes.data as ProfileSection[]) || []);
-      setTimeline((timelineRes.data as TimelineEntry[]) || []);
-      setSkills((skillsRes.data as Skill[]) || []);
-      setCaseStudies((caseStudiesRes.data as unknown as CaseStudy[]) || []);
+      setTimeline(timelineRes.data || []);
+      setSkills(skillsRes.data || []);
+      setCaseStudies(caseStudiesRes.data || []);
+      setTestimonials(testimonialsRes.data || []);
       setLoading(false);
     };
 
@@ -145,227 +142,201 @@ const PublicProfile = () => {
     );
   }
 
-  // Find section data by type
+  // Extract section data
   const getSection = (type: string) => sections.find((s) => s.section_type === type);
   const heroSection = getSection("hero");
   const impactSection = getSection("impact_charts");
+  const caseStudiesSection = getSection("case_studies");
+  const timelineSection = getSection("career_timeline");
   const skillsSection = getSection("skills_matrix");
+  const testimonialsSection = getSection("testimonials");
+  const workStyleSection = getSection("work_style");
+
+  // Build hero stats
+  const heroStats = heroSection?.section_data?.hero_stats || {
+    yearsExperience: profile.years_experience || 5,
+    projectsLed: 20,
+    teamsManaged: 10,
+    keyMetric: { value: 0, label: "Projects", suffix: "+" },
+  };
+
+  const normalizedHeroStats = {
+    yearsExperience: heroStats.years_experience || heroStats.yearsExperience || profile.years_experience || 5,
+    projectsLed: heroStats.projects_led || heroStats.projectsLed || 20,
+    teamsManaged: heroStats.people_managed || heroStats.teamsManaged || 10,
+    keyMetric: heroStats.key_metric || heroStats.keyMetric || { value: 0, label: "Projects", suffix: "+" },
+  };
+
+  // Build skill names for hero tags
+  const skillNames = skills.map((s) => s.name);
+
+  // Build skills data for SkillsMatrix (matching demo format)
+  const skillsData = skills.map((skill, index) => ({
+    name: skill.name,
+    level: Math.round((skill.proficiency || 80) / 20),
+    yearsOfExperience: heroSection?.section_data?.hero_stats?.years_experience
+      ? Math.max(1, Math.round((heroSection.section_data.hero_stats.years_experience || 5) * (skill.proficiency || 80) / 100))
+      : Math.max(1, Math.round((profile.years_experience || 5) * (skill.proficiency || 80) / 100)),
+    relatedCaseStudies: [] as number[],
+  }));
+
+  // Build case studies for CaseStudyCard (matching demo format)
+  const caseStudyCards = caseStudies.map((cs) => ({
+    title: cs.title,
+    company: "—",
+    keyMetric: cs.metrics?.[0]?.value || "✓",
+    summary: cs.challenge?.substring(0, 100) || cs.title,
+    challenge: cs.challenge || "",
+    approach: cs.approach || "",
+    outcome: cs.results || "",
+    skills: cs.metrics?.map((m: any) => m.label) || [],
+  }));
+
+  // Use AI-enriched case studies from section_data if available (they have company + skills_used)
+  const enrichedCaseStudies = caseStudiesSection?.section_data?.case_studies;
+  const finalCaseStudyCards = enrichedCaseStudies?.length > 0
+    ? enrichedCaseStudies.map((cs: any) => ({
+        title: cs.title,
+        company: cs.company || "—",
+        keyMetric: cs.key_metric || cs.metrics?.[0]?.value || "✓",
+        summary: cs.summary || cs.challenge?.substring(0, 100) || cs.title,
+        challenge: cs.challenge || "",
+        approach: cs.approach || "",
+        outcome: cs.results || "",
+        skills: cs.skills_used || cs.skills || [],
+      }))
+    : caseStudyCards;
+
+  // Filter case studies by active skill
+  const filteredCaseStudies = activeSkill
+    ? finalCaseStudyCards.filter((cs: any) => cs.skills.includes(activeSkill))
+    : finalCaseStudyCards;
+
+  // Build timeline for CareerTimeline (matching demo format)
+  const timelineEntries = timelineSection?.section_data?.timeline?.length > 0
+    ? timelineSection.section_data.timeline.map((entry: any) => ({
+        company: entry.company,
+        role: entry.role,
+        startYear: entry.start_year || entry.startYear || "",
+        endYear: entry.end_year || entry.endYear || "Present",
+        achievements: entry.achievements || [],
+      }))
+    : timeline.map((entry) => ({
+        company: entry.company,
+        role: entry.role,
+        startYear: entry.start_date?.substring(0, 4) || "",
+        endYear: entry.end_date ? entry.end_date.substring(0, 4) : "Present",
+        achievements: [entry.key_achievement, entry.description].filter(Boolean),
+      }));
+
+  // Build testimonials for TestimonialsCarousel
+  const testimonialCards = testimonials.map((t) => ({
+    quote: t.quote,
+    author: t.author_name,
+    role: t.author_role || "",
+    company: t.author_company || "",
+  }));
+
+  // Build work style data
+  const workStyleData = workStyleSection?.section_data?.work_style;
+  const workStyleDimensions = workStyleData?.dimensions?.map((d: any) => ({
+    label: d.label,
+    leftLabel: d.left_label || d.leftLabel || "",
+    rightLabel: d.right_label || d.rightLabel || "",
+    value: d.value || 50,
+    icon: WORK_STYLE_ICONS[d.label] || Users,
+  })) || [];
+
+  // Visualizations from impact section
+  const visualizations = impactSection?.section_data?.visualizations || [];
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Hero */}
-      <div className="bg-gradient-to-b from-primary/5 to-background">
-        <div className="container mx-auto px-6 py-16 max-w-4xl">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="text-center"
-          >
-            <div className="w-24 h-24 rounded-2xl icon-gradient-bg flex items-center justify-center mx-auto mb-6 text-3xl font-bold text-white shadow-2xl shadow-primary/20">
-              {profile.full_name
-                ?.split(" ")
-                .map((n: string) => n[0])
-                .join("")
-                .toUpperCase()
-                .slice(0, 2) || "?"}
-            </div>
-            <h1 className="text-4xl font-bold mb-2">{profile.full_name}</h1>
-            {profile.headline && (
-              <p className="text-xl text-muted-foreground mb-3">{profile.headline}</p>
-            )}
-            <div className="flex items-center justify-center gap-4 text-sm text-muted-foreground mb-6">
-              {profile.location && (
-                <span className="flex items-center gap-1">
-                  <MapPin className="w-3.5 h-3.5" />
-                  {profile.location}
-                </span>
-              )}
-              {profile.industry && (
-                <span className="flex items-center gap-1">
-                  <Briefcase className="w-3.5 h-3.5" />
-                  {profile.industry}
-                </span>
-              )}
-              {profile.years_experience && (
-                <span>{profile.years_experience}+ years experience</span>
-              )}
-            </div>
-            {profile.bio && (
-              <p className="text-lg text-foreground/80 max-w-2xl mx-auto mb-4 leading-relaxed">
-                {profile.bio}
-              </p>
-            )}
-            {heroSection?.section_data?.positioning_statement && (
-              <p className="text-base text-primary font-medium max-w-xl mx-auto italic">
-                "{heroSection.section_data.positioning_statement}"
-              </p>
-            )}
-          </motion.div>
-        </div>
-      </div>
+      {/* Hero Section - same as demos */}
+      <ProfileHero
+        name={profile.full_name || ""}
+        title={profile.headline || ""}
+        location={profile.location || ""}
+        company={profile.industry || ""}
+        tagline={profile.bio || ""}
+        photoUrl={profile.avatar_url || undefined}
+        skills={skillNames.slice(0, 7)}
+        activeSkill={activeSkill}
+        onSkillClick={setActiveSkill}
+        stats={normalizedHeroStats}
+      />
 
-      <div className="container mx-auto px-6 max-w-4xl pb-24 space-y-16">
-        {/* Impact Metrics */}
-        {impactSection?.section_data?.metrics?.length > 0 && (
-          <motion.section
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-          >
-            <h2 className="text-2xl font-bold mb-6 flex items-center gap-2">
-              <TrendingUp className="w-5 h-5 text-primary" />
-              Impact & Results
-            </h2>
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-              {impactSection.section_data.metrics.map((metric: any, i: number) => (
-                <Card key={i} className="p-6 text-center">
-                  <p className="text-3xl font-bold text-primary mb-1">{metric.value}</p>
-                  <p className="text-sm font-medium">{metric.label}</p>
-                  {metric.context && (
-                    <p className="text-xs text-muted-foreground mt-1">{metric.context}</p>
-                  )}
-                </Card>
-              ))}
-            </div>
-          </motion.section>
-        )}
+      {/* Impact Charts - AI-generated visualizations */}
+      {visualizations.length > 0 && (
+        <DynamicImpactCharts visualizations={visualizations} />
+      )}
 
-        {/* Career Timeline */}
-        {timeline.length > 0 && (
-          <motion.section
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-          >
-            <h2 className="text-2xl font-bold mb-6 flex items-center gap-2">
-              <Briefcase className="w-5 h-5 text-primary" />
-              Career Timeline
-            </h2>
-            <div className="space-y-6">
-              {timeline.map((entry) => (
-                <div key={entry.id} className="relative pl-8 border-l-2 border-border pb-6 last:pb-0">
-                  <div className="absolute left-[-9px] top-0 w-4 h-4 rounded-full bg-primary" />
-                  <div className="flex flex-wrap items-baseline gap-2 mb-1">
-                    <h3 className="font-semibold text-lg">{entry.role}</h3>
-                    <span className="text-muted-foreground">at {entry.company}</span>
-                  </div>
-                  <p className="text-sm text-muted-foreground mb-2">
-                    {entry.start_date} — {entry.end_date || "Present"}
+      {/* Case Studies - expandable cards like demos */}
+      {finalCaseStudyCards.length > 0 && (
+        <section className="py-16 bg-muted/30">
+          <div className="container mx-auto px-6">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="max-w-5xl"
+            >
+              <div className="flex items-center justify-between mb-8">
+                <div>
+                  <h2 className="text-3xl font-bold mb-2">Impact Stories</h2>
+                  <p className="text-muted-foreground">
+                    {activeSkill
+                      ? `Showing ${filteredCaseStudies.length} stories related to "${activeSkill}"`
+                      : "Click a skill above to filter by expertise"}
                   </p>
-                  {entry.description && (
-                    <p className="text-sm text-foreground/70 mb-1">{entry.description}</p>
-                  )}
-                  {entry.key_achievement && (
-                    <p className="text-sm text-primary font-medium flex items-start gap-1">
-                      <Award className="w-3.5 h-3.5 mt-0.5 shrink-0" />
-                      {entry.key_achievement}
-                    </p>
-                  )}
                 </div>
-              ))}
-            </div>
-          </motion.section>
-        )}
+                {activeSkill && (
+                  <Button variant="ghost" size="sm" onClick={() => setActiveSkill(null)}>
+                    Clear filter ×
+                  </Button>
+                )}
+              </div>
+              <div className="space-y-4">
+                {filteredCaseStudies.map((study: any, index: number) => (
+                  <CaseStudyCard
+                    key={index}
+                    study={study}
+                    index={index}
+                    isHighlighted={!activeSkill}
+                  />
+                ))}
+              </div>
+            </motion.div>
+          </div>
+        </section>
+      )}
 
-        {/* Case Studies */}
-        {caseStudies.length > 0 && (
-          <motion.section
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-          >
-            <h2 className="text-2xl font-bold mb-6 flex items-center gap-2">
-              <Star className="w-5 h-5 text-primary" />
-              Case Studies
-            </h2>
-            <div className="space-y-6">
-              {caseStudies.map((cs) => (
-                <Card key={cs.id} className="p-6">
-                  <h3 className="text-lg font-bold mb-4">{cs.title}</h3>
-                  <div className="grid md:grid-cols-3 gap-4 mb-4">
-                    {cs.challenge && (
-                      <div>
-                        <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1">Challenge</p>
-                        <p className="text-sm">{cs.challenge}</p>
-                      </div>
-                    )}
-                    {cs.approach && (
-                      <div>
-                        <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1">Approach</p>
-                        <p className="text-sm">{cs.approach}</p>
-                      </div>
-                    )}
-                    {cs.results && (
-                      <div>
-                        <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1">Results</p>
-                        <p className="text-sm">{cs.results}</p>
-                      </div>
-                    )}
-                  </div>
-                  {cs.metrics && Array.isArray(cs.metrics) && cs.metrics.length > 0 && (
-                    <div className="flex flex-wrap gap-2 pt-3 border-t border-border">
-                      {cs.metrics.map((m: any, i: number) => (
-                        <Badge key={i} variant="secondary" className="text-xs">
-                          {m.label}: <span className="font-bold ml-1">{m.value}</span>
-                        </Badge>
-                      ))}
-                    </div>
-                  )}
-                </Card>
-              ))}
-            </div>
-          </motion.section>
-        )}
+      {/* Career Timeline - interactive nodes like demos */}
+      {timelineEntries.length > 0 && (
+        <CareerTimeline entries={timelineEntries} />
+      )}
 
-        {/* Skills */}
-        {skills.length > 0 && (
-          <motion.section
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-          >
-            <h2 className="text-2xl font-bold mb-6">Skills & Expertise</h2>
-            {(() => {
-              // Group skills by category
-              const grouped = skills.reduce((acc, skill) => {
-                const cat = skill.category || "General";
-                if (!acc[cat]) acc[cat] = [];
-                acc[cat].push(skill);
-                return acc;
-              }, {} as Record<string, Skill[]>);
+      {/* Skills Matrix - visual grid with proficiency bars */}
+      {skillsData.length > 0 && (
+        <SkillsMatrix
+          skills={skillsData}
+          activeSkill={activeSkill}
+          onSkillClick={setActiveSkill}
+        />
+      )}
 
-              const proofPoints = skillsSection?.section_data?.skills_with_proof || [];
-              const proofMap = new Map(proofPoints.map((s: any) => [s.name, s.proof_point]));
+      {/* Testimonials Carousel */}
+      {testimonialCards.length > 0 && (
+        <TestimonialsCarousel testimonials={testimonialCards} />
+      )}
 
-              return (
-                <div className="grid md:grid-cols-2 gap-6">
-                  {Object.entries(grouped).map(([category, catSkills]) => (
-                    <div key={category}>
-                      <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-3">
-                        {category}
-                      </h3>
-                      <div className="flex flex-wrap gap-2">
-                        {catSkills.map((skill) => (
-                          <div key={skill.id} className="group relative">
-                            <Badge variant="outline" className="cursor-default">
-                              {skill.name}
-                            </Badge>
-                            {proofMap.get(skill.name) && (
-                              <div className="absolute bottom-full left-0 mb-2 hidden group-hover:block z-10 bg-popover border border-border rounded-lg p-2 text-xs max-w-[200px] shadow-lg">
-                                {proofMap.get(skill.name) as string}
-                              </div>
-                            )}
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              );
-            })()}
-          </motion.section>
-        )}
-      </div>
+      {/* Work Style */}
+      {workStyleDimensions.length > 0 && (
+        <WorkStyleVisual
+          dimensions={workStyleDimensions}
+          traits={workStyleData?.traits || []}
+        />
+      )}
 
       {/* Proof Badge */}
       <div className="fixed bottom-6 right-6 z-50">
