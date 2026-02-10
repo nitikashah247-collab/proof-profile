@@ -302,14 +302,46 @@ const Onboarding = () => {
         throw new Error("Could not find your profile. Please try again.");
       }
 
-      // 2. Update profile with resume data & mark onboarding complete
+      // 2. Call generate-profile edge function with full context
+      console.log("Calling generate-profile with resume data and", chatMessages.length, "interview messages");
+      const genResponse = await fetch(
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/generate-profile`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            resumeData,
+            interviewMessages: chatMessages,
+            roleCategory,
+            archetype: selectedArchetype,
+          }),
+        }
+      );
+
+      let generated: any = null;
+      if (genResponse.ok) {
+        const genResult = await genResponse.json();
+        if (genResult.success) {
+          generated = genResult.generated;
+          console.log("AI generated profile content:", Object.keys(generated));
+        } else {
+          console.error("Generate profile failed:", genResult.error);
+        }
+      } else {
+        console.error("Generate profile HTTP error:", genResponse.status);
+      }
+
+      // 3. Update profile with AI-generated or resume data
       const updatePayload: Record<string, unknown> = {
         onboarding_completed: true,
         industry: resumeData?.industry || profile.industry,
         years_experience: resumeData?.years_experience || profile.years_experience,
         location: resumeData?.location || profile.location,
-        bio: resumeData?.bio || profile.bio,
-        headline: resumeData?.headline || profile.headline,
+        bio: generated?.bio || resumeData?.bio || profile.bio,
+        headline: generated?.headline || resumeData?.headline || profile.headline,
       };
 
       if (resumeData?.full_name && !profile.full_name) {
@@ -326,7 +358,7 @@ const Onboarding = () => {
         throw new Error("Failed to update profile.");
       }
 
-      // 3. Create a default profile version
+      // 4. Create a default profile version
       const { error: versionError } = await supabase
         .from("profile_versions")
         .insert({
@@ -340,10 +372,9 @@ const Onboarding = () => {
 
       if (versionError) {
         console.error("Version creation error:", versionError);
-        // Don't throw — profile is saved, version is secondary
       }
 
-      // 4. Save career timeline from resume
+      // 5. Save career timeline from resume
       if (resumeData?.roles && resumeData.roles.length > 0) {
         const timelineEntries = resumeData.roles.map((role, index) => ({
           user_id: user.id,
@@ -364,24 +395,136 @@ const Onboarding = () => {
         if (timelineError) console.error("Timeline insert error:", timelineError);
       }
 
-      // 5. Save skills from resume
-      if (resumeData?.skills && resumeData.skills.length > 0) {
-        const skillEntries = resumeData.skills.map((skill, index) => ({
-          user_id: user.id,
-          profile_id: profile.id,
-          name: skill.name,
-          category: skill.category || null,
-          sort_order: index,
-        }));
+      // 6. Save skills (prefer AI-enriched skills with proof points)
+      const skillsToSave = generated?.skills_with_proof?.length > 0
+        ? generated.skills_with_proof.map((skill: any, index: number) => ({
+            user_id: user.id,
+            profile_id: profile.id,
+            name: skill.name,
+            category: skill.category || null,
+            sort_order: index,
+          }))
+        : (resumeData?.skills || []).map((skill: any, index: number) => ({
+            user_id: user.id,
+            profile_id: profile.id,
+            name: skill.name,
+            category: skill.category || null,
+            sort_order: index,
+          }));
 
+      if (skillsToSave.length > 0) {
         const { error: skillsError } = await supabase
           .from("skills")
-          .insert(skillEntries);
+          .insert(skillsToSave);
 
         if (skillsError) console.error("Skills insert error:", skillsError);
       }
 
-      // 6. Save interview conversation
+      // 7. Create profile_sections from AI-generated content
+      const sectionsToCreate: Array<{
+        user_id: string;
+        profile_id: string;
+        section_type: string;
+        section_order: number;
+        section_data: any;
+        is_visible: boolean;
+      }> = [];
+
+      let order = 0;
+
+      // Hero section
+      sectionsToCreate.push({
+        user_id: user.id,
+        profile_id: profile.id,
+        section_type: "hero",
+        section_order: order++,
+        section_data: {
+          positioning_statement: generated?.positioning_statement || "",
+        },
+        is_visible: true,
+      });
+
+      // Career timeline section
+      if (resumeData?.roles?.length > 0) {
+        sectionsToCreate.push({
+          user_id: user.id,
+          profile_id: profile.id,
+          section_type: "career_timeline",
+          section_order: order++,
+          section_data: {},
+          is_visible: true,
+        });
+      }
+
+      // Skills matrix section
+      if (skillsToSave.length > 0) {
+        sectionsToCreate.push({
+          user_id: user.id,
+          profile_id: profile.id,
+          section_type: "skills_matrix",
+          section_order: order++,
+          section_data: {
+            skills_with_proof: generated?.skills_with_proof || [],
+          },
+          is_visible: true,
+        });
+      }
+
+      // Case studies section
+      if (generated?.case_studies?.length > 0) {
+        // Save to case_studies table
+        const caseStudyEntries = generated.case_studies.map((cs: any, idx: number) => ({
+          user_id: user.id,
+          profile_id: profile.id,
+          title: cs.title || `Case Study ${idx + 1}`,
+          challenge: cs.challenge || "",
+          approach: cs.approach || "",
+          results: cs.results || "",
+          metrics: cs.metrics || [],
+          sort_order: idx,
+        }));
+
+        const { error: csError } = await supabase
+          .from("case_studies")
+          .insert(caseStudyEntries);
+
+        if (csError) console.error("Case studies insert error:", csError);
+
+        sectionsToCreate.push({
+          user_id: user.id,
+          profile_id: profile.id,
+          section_type: "case_studies",
+          section_order: order++,
+          section_data: {},
+          is_visible: true,
+        });
+      }
+
+      // Impact charts section
+      if (generated?.impact_metrics?.length > 0) {
+        sectionsToCreate.push({
+          user_id: user.id,
+          profile_id: profile.id,
+          section_type: "impact_charts",
+          section_order: order++,
+          section_data: {
+            metrics: generated.impact_metrics,
+          },
+          is_visible: true,
+        });
+      }
+
+      // Insert all sections
+      if (sectionsToCreate.length > 0) {
+        const { error: sectionsError } = await supabase
+          .from("profile_sections")
+          .insert(sectionsToCreate);
+
+        if (sectionsError) console.error("Sections insert error:", sectionsError);
+        else console.log("Created", sectionsToCreate.length, "profile sections");
+      }
+
+      // 8. Save interview conversation
       if (chatMessages.length > 0) {
         const { error: convoError } = await supabase
           .from("onboarding_conversations")
@@ -402,7 +545,6 @@ const Onboarding = () => {
         description: "You can now share it with anyone.",
       });
 
-      // Redirect to their public profile
       navigate(`/p/${profile.slug}`);
     } catch (err) {
       console.error("Profile generation error:", err);
