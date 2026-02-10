@@ -27,11 +27,15 @@ serve(async (req) => {
       );
     }
 
-    // Convert audio to base64 for Gemini
+    console.log("Received audio file:", file.name, "size:", file.size, "type:", file.type);
+
+    // Convert audio to base64
     const audioBytes = new Uint8Array(await file.arrayBuffer());
     const base64Audio = arrayBufferToBase64(audioBytes.buffer);
 
-    // Use Gemini to transcribe audio
+    console.log("Base64 audio length:", base64Audio.length);
+
+    // Use Gemini with inline_data format (the correct format for the gateway)
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
       headers: {
@@ -45,26 +49,26 @@ serve(async (req) => {
             role: "user",
             content: [
               {
-                type: "input_audio",
-                input_audio: {
-                  data: base64Audio,
-                  format: "webm",
+                type: "image_url",
+                image_url: {
+                  url: `data:audio/webm;base64,${base64Audio}`,
                 },
               },
               {
                 type: "text",
-                text: "Transcribe this audio recording exactly as spoken. Return ONLY the transcribed text, nothing else. If no speech is detected, return an empty string.",
+                text: "This is an audio recording. Transcribe it exactly as spoken, word for word. Return ONLY the transcribed text with no preamble, no labels, no formatting. If you cannot detect any speech, return an empty string.",
               },
             ],
           },
         ],
+        temperature: 0,
       }),
     });
 
     if (!response.ok) {
       const errText = await response.text();
       console.error("AI gateway error:", response.status, errText);
-      
+
       if (response.status === 429) {
         return new Response(
           JSON.stringify({ error: "Rate limit exceeded. Please try again in a moment." }),
@@ -77,12 +81,16 @@ serve(async (req) => {
           { status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" } }
         );
       }
-      
-      throw new Error("Transcription service error");
+
+      throw new Error(`Transcription service error: ${response.status} - ${errText}`);
     }
 
     const data = await response.json();
+    console.log("AI gateway response:", JSON.stringify(data).substring(0, 500));
+
     const transcribedText = data.choices?.[0]?.message?.content?.trim() || "";
+
+    console.log("Transcribed text:", transcribedText.substring(0, 200));
 
     return new Response(
       JSON.stringify({ text: transcribedText }),
