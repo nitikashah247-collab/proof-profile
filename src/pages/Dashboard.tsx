@@ -55,6 +55,42 @@ const Dashboard = () => {
     navigate("/");
   };
 
+  const handleDeleteProfile = async (profileId: string, isDefault: boolean) => {
+    if (!user) return;
+    const msg = isDefault
+      ? "Are you sure? This will delete your entire profile and all versions. This cannot be undone."
+      : "Are you sure? This version will be permanently deleted.";
+    if (!confirm(msg)) return;
+
+    try {
+      if (isDefault) {
+        // Cascade delete all child tables first
+        const tables = ["profile_sections", "career_timeline", "skills", "case_studies", "testimonials", "coach_conversations", "profile_views"] as const;
+        for (const table of tables) {
+          const { error } = await supabase.from(table).delete().eq("profile_id", profileId);
+          if (error) throw error;
+        }
+        // Delete all versions
+        const { error: versionsErr } = await supabase.from("profile_versions").delete().eq("profile_id", profileId);
+        if (versionsErr) throw versionsErr;
+        // Delete profile
+        const { error: profileErr } = await supabase.from("profiles").delete().eq("id", profileId).eq("user_id", user.id);
+        if (profileErr) throw profileErr;
+        // Reset local state
+        setProfile(null);
+        setVersions([]);
+        toast({ title: "Profile deleted", description: "You can create a new one anytime." });
+      } else {
+        const { error } = await supabase.from("profile_versions").delete().eq("id", profileId).eq("user_id", user.id);
+        if (error) throw error;
+        setVersions(prev => prev.filter(v => v.id !== profileId));
+        toast({ title: "Version deleted" });
+      }
+    } catch (err: any) {
+      toast({ title: "Delete failed", description: err.message, variant: "destructive" });
+    }
+  };
+
   const initials = profile?.full_name
     ? profile.full_name.split(" ").map((n: string) => n[0]).join("").toUpperCase().slice(0, 2)
     : user?.email?.[0]?.toUpperCase() || "U";
@@ -237,22 +273,13 @@ const Dashboard = () => {
                                Copy link
                              </DropdownMenuItem>
                            )}
-                           <DropdownMenuItem 
-                             className="text-destructive"
-                             onClick={() => {
-                               if (version.is_default) {
-                                 if (confirm("Are you sure? This cannot be undone. You can create a new profile anytime.")) {
-                                   // TODO: Implement base profile deletion
-                                   toast({ title: "Profile deletion coming soon" });
-                                 }
-                               } else {
-                                 if (confirm("Are you sure? This cannot be undone.")) {
-                                   // TODO: Implement version deletion
-                                   toast({ title: "Version deletion coming soon" });
-                                 }
-                               }
-                             }}
-                           >
+                            <DropdownMenuItem 
+                              className="text-destructive"
+                              onClick={() => handleDeleteProfile(
+                                version.is_default ? profile.id : version.id,
+                                version.is_default
+                              )}
+                            >
                              <Trash2 className="w-4 h-4 mr-2" />
                              Delete {version.is_default ? "profile" : "version"}
                            </DropdownMenuItem>
