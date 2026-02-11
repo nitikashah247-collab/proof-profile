@@ -549,14 +549,26 @@ const Onboarding = () => {
         });
       }
 
-      // Testimonials section
-      if (generated?.testimonials?.length > 0) {
+      // Languages section
+      if (generated?.languages?.length > 0) {
         sectionsToCreate.push({
           user_id: user.id,
           profile_id: profile.id,
-          section_type: "testimonials",
+          section_type: "languages",
           section_order: order++,
-          section_data: {},
+          section_data: { languages: generated.languages },
+          is_visible: true,
+        });
+      }
+
+      // Publications section
+      if (generated?.publications?.length > 0) {
+        sectionsToCreate.push({
+          user_id: user.id,
+          profile_id: profile.id,
+          section_type: "publications",
+          section_order: order++,
+          section_data: { publications: generated.publications },
           is_visible: true,
         });
       }
