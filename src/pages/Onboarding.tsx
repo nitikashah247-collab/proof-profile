@@ -353,9 +353,20 @@ const Onboarding = () => {
         console.error("Generate profile HTTP error:", genResponse.status);
       }
 
-      // 3. Update profile with AI-generated or resume data
+      // 3. Ensure profile has a slug
+      let slug = profile.slug;
+      if (!slug) {
+        const name = resumeData?.full_name || profile.full_name || "";
+        slug = name
+          .toLowerCase()
+          .replace(/[^a-z0-9]+/g, "-")
+          .replace(/^-+|-+$/g, "") || `user-${user.id.substring(0, 8)}`;
+      }
+
+      // 4. Update profile with AI-generated or resume data
       const updatePayload: Record<string, unknown> = {
         onboarding_completed: true,
+        slug,
         industry: resumeData?.industry || profile.industry,
         years_experience: generated?.hero_stats?.years_experience || resumeData?.years_experience || profile.years_experience,
         location: resumeData?.location || profile.location,
@@ -380,7 +391,7 @@ const Onboarding = () => {
         throw new Error("Failed to update profile.");
       }
 
-      // 4. Create a default profile version
+      // 5. Create a default profile version
       const { error: versionError } = await supabase
         .from("profile_versions")
         .insert({
@@ -389,7 +400,7 @@ const Onboarding = () => {
           version_name: "Base Profile",
           is_default: true,
           is_published: true,
-          slug: profile.slug,
+          slug,
         });
 
       if (versionError) {
@@ -642,7 +653,7 @@ const Onboarding = () => {
         description: "You can now share it with anyone.",
       });
 
-      navigate(`/p/${profile.slug}`);
+      navigate(`/p/${slug}`);
     } catch (err) {
       console.error("Profile generation error:", err);
       setIsGenerating(false);
