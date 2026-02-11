@@ -910,9 +910,14 @@ const Onboarding = () => {
                   </div>
 
                   <div className="border-t border-border p-4 space-y-3">
-                    <p className="text-xs text-muted-foreground text-center">
-                      💬 Type your answer or 🎤 record a voice memo (faster and easier!)
-                    </p>
+                    <div className="flex items-center justify-between">
+                      <p className="text-xs text-muted-foreground">
+                        {questionIndex + 1} of {questions.length} questions answered
+                      </p>
+                      <p className="text-xs text-muted-foreground text-center flex-1">
+                        💬 Type your answer or 🎤 record a voice memo (faster and easier!)
+                      </p>
+                    </div>
                     <div className="flex items-center gap-3">
                       <Textarea
                         placeholder="Type your answer..."
@@ -945,7 +950,7 @@ const Onboarding = () => {
                       onClick={() => setStep(3)}
                       className="group"
                     >
-                      Continue to next step
+                      Continue with {questionIndex + 1} {questionIndex === 1 ? "answer" : "answers"}
                       <ArrowRight className="w-4 h-4 ml-2 transition-transform group-hover:translate-x-1" />
                     </Button>
                   )}

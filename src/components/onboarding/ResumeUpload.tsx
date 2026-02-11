@@ -245,10 +245,12 @@ export const ResumeUpload = ({ onComplete }: ResumeUploadProps) => {
         </Button>
       )}
 
-      <p className="text-xs text-muted-foreground text-center flex items-center justify-center gap-1.5">
-        <span>🔒</span>
-        Your resume is encrypted and only visible to you. We never share your data.{" "}
-        <a href="/privacy" className="text-primary hover:underline">Privacy Policy</a>
+      <p className="text-xs text-muted-foreground text-center">
+        <span className="inline-flex items-center gap-1.5">
+          <span>🔒</span>
+          <span>Your resume is encrypted and only visible to you. We never share your data.{" "}
+          <a href="/privacy" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">Privacy Policy</a></span>
+        </span>
       </p>
     </div>
   );
