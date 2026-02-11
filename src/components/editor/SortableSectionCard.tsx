@@ -14,6 +14,24 @@ interface SortableSectionCardProps {
   onDelete: (sectionId: string) => void;
 }
 
+const hasContentData = (data: Record<string, any>): boolean => {
+  if (!data || Object.keys(data).length === 0) return false;
+  // Check for common generated data keys beyond just "items"
+  const knownContentKeys = [
+    "items", "positioning_statement", "hero_stats", "summary", "email",
+    "case_studies", "timeline", "skills_with_proof", "metrics",
+    "visualizations", "languages", "publications", "work_style",
+    "name", "title", "cta_text",
+  ];
+  return knownContentKeys.some((key) => {
+    const val = data[key];
+    if (val === undefined || val === null || val === "") return false;
+    if (Array.isArray(val)) return val.length > 0;
+    if (typeof val === "object") return Object.keys(val).length > 0;
+    return true;
+  });
+};
+
 export const SortableSectionCard = ({
   section,
   template,
@@ -31,7 +49,7 @@ export const SortableSectionCard = ({
   };
 
   const isCore = template?.is_core ?? false;
-  const hasContent = Object.keys(section.section_data).length > 0;
+  const hasContent = hasContentData(section.section_data);
 
   return (
     <div
@@ -63,12 +81,12 @@ export const SortableSectionCard = ({
         </p>
       </div>
 
-      {/* Actions */}
-      <div className="flex items-center gap-1">
-        <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => onEdit(section)}>
+      {/* Actions - stopPropagation prevents drag interference */}
+      <div className="flex items-center gap-1" onPointerDown={(e) => e.stopPropagation()}>
+        <Button variant="ghost" size="icon" className="h-8 w-8" onClick={(e) => { e.stopPropagation(); onEdit(section); }}>
           <Pencil className="w-3.5 h-3.5" />
         </Button>
-        <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => onToggleVisibility(section.id)}>
+        <Button variant="ghost" size="icon" className="h-8 w-8" onClick={(e) => { e.stopPropagation(); onToggleVisibility(section.id); }}>
           {section.is_visible ? <Eye className="w-3.5 h-3.5" /> : <EyeOff className="w-3.5 h-3.5" />}
         </Button>
         {!isCore && (
@@ -76,7 +94,7 @@ export const SortableSectionCard = ({
             variant="ghost"
             size="icon"
             className="h-8 w-8 text-muted-foreground hover:text-destructive"
-            onClick={() => onDelete(section.id)}
+            onClick={(e) => { e.stopPropagation(); onDelete(section.id); }}
           >
             <Trash2 className="w-3.5 h-3.5" />
           </Button>
