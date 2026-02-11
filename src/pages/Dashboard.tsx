@@ -222,29 +222,42 @@ const Dashboard = () => {
                         </Button>
                       )}
                       <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="icon">
-                            <MoreHorizontal className="w-5 h-5" />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                          {version.slug && (
-                            <DropdownMenuItem onClick={() => {
-                              navigator.clipboard.writeText(`${window.location.origin}/p/${version.slug}`);
-                              toast({ title: "Link copied!" });
-                            }}>
-                              <Copy className="w-4 h-4 mr-2" />
-                              Copy link
-                            </DropdownMenuItem>
-                          )}
-                          {!version.is_default && (
-                            <DropdownMenuItem className="text-destructive">
-                              <Trash2 className="w-4 h-4 mr-2" />
-                              Delete
-                            </DropdownMenuItem>
-                          )}
-                        </DropdownMenuContent>
-                      </DropdownMenu>
+                         <DropdownMenuTrigger asChild>
+                           <Button variant="ghost" size="icon">
+                             <MoreHorizontal className="w-5 h-5" />
+                           </Button>
+                         </DropdownMenuTrigger>
+                         <DropdownMenuContent align="end">
+                           {version.slug && (
+                             <DropdownMenuItem onClick={() => {
+                               navigator.clipboard.writeText(`${window.location.origin}/p/${version.slug}`);
+                               toast({ title: "Link copied!" });
+                             }}>
+                               <Copy className="w-4 h-4 mr-2" />
+                               Copy link
+                             </DropdownMenuItem>
+                           )}
+                           <DropdownMenuItem 
+                             className="text-destructive"
+                             onClick={() => {
+                               if (version.is_default) {
+                                 if (confirm("Are you sure? This cannot be undone. You can create a new profile anytime.")) {
+                                   // TODO: Implement base profile deletion
+                                   toast({ title: "Profile deletion coming soon" });
+                                 }
+                               } else {
+                                 if (confirm("Are you sure? This cannot be undone.")) {
+                                   // TODO: Implement version deletion
+                                   toast({ title: "Version deletion coming soon" });
+                                 }
+                               }
+                             }}
+                           >
+                             <Trash2 className="w-4 h-4 mr-2" />
+                             Delete {version.is_default ? "profile" : "version"}
+                           </DropdownMenuItem>
+                         </DropdownMenuContent>
+                       </DropdownMenu>
                     </div>
                   </div>
                 </motion.div>
