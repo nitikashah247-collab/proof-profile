@@ -20,6 +20,7 @@ import {
 } from "lucide-react";
 import { ResumeUpload, ResumeData } from "@/components/onboarding/ResumeUpload";
 import { VoiceMemo } from "@/components/onboarding/VoiceMemo";
+import { PhotoUpload } from "@/components/onboarding/PhotoUpload";
 import {
   HoverCard,
   HoverCardContent,
@@ -107,6 +108,7 @@ const Onboarding = () => {
   const [selectedArchetype, setSelectedArchetype] = useState<string | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
   const [aiSuggesting, setAiSuggesting] = useState(false);
+  const [avatarUrl, setAvatarUrl] = useState<string>("");
   const [aiSuggestion, setAiSuggestion] = useState<{ archetype: string; reason: string } | null>(null);
   const navigate = useNavigate();
 
@@ -346,6 +348,9 @@ const Onboarding = () => {
       if (resumeData?.full_name && !profile.full_name) {
         updatePayload.full_name = resumeData.full_name;
       }
+      if (avatarUrl) {
+        updatePayload.avatar_url = avatarUrl;
+      }
 
       const { error: updateError } = await supabase
         .from("profiles")
@@ -490,6 +495,7 @@ const Onboarding = () => {
           hero_stats: generated?.hero_stats || null,
           email: user.email || "",
           linkedin_url: linkedinUrl || "",
+          archetype: selectedArchetype || "",
         },
         is_visible: true,
       });
@@ -685,9 +691,14 @@ const Onboarding = () => {
                 <h1 className="text-4xl font-bold mb-4">
                   Let's build your <span className="text-primary">Proof</span>
                 </h1>
-                <p className="text-xl text-muted-foreground mb-12">
+                <p className="text-xl text-muted-foreground mb-8">
                   How would you like to get started?
                 </p>
+
+                {/* Profile Photo Upload */}
+                <div className="mb-8">
+                  <PhotoUpload onUpload={setAvatarUrl} currentUrl={avatarUrl || undefined} />
+                </div>
 
                 {!activeUpload ? (
                   <div className="space-y-8">
