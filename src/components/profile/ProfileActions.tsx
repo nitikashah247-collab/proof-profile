@@ -7,9 +7,11 @@ import { toast } from "sonner";
 interface ProfileActionsProps {
   profileUrl: string;
   name: string;
+  email?: string;
+  calendlyUrl?: string;
 }
 
-export const ProfileActions = ({ profileUrl, name }: ProfileActionsProps) => {
+export const ProfileActions = ({ profileUrl, name, email, calendlyUrl }: ProfileActionsProps) => {
   const [copied, setCopied] = useState(false);
 
   const handleShare = async () => {
@@ -25,13 +27,19 @@ export const ProfileActions = ({ profileUrl, name }: ProfileActionsProps) => {
 
   const handleDownloadResume = () => {
     toast.success("Resume download started");
-    // In a real app, this would trigger a PDF download
   };
 
   const handleDownloadCaseStudy = () => {
     toast.success("Case study one-pager download started");
-    // In a real app, this would trigger a PDF download
   };
+
+  const contactEmail = email || "";
+  const mailtoGetInTouch = contactEmail
+    ? `mailto:${contactEmail}?subject=${encodeURIComponent("Inquiry from your Proof profile")}`
+    : null;
+  const scheduleLink = calendlyUrl || (contactEmail
+    ? `mailto:${contactEmail}?subject=${encodeURIComponent("Schedule a call")}`
+    : null);
 
   return (
     <section className="py-16 relative overflow-hidden">
@@ -50,14 +58,22 @@ export const ProfileActions = ({ profileUrl, name }: ProfileActionsProps) => {
 
           {/* Primary CTAs */}
           <div className="flex flex-wrap items-center justify-center gap-4 mb-8">
-            <Button size="lg" className="gap-2">
-              <Mail className="w-5 h-5" />
-              Get in Touch
-            </Button>
-            <Button variant="outline" size="lg" className="gap-2">
-              <Calendar className="w-5 h-5" />
-              Schedule a Call
-            </Button>
+            {mailtoGetInTouch && (
+              <Button size="lg" className="gap-2" asChild>
+                <a href={mailtoGetInTouch}>
+                  <Mail className="w-5 h-5" />
+                  Get in Touch
+                </a>
+              </Button>
+            )}
+            {scheduleLink && (
+              <Button variant="outline" size="lg" className="gap-2" asChild>
+                <a href={scheduleLink} target={calendlyUrl ? "_blank" : undefined} rel={calendlyUrl ? "noopener noreferrer" : undefined}>
+                  <Calendar className="w-5 h-5" />
+                  Schedule a Call
+                </a>
+              </Button>
+            )}
           </div>
 
           {/* Secondary Actions */}

@@ -96,6 +96,8 @@ const Onboarding = () => {
   const [resumeFileUrl, setResumeFileUrl] = useState<string | null>(null);
   const [resumeComplete, setResumeComplete] = useState(false);
   const [linkedinComplete, setLinkedinComplete] = useState(false);
+  const [linkedinUrl, setLinkedinUrl] = useState("");
+  const [linkedinError, setLinkedinError] = useState("");
   const [chatMessages, setChatMessages] = useState<Array<{ role: "ai" | "user"; content: string }>>([]);
   const [currentInput, setCurrentInput] = useState("");
   const [questionIndex, setQuestionIndex] = useState(0);
@@ -240,11 +242,8 @@ const Onboarding = () => {
   };
 
   const handleVoiceTranscript = (text: string) => {
+    // Put transcript in input for user to review/edit before sending
     setCurrentInput(text);
-    // Auto-send after a brief delay so user can see the transcript
-    setTimeout(() => {
-      handleSendMessage(text);
-    }, 500);
   };
 
   const handleAiSuggest = useCallback(async () => {
@@ -489,6 +488,8 @@ const Onboarding = () => {
         section_data: {
           positioning_statement: generated?.positioning_statement || "",
           hero_stats: generated?.hero_stats || null,
+          email: user.email || "",
+          linkedin_url: linkedinUrl || "",
         },
         is_visible: true,
       });
@@ -691,7 +692,7 @@ const Onboarding = () => {
                           id: "linkedin" as const,
                           icon: Linkedin,
                           title: "Import LinkedIn",
-                          description: "Paste your profile URL (coming soon)",
+                          description: "Paste your LinkedIn profile URL",
                         },
                       ].map((option) => (
                         <motion.button
@@ -765,7 +766,7 @@ const Onboarding = () => {
                   <motion.div
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="max-w-lg mx-auto text-center"
+                    className="max-w-lg mx-auto"
                   >
                     {resumeComplete && (
                       <div className="flex items-center gap-2 justify-center mb-6 p-3 rounded-xl bg-primary/5 border border-primary/20">
@@ -773,21 +774,56 @@ const Onboarding = () => {
                         <span className="text-sm font-medium">Resume uploaded successfully</span>
                       </div>
                     )}
-                    <p className="text-muted-foreground mb-4">
-                      LinkedIn import is coming soon. You can skip this step for now.
-                    </p>
-                    <div className="flex justify-center gap-3">
-                      <Button
-                        variant="ghost"
-                        onClick={() => setActiveUpload(null)}
-                        className="text-muted-foreground"
-                      >
-                        ← Back
-                      </Button>
-                      <Button onClick={handleLinkedinSkip}>
-                        Continue without LinkedIn
-                        <ArrowRight className="w-4 h-4 ml-2" />
-                      </Button>
+                    <div className="space-y-4">
+                      <div>
+                        <label className="block text-sm font-medium mb-2 text-left">Paste your LinkedIn profile URL</label>
+                        <input
+                          type="url"
+                          value={linkedinUrl}
+                          onChange={(e) => {
+                            setLinkedinUrl(e.target.value);
+                            setLinkedinError("");
+                          }}
+                          placeholder="https://linkedin.com/in/yourname"
+                          className="w-full px-4 py-3 rounded-xl border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                        />
+                        {linkedinError && (
+                          <p className="text-sm text-destructive mt-1">{linkedinError}</p>
+                        )}
+                      </div>
+                      <div className="flex justify-center gap-3">
+                        <Button
+                          variant="ghost"
+                          onClick={() => setActiveUpload(null)}
+                          className="text-muted-foreground"
+                        >
+                          ← Back
+                        </Button>
+                        <Button onClick={() => {
+                          if (linkedinUrl.trim()) {
+                            const urlPattern = /^https?:\/\/(www\.)?linkedin\.com\/in\/[\w-]+\/?$/i;
+                            if (!urlPattern.test(linkedinUrl.trim())) {
+                              setLinkedinError("Please enter a valid LinkedIn URL (e.g. https://linkedin.com/in/yourname)");
+                              return;
+                            }
+                          }
+                          setLinkedinComplete(true);
+                          if (resumeData) {
+                            const detectedRole = detectRoleCategory(resumeData);
+                            setRoleCategory(detectedRole);
+                            const roleQuestions = getQuestionsForRole(detectedRole);
+                            setQuestions(roleQuestions);
+                            const initialMessages = buildInitialMessages(resumeData, detectedRole, roleQuestions);
+                            setChatMessages(initialMessages);
+                            setStep(2);
+                          } else {
+                            handleStartFresh();
+                          }
+                        }}>
+                          {linkedinUrl.trim() ? "Continue" : "Skip LinkedIn"}
+                          <ArrowRight className="w-4 h-4 ml-2" />
+                        </Button>
+                      </div>
                     </div>
                   </motion.div>
                 ) : null}
@@ -808,13 +844,18 @@ const Onboarding = () => {
                   <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-medium mb-4">
                     <Sparkles className="w-4 h-4" />
                     AI Interview
+                    {questionIndex > 0 && (
+                      <span className="ml-1 text-xs opacity-75">
+                        · {questionIndex} of {questions.length} answered
+                      </span>
+                    )}
                   </div>
                   <h1 className="text-3xl font-bold mb-2">
                     Let's surface your best stories
                   </h1>
                   <p className="text-muted-foreground">
                     {resumeData
-                      ? `We've tailored questions for your ${roleCategory === "general" ? "professional" : roleCategory} background. Answer a few more to go deeper.`
+                      ? `We've tailored questions for your ${roleCategory === "general" ? "professional" : roleCategory} background. Answer as many as you'd like.`
                       : "Answer a few questions to help me understand your impact"}
                   </p>
                 </div>
@@ -875,13 +916,22 @@ const Onboarding = () => {
                   </div>
                 </div>
 
-                <div className="text-center mt-6">
+                <div className="flex items-center justify-center gap-4 mt-6">
+                  {questionIndex > 0 && (
+                    <Button
+                      onClick={() => setStep(3)}
+                      className="group"
+                    >
+                      Continue to next step
+                      <ArrowRight className="w-4 h-4 ml-2 transition-transform group-hover:translate-x-1" />
+                    </Button>
+                  )}
                   <Button
                     variant="ghost"
                     onClick={() => setStep(3)}
                     className="text-muted-foreground"
                   >
-                    Skip for now
+                    {questionIndex > 0 ? "Skip remaining" : "Skip for now"}
                     <ArrowRight className="w-4 h-4 ml-2" />
                   </Button>
                 </div>

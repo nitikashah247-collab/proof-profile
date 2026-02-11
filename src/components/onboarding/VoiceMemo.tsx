@@ -1,7 +1,7 @@
 import { useState, useRef, useCallback, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { Mic, Square, Loader2 } from "lucide-react";
+import { Mic, Square, Loader2, Check, X } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 
 interface VoiceMemoProps {
@@ -14,6 +14,7 @@ export const VoiceMemo = ({ onTranscript, disabled }: VoiceMemoProps) => {
   const [isTranscribing, setIsTranscribing] = useState(false);
   const [duration, setDuration] = useState(0);
   const [audioLevels, setAudioLevels] = useState<number[]>(Array(20).fill(0));
+  const [pendingTranscript, setPendingTranscript] = useState<string | null>(null);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<Blob[]>([]);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -49,7 +50,6 @@ export const VoiceMemo = ({ onTranscript, disabled }: VoiceMemoProps) => {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       streamRef.current = stream;
 
-      // Set up audio analysis for waveform
       const audioCtx = new AudioContext();
       const source = audioCtx.createMediaStreamSource(stream);
       const analyser = audioCtx.createAnalyser();
@@ -131,7 +131,8 @@ export const VoiceMemo = ({ onTranscript, disabled }: VoiceMemoProps) => {
 
       const data = await response.json();
       if (data.text) {
-        onTranscript(data.text);
+        // Show transcript for review instead of auto-sending
+        setPendingTranscript(data.text);
       } else {
         toast({
           title: "No speech detected",
@@ -151,6 +152,17 @@ export const VoiceMemo = ({ onTranscript, disabled }: VoiceMemoProps) => {
     }
   };
 
+  const handleConfirmTranscript = () => {
+    if (pendingTranscript) {
+      onTranscript(pendingTranscript);
+      setPendingTranscript(null);
+    }
+  };
+
+  const handleDiscardTranscript = () => {
+    setPendingTranscript(null);
+  };
+
   const formatTime = (seconds: number) => {
     const m = Math.floor(seconds / 60);
     const s = seconds % 60;
@@ -163,6 +175,31 @@ export const VoiceMemo = ({ onTranscript, disabled }: VoiceMemoProps) => {
         <Loader2 className="w-5 h-5 text-primary animate-spin" />
         <span className="text-sm text-muted-foreground">Transcribing your voice memo...</span>
       </div>
+    );
+  }
+
+  if (pendingTranscript) {
+    return (
+      <motion.div
+        initial={{ opacity: 0, y: 5 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="space-y-2"
+      >
+        <div className="px-4 py-3 rounded-xl bg-primary/5 border border-primary/20">
+          <p className="text-xs text-muted-foreground mb-1 font-medium">🎤 Transcription preview — edit in the text box above, or:</p>
+          <p className="text-sm text-foreground">{pendingTranscript}</p>
+        </div>
+        <div className="flex items-center gap-2">
+          <Button size="sm" onClick={handleConfirmTranscript} className="gap-1.5">
+            <Check className="w-3.5 h-3.5" />
+            Use this transcript
+          </Button>
+          <Button size="sm" variant="ghost" onClick={handleDiscardTranscript} className="gap-1.5 text-muted-foreground">
+            <X className="w-3.5 h-3.5" />
+            Discard
+          </Button>
+        </div>
+      </motion.div>
     );
   }
 
