@@ -5,6 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Loader2 } from "lucide-react";
 import { Users, Zap, Brain, MessageSquare } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
 
 // Reuse demo-quality components
 import { ProfileHero } from "@/components/profile/ProfileHero";
@@ -14,6 +15,9 @@ import { CareerTimeline } from "@/components/profile/CareerTimeline";
 import { SkillsMatrix } from "@/components/profile/SkillsMatrix";
 import { TestimonialsCarousel } from "@/components/profile/TestimonialsCarousel";
 import { WorkStyleVisual } from "@/components/profile/WorkStyleVisual";
+import { CoverBanner } from "@/components/profile/CoverBanner";
+import { ProfileOwnerBar } from "@/components/profile/ProfileOwnerBar";
+import { CareerCoachDrawer } from "@/components/editor/CareerCoachDrawer";
 
 interface ProfileSection {
   id: string;
@@ -32,6 +36,7 @@ const WORK_STYLE_ICONS: Record<string, React.ElementType> = {
 
 const PublicProfile = () => {
   const { slug } = useParams<{ slug: string }>();
+  const { user } = useAuth();
   const [profile, setProfile] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
@@ -41,6 +46,7 @@ const PublicProfile = () => {
   const [caseStudies, setCaseStudies] = useState<any[]>([]);
   const [testimonials, setTestimonials] = useState<any[]>([]);
   const [activeSkill, setActiveSkill] = useState<string | null>(null);
+  const [isOwner, setIsOwner] = useState(false);
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -63,7 +69,7 @@ const PublicProfile = () => {
       }
 
       setProfile(data);
-
+      setIsOwner(!!user && data.user_id === user.id);
       // Fetch all related data in parallel
       const [sectionsRes, timelineRes, skillsRes, caseStudiesRes, testimonialsRes] = await Promise.all([
         supabase
@@ -273,8 +279,17 @@ const PublicProfile = () => {
   // Visualizations from impact section
   const visualizations = impactSection?.section_data?.visualizations || [];
 
+  // Determine archetype from hero section or industry
+  const archetype = heroSection?.section_data?.archetype || "";
+
   return (
     <div className="min-h-screen bg-background">
+      {/* Owner controls */}
+      {isOwner && <ProfileOwnerBar />}
+
+      {/* Cover Banner */}
+      <CoverBanner archetype={archetype} bannerUrl={profile.banner_url || undefined} />
+
       {/* Hero Section - same as demos */}
       <ProfileHero
         name={profile.full_name || ""}
@@ -428,17 +443,29 @@ const PublicProfile = () => {
       )}
 
       {/* Proof Badge */}
-      <div className="fixed bottom-6 right-6 z-50">
-        <Link
-          to="/"
-          className="flex items-center gap-2 px-4 py-2 rounded-full bg-card border border-border shadow-lg hover:shadow-xl transition-shadow"
-        >
-          <div className="w-5 h-5 rounded icon-gradient-bg flex items-center justify-center">
-            <span className="text-white font-bold text-[10px]">P</span>
-          </div>
-          <span className="text-sm font-medium">Made with Proof</span>
-        </Link>
-      </div>
+      {!isOwner && (
+        <div className="fixed bottom-6 right-6 z-50">
+          <Link
+            to="/"
+            className="flex items-center gap-2 px-4 py-2 rounded-full bg-card border border-border shadow-lg hover:shadow-xl transition-shadow"
+          >
+            <div className="w-5 h-5 rounded icon-gradient-bg flex items-center justify-center">
+              <span className="text-white font-bold text-[10px]">P</span>
+            </div>
+            <span className="text-sm font-medium">Made with Proof</span>
+          </Link>
+        </div>
+      )}
+
+      {/* AI Career Coach - only for profile owner */}
+      {isOwner && (
+        <CareerCoachDrawer
+          profileData={profile}
+          sections={sections}
+          activeSectionTypes={sections.map((s) => s.section_type)}
+          onAddSection={() => {}}
+        />
+      )}
     </div>
   );
 };
