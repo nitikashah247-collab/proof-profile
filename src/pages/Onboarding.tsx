@@ -292,15 +292,33 @@ const Onboarding = () => {
     setIsGenerating(true);
 
     try {
-      // 1. Fetch the user's profile
-      const { data: profile, error: profileError } = await supabase
+      // 1. Fetch the user's profile, or create one if it was deleted
+      let { data: profile, error: profileError } = await supabase
         .from("profiles")
         .select("*")
         .eq("user_id", user.id)
         .maybeSingle();
 
-      if (profileError || !profile) {
-        throw new Error("Could not find your profile. Please try again.");
+      if (profileError) {
+        throw new Error("Could not load your profile. Please try again.");
+      }
+
+      if (!profile) {
+        const userName = resumeData?.full_name || "";
+        const { data: newProfile, error: createError } = await supabase
+          .from("profiles")
+          .insert({
+            user_id: user.id,
+            full_name: userName,
+            slug: userName ? undefined : undefined,
+          })
+          .select()
+          .single();
+
+        if (createError || !newProfile) {
+          throw new Error("Failed to create profile. Please try again.");
+        }
+        profile = newProfile;
       }
 
       // 2. Call generate-profile edge function with full context
