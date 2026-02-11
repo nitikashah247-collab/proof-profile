@@ -264,6 +264,9 @@ const PublicProfile = () => {
         activeSkill={activeSkill}
         onSkillClick={setActiveSkill}
         stats={normalizedHeroStats}
+        email={heroSection?.section_data?.email || ""}
+        calendlyUrl={heroSection?.section_data?.calendly_url || ""}
+        linkedinUrl={heroSection?.section_data?.linkedin_url || ""}
       />
 
       {/* Impact Charts - AI-generated visualizations */}

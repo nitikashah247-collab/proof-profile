@@ -19,6 +19,9 @@ interface ProfileHeroProps {
     teamsManaged: number;
     keyMetric: { value: number; label: string; suffix: string };
   };
+  email?: string;
+  calendlyUrl?: string;
+  linkedinUrl?: string;
 }
 
 export const ProfileHero = ({
@@ -32,8 +35,19 @@ export const ProfileHero = ({
   activeSkill,
   onSkillClick,
   stats,
+  email,
+  calendlyUrl,
+  linkedinUrl,
 }: ProfileHeroProps) => {
   const initials = name.split(" ").map(n => n[0]).join("");
+
+  const contactEmail = email || "";
+  const mailtoGetInTouch = contactEmail
+    ? `mailto:${contactEmail}?subject=${encodeURIComponent("Inquiry from your Proof profile")}`
+    : null;
+  const scheduleLink = calendlyUrl || (contactEmail
+    ? `mailto:${contactEmail}?subject=${encodeURIComponent("Schedule a call")}`
+    : null);
 
   return (
     <section className="pt-32 pb-16 relative overflow-hidden">
@@ -120,17 +134,29 @@ export const ProfileHero = ({
                 transition={{ duration: 0.5, delay: 0.35 }}
                 className="flex flex-wrap items-center gap-3"
               >
-                <Button size="lg">
-                  <Mail className="w-5 h-5 mr-2" />
-                  Get in touch
-                </Button>
-                <Button variant="outline" size="lg">
-                  <Calendar className="w-5 h-5 mr-2" />
-                  Schedule a call
-                </Button>
-                <Button variant="ghost" size="icon" className="ml-2">
-                  <Linkedin className="w-5 h-5" />
-                </Button>
+                {mailtoGetInTouch && (
+                  <Button size="lg" asChild>
+                    <a href={mailtoGetInTouch}>
+                      <Mail className="w-5 h-5 mr-2" />
+                      Get in touch
+                    </a>
+                  </Button>
+                )}
+                {scheduleLink && (
+                  <Button variant="outline" size="lg" asChild>
+                    <a href={scheduleLink} target={calendlyUrl ? "_blank" : undefined} rel={calendlyUrl ? "noopener noreferrer" : undefined}>
+                      <Calendar className="w-5 h-5 mr-2" />
+                      Schedule a call
+                    </a>
+                  </Button>
+                )}
+                {linkedinUrl && (
+                  <Button variant="ghost" size="icon" className="ml-2" asChild>
+                    <a href={linkedinUrl} target="_blank" rel="noopener noreferrer">
+                      <Linkedin className="w-5 h-5" />
+                    </a>
+                  </Button>
+                )}
               </motion.div>
             </div>
           </motion.div>
