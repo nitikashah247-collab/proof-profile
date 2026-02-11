@@ -22,7 +22,7 @@ export const PhotoUpload = ({ onUpload, currentUrl }: PhotoUploadProps) => {
     if (!["image/jpeg", "image/png", "image/webp"].includes(file.type)) {
       return;
     }
-    if (file.size > 5 * 1024 * 1024) return;
+    if (file.size > 10 * 1024 * 1024) return;
 
     setUploading(true);
 
@@ -36,16 +36,16 @@ export const PhotoUpload = ({ onUpload, currentUrl }: PhotoUploadProps) => {
 
       const size = Math.min(img.width, img.height);
       const canvas = document.createElement("canvas");
-      canvas.width = 400;
-      canvas.height = 400;
+      canvas.width = 800;
+      canvas.height = 800;
       const ctx = canvas.getContext("2d")!;
       const sx = (img.width - size) / 2;
       const sy = (img.height - size) / 2;
-      ctx.drawImage(img, sx, sy, size, size, 0, 0, 400, 400);
+      ctx.drawImage(img, sx, sy, size, size, 0, 0, 800, 800);
       URL.revokeObjectURL(objectUrl);
 
       const blob = await new Promise<Blob>((resolve) =>
-        canvas.toBlob((b) => resolve(b!), "image/jpeg", 0.9)
+        canvas.toBlob((b) => resolve(b!), "image/jpeg", 0.95)
       );
 
       const filePath = `${user.id}/avatar.jpg`;

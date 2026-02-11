@@ -107,9 +107,11 @@ CRITICAL RULES FOR SKILLS:
 - Each skill name MUST be unique — NEVER include duplicates
 - Classify each skill into exactly one of two categories:
   * "Core Competency" — soft skills like Leadership, Communication, Strategic Planning, Problem Solving, Cross-functional Collaboration
-  * "Technical Proficiency" — tools, platforms, hard skills like Salesforce, Python, Excel, Financial Modeling, Data Analysis
+  * "Technical Proficiency" — tools, platforms, hard skills like Salesforce, Python, Excel, Financial Modeling, Data Analysis, HubSpot, Tableau, NetSuite, AWS, Docker, JIRA, SAP, Power BI, Google Analytics
+- ACTIVELY SCAN the resume for tool/platform/system mentions: "Experience with...", "Proficient in...", "Tools used:", and all common software names
 - Merge semantically similar skills (e.g., "Strategic Planning" and "Strategy" → keep "Strategic Planning")
 - Limit to 8-12 total skills, balanced between the two categories
+- Technical tools and platforms MUST be included — do not ignore them
 
 CRITICAL RULES FOR VISUALIZATIONS:
 - Scan ALL achievements for ANY quantifiable data: percentages, dollar amounts, team sizes, time periods, ratios, fractions, scores
@@ -122,11 +124,15 @@ CRITICAL RULES FOR VISUALIZATIONS:
 - Generate at least 3 visualizations, up to 6
 - Use relative scales if exact data unavailable (e.g. base=100, after=138 for 38% growth)
 - THE GOLDEN RULE: If it's a number, visualize it. Don't just write it as text.
+- NEVER return an empty visualizations array if any metrics exist in the resume or interview data
 
 CRITICAL RULES FOR CASE STUDIES:
-- Generate 3-5 detailed case studies from BOTH resume AND interview answers
+- Generate EXACTLY 3-5 case studies — NO MORE THAN 5
+- Select the MOST impressive stories based on: quantifiable metrics (highest priority), recency, seniority of achievement
+- Do NOT include every resume bullet point as a separate case study — consolidate related achievements
 - Each MUST have a company name, key_metric, all three sections (challenge/approach/results), and skills_used
 - Make them specific and story-driven, not generic
+- Quality over quantity — 3 excellent stories beats 12 mediocre ones
 
 CRITICAL RULES — NO TESTIMONIALS:
 - DO NOT generate any testimonials. Return an empty array for testimonials: []
@@ -147,8 +153,10 @@ CRITICAL RULES FOR WORK STYLE:
 - Extract 6 traits/values from how they describe their work
 
 CRITICAL RULES FOR CAREER TIMELINE:
-- Each role at a company is ONE entry with start_year and end_year
-- Do NOT create multiple entries for the same role
+- ONE entry per distinct ROLE — do NOT create separate entries per year or per achievement
+- Each entry = Company | Role Title | Start Year - End Year
+- Do NOT create multiple entries for the same role at the same company
+- Maximum 6 entries total — focus on the most significant career moves
 - Include 3-4 key achievements per role (not just responsibilities)
 - Format as compelling one-liners
 
@@ -325,13 +333,28 @@ serve(async (req) => {
     // Post-process: force testimonials to empty (never hallucinate)
     generatedProfile.testimonials = [];
 
+    // Post-process: limit case studies to 5 max
+    if (generatedProfile.case_studies?.length > 5) {
+      generatedProfile.case_studies = generatedProfile.case_studies.slice(0, 5);
+    }
+
+    // Post-process: limit career timeline to 6 max, deduplicate by company+role
+    if (generatedProfile.career_timeline?.length > 0) {
+      const seen = new Set<string>();
+      generatedProfile.career_timeline = generatedProfile.career_timeline.filter((entry: any) => {
+        const key = `${entry.company}|${entry.role}`.toLowerCase();
+        if (seen.has(key)) return false;
+        seen.add(key);
+        return true;
+      }).slice(0, 6);
+    }
+
     // Post-process: deduplicate skills
     if (generatedProfile.skills_with_proof?.length > 0) {
       const seen = new Map<string, any>();
       for (const skill of generatedProfile.skills_with_proof) {
         const key = skill.name.toLowerCase().trim();
         if (seen.has(key)) {
-          // Keep the one with higher level
           const existing = seen.get(key);
           if ((skill.level || 0) > (existing.level || 0)) {
             seen.set(key, skill);

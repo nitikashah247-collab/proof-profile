@@ -282,8 +282,11 @@ const PublicProfile = () => {
   // Determine archetype from hero section or industry
   const archetype = heroSection?.section_data?.archetype || "";
 
+  // Map archetype to theme class for full-page styling
+  const themeClass = archetype === "executive" ? "theme-executive" : "";
+
   return (
-    <div className="min-h-screen bg-background">
+    <div className={`min-h-screen bg-background ${themeClass}`}>
       {/* Owner controls */}
       {isOwner && <ProfileOwnerBar />}
 
@@ -312,8 +315,13 @@ const PublicProfile = () => {
         <DynamicImpactCharts visualizations={visualizations} />
       )}
 
-      {/* Case Studies - expandable cards like demos */}
-      {finalCaseStudyCards.length > 0 && (
+      {/* Case Studies - expandable cards like demos (limit to 5) */}
+      {finalCaseStudyCards.length > 0 && (() => {
+        const limitedCaseStudies = finalCaseStudyCards.slice(0, 5);
+        const limitedFiltered = activeSkill
+          ? limitedCaseStudies.filter((cs: any) => cs.skills.includes(activeSkill))
+          : limitedCaseStudies;
+        return (
         <section className="py-16 bg-muted/30">
           <div className="container mx-auto px-6">
             <motion.div
@@ -338,7 +346,7 @@ const PublicProfile = () => {
                 )}
               </div>
               <div className="space-y-4">
-                {filteredCaseStudies.map((study: any, index: number) => (
+                {limitedFiltered.map((study: any, index: number) => (
                   <CaseStudyCard
                     key={index}
                     study={study}
@@ -350,11 +358,12 @@ const PublicProfile = () => {
             </motion.div>
           </div>
         </section>
-      )}
+        );
+      })()}
 
-      {/* Career Timeline - interactive nodes like demos */}
+      {/* Career Timeline - interactive nodes like demos (limit to 6 roles) */}
       {timelineEntries.length > 0 && (
-        <CareerTimeline entries={timelineEntries} />
+        <CareerTimeline entries={timelineEntries.slice(0, 6)} />
       )}
 
       {/* Skills Matrix - visual grid with proficiency bars */}
