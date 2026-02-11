@@ -35,11 +35,11 @@ interface DynamicImpactChartsProps {
 }
 
 const PIE_COLORS = [
-  "hsl(240 100% 50%)",
-  "hsl(240 100% 65%)",
-  "hsl(240 100% 80%)",
-  "hsl(200 100% 50%)",
-  "hsl(160 100% 40%)",
+  "hsl(var(--primary))",
+  "hsl(var(--accent))",
+  "hsl(var(--primary) / 0.7)",
+  "hsl(var(--accent) / 0.7)",
+  "hsl(var(--primary) / 0.5)",
 ];
 
 const CustomTooltip = ({ active, payload, label }: any) => {
@@ -117,7 +117,7 @@ export const DynamicImpactCharts = ({ visualizations }: DynamicImpactChartsProps
                         <Line
                           type="monotone"
                           dataKey="value"
-                          stroke="hsl(240 100% 50%)"
+                          stroke="hsl(var(--primary))"
                           strokeWidth={3}
                           dot={false}
                           animationBegin={isInView ? 0 : 99999}
@@ -141,7 +141,7 @@ export const DynamicImpactCharts = ({ visualizations }: DynamicImpactChartsProps
                         <Tooltip content={<CustomTooltip />} />
                         <Bar
                           dataKey="value"
-                          fill="hsl(240 100% 50%)"
+                          fill="hsl(var(--primary))"
                           radius={[4, 4, 0, 0]}
                           animationBegin={isInView ? 0 : 99999}
                           animationDuration={1500}
