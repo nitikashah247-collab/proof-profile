@@ -31,7 +31,6 @@ Return ONLY a valid JSON object (no markdown fences) with these fields:
       "headline_value": "string - e.g. '38%' or '$85M'",
       "headline_label": "string - e.g. 'YoY Growth'",
       "data": [
-        {"label": "string", "value": "number"},
         {"label": "string", "value": "number"}
       ],
       "format": "currency | percentage | number"
@@ -54,8 +53,8 @@ Return ONLY a valid JSON object (no markdown fences) with these fields:
   ],
   "skills_with_proof": [
     {
-      "name": "string - skill name",
-      "category": "string - Technical, Leadership, Domain, or Strategic",
+      "name": "string - skill name (UNIQUE - never repeat a skill name)",
+      "category": "string - MUST be exactly one of: 'Core Competency' or 'Technical Proficiency'",
       "level": "number 1-5 proficiency",
       "years": "number - estimated years of experience",
       "proof_point": "string - brief evidence from experience"
@@ -68,12 +67,18 @@ Return ONLY a valid JSON object (no markdown fences) with these fields:
       "context": "string - brief context"
     }
   ],
-  "testimonials": [
+  "languages": [
     {
-      "quote": "string - A realistic testimonial quote from a colleague/leader based on the achievements described",
-      "author": "string - A plausible name",
-      "role": "string - Their title",
-      "company": "string - Their company"
+      "name": "string - language name",
+      "proficiency": "string - Native, Fluent, Professional, Conversational, or Basic"
+    }
+  ],
+  "publications": [
+    {
+      "title": "string - article/publication title",
+      "outlet": "string - where it was published",
+      "year": "string - year published",
+      "url": "string - link if available, empty string if not"
     }
   ],
   "work_style": {
@@ -98,23 +103,40 @@ Return ONLY a valid JSON object (no markdown fences) with these fields:
   ]
 }
 
+CRITICAL RULES FOR SKILLS:
+- Each skill name MUST be unique — NEVER include duplicates
+- Classify each skill into exactly one of two categories:
+  * "Core Competency" — soft skills like Leadership, Communication, Strategic Planning, Problem Solving, Cross-functional Collaboration
+  * "Technical Proficiency" — tools, platforms, hard skills like Salesforce, Python, Excel, Financial Modeling, Data Analysis
+- Merge semantically similar skills (e.g., "Strategic Planning" and "Strategy" → keep "Strategic Planning")
+- Limit to 8-12 total skills, balanced between the two categories
+
 CRITICAL RULES FOR VISUALIZATIONS:
-- Scan ALL achievements for quantifiable metrics (percentages, dollar amounts, team sizes, time periods)
+- Scan ALL achievements for ANY quantifiable data: percentages, dollar amounts, team sizes, time periods, ratios, fractions, scores
 - For EVERY percentage increase/decrease, create a line_chart showing trajectory (generate 6-12 plausible data points)
 - For EVERY before/after comparison, create a bar_chart
 - For portfolio/segment breakdowns, create a pie_chart
-- Generate at least 3 visualizations, up to 5
+- "1 out of 5" → bar_chart showing the proportion
+- "$2M budget" → metric in impact_metrics
+- "NPS improved by 20 points" → line_chart or bar_chart
+- Generate at least 3 visualizations, up to 6
 - Use relative scales if exact data unavailable (e.g. base=100, after=138 for 38% growth)
+- THE GOLDEN RULE: If it's a number, visualize it. Don't just write it as text.
 
 CRITICAL RULES FOR CASE STUDIES:
 - Generate 3-5 detailed case studies from BOTH resume AND interview answers
 - Each MUST have a company name, key_metric, all three sections (challenge/approach/results), and skills_used
 - Make them specific and story-driven, not generic
 
-CRITICAL RULES FOR TESTIMONIALS:
-- Generate 3-5 realistic testimonials based on the achievements described
-- Make them sound authentic — specific to the person's work, not generic praise
-- Vary the seniority/relationship of testimonial givers (CEO, peer, direct report, client)
+CRITICAL RULES — NO TESTIMONIALS:
+- DO NOT generate any testimonials. Return an empty array for testimonials: []
+- Testimonials must only come from real people — never fabricate quotes
+- The platform will prompt users to add real testimonials later
+
+CRITICAL RULES FOR LANGUAGES & PUBLICATIONS:
+- If the resume mentions languages spoken, extract them into the "languages" array
+- If the resume mentions publications, articles, papers, or writing, extract them into "publications"
+- If neither is present, return empty arrays
 
 CRITICAL RULES FOR HERO STATS:
 - Extract or estimate: years of experience, projects/initiatives led, people managed, and one headline metric
@@ -125,6 +147,8 @@ CRITICAL RULES FOR WORK STYLE:
 - Extract 6 traits/values from how they describe their work
 
 CRITICAL RULES FOR CAREER TIMELINE:
+- Each role at a company is ONE entry with start_year and end_year
+- Do NOT create multiple entries for the same role
 - Include 3-4 key achievements per role (not just responsibilities)
 - Format as compelling one-liners
 
@@ -183,6 +207,26 @@ serve(async (req) => {
         for (const edu of resumeData.education) {
           context += `- ${edu.degree} from ${edu.institution}${edu.year ? ` (${edu.year})` : ""}\n`;
         }
+      }
+
+      // Include any additional resume sections (languages, publications, etc.)
+      if (resumeData.languages?.length > 0) {
+        context += `\n### Languages\n`;
+        for (const lang of resumeData.languages) {
+          context += `- ${lang.name}: ${lang.proficiency || "Unknown"}\n`;
+        }
+      }
+
+      if (resumeData.publications?.length > 0) {
+        context += `\n### Publications / Articles\n`;
+        for (const pub of resumeData.publications) {
+          context += `- ${pub.title}${pub.outlet ? ` (${pub.outlet})` : ""}${pub.year ? `, ${pub.year}` : ""}\n`;
+        }
+      }
+
+      // Pass through any raw_text for full extraction
+      if (resumeData.raw_text) {
+        context += `\n### Full Resume Text\n${resumeData.raw_text}\n`;
       }
     }
 
@@ -271,9 +315,32 @@ serve(async (req) => {
         })),
         impact_metrics: [],
         testimonials: [],
+        languages: [],
+        publications: [],
         work_style: { dimensions: [], traits: [] },
         career_timeline: [],
       };
+    }
+
+    // Post-process: force testimonials to empty (never hallucinate)
+    generatedProfile.testimonials = [];
+
+    // Post-process: deduplicate skills
+    if (generatedProfile.skills_with_proof?.length > 0) {
+      const seen = new Map<string, any>();
+      for (const skill of generatedProfile.skills_with_proof) {
+        const key = skill.name.toLowerCase().trim();
+        if (seen.has(key)) {
+          // Keep the one with higher level
+          const existing = seen.get(key);
+          if ((skill.level || 0) > (existing.level || 0)) {
+            seen.set(key, skill);
+          }
+        } else {
+          seen.set(key, skill);
+        }
+      }
+      generatedProfile.skills_with_proof = Array.from(seen.values());
     }
 
     return new Response(

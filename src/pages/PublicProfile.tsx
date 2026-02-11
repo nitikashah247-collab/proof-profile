@@ -151,6 +151,8 @@ const PublicProfile = () => {
   const skillsSection = getSection("skills_matrix");
   const testimonialsSection = getSection("testimonials");
   const workStyleSection = getSection("work_style");
+  const languagesSection = getSection("languages");
+  const publicationsSection = getSection("publications");
 
   // Build hero stats
   const heroStats = heroSection?.section_data?.hero_stats || {
@@ -167,18 +169,39 @@ const PublicProfile = () => {
     keyMetric: heroStats.key_metric || heroStats.keyMetric || { value: 0, label: "Projects", suffix: "+" },
   };
 
-  // Build skill names for hero tags
-  const skillNames = skills.map((s) => s.name);
+  // Build skill names for hero tags (deduplicated)
+  const skillNameSet = new Set<string>();
+  const skillNames = skills.filter(s => {
+    const key = s.name.toLowerCase().trim();
+    if (skillNameSet.has(key)) return false;
+    skillNameSet.add(key);
+    return true;
+  }).map(s => s.name);
 
-  // Build skills data for SkillsMatrix (matching demo format)
-  const skillsData = skills.map((skill, index) => ({
-    name: skill.name,
-    level: Math.round((skill.proficiency || 80) / 20),
-    yearsOfExperience: heroSection?.section_data?.hero_stats?.years_experience
-      ? Math.max(1, Math.round((heroSection.section_data.hero_stats.years_experience || 5) * (skill.proficiency || 80) / 100))
-      : Math.max(1, Math.round((profile.years_experience || 5) * (skill.proficiency || 80) / 100)),
-    relatedCaseStudies: [] as number[],
-  }));
+  // Build skills data for SkillsMatrix with category from section_data
+  const skillProofMap = new Map<string, any>();
+  const skillsWithProof = skillsSection?.section_data?.skills_with_proof || [];
+  for (const sp of skillsWithProof) {
+    skillProofMap.set(sp.name?.toLowerCase()?.trim(), sp);
+  }
+
+  // Deduplicate skills
+  const seenSkills = new Set<string>();
+  const skillsData = skills.filter(skill => {
+    const key = skill.name.toLowerCase().trim();
+    if (seenSkills.has(key)) return false;
+    seenSkills.add(key);
+    return true;
+  }).map((skill) => {
+    const proof = skillProofMap.get(skill.name.toLowerCase().trim());
+    return {
+      name: skill.name,
+      level: Math.round((skill.proficiency || 80) / 20),
+      yearsOfExperience: proof?.years || Math.max(1, Math.round((profile.years_experience || 5) * (skill.proficiency || 80) / 100)),
+      relatedCaseStudies: [] as number[],
+      category: proof?.category || skill.category || "",
+    };
+  });
 
   // Build case studies for CaseStudyCard (matching demo format)
   const caseStudyCards = caseStudies.map((cs) => ({
@@ -331,6 +354,69 @@ const PublicProfile = () => {
       {/* Testimonials Carousel */}
       {testimonialCards.length > 0 && (
         <TestimonialsCarousel testimonials={testimonialCards} />
+      )}
+
+      {/* Languages */}
+      {languagesSection?.section_data?.languages?.length > 0 && (
+        <section className="py-16 bg-muted/30">
+          <div className="container mx-auto px-6">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="max-w-5xl"
+            >
+              <h2 className="text-3xl font-bold mb-8">Languages</h2>
+              <div className="flex flex-wrap gap-4">
+                {languagesSection.section_data.languages.map((lang: any, i: number) => (
+                  <div key={i} className="px-5 py-3 rounded-xl border border-border bg-card flex items-center gap-3">
+                    <span className="text-lg">🌐</span>
+                    <div>
+                      <p className="font-semibold text-sm">{lang.name}</p>
+                      <p className="text-xs text-muted-foreground">{lang.proficiency}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </motion.div>
+          </div>
+        </section>
+      )}
+
+      {/* Publications */}
+      {publicationsSection?.section_data?.publications?.length > 0 && (
+        <section className="py-16">
+          <div className="container mx-auto px-6">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="max-w-5xl"
+            >
+              <h2 className="text-3xl font-bold mb-8">Publications</h2>
+              <div className="space-y-4">
+                {publicationsSection.section_data.publications.map((pub: any, i: number) => (
+                  <div key={i} className="p-4 rounded-xl border border-border bg-card flex items-start gap-4">
+                    <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary shrink-0 mt-0.5">
+                      📄
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="font-semibold text-sm">{pub.title}</p>
+                      <p className="text-xs text-muted-foreground">
+                        {[pub.outlet, pub.year].filter(Boolean).join(" · ")}
+                      </p>
+                    </div>
+                    {pub.url && (
+                      <a href={pub.url} target="_blank" rel="noopener noreferrer" className="text-xs text-primary hover:underline shrink-0">
+                        Read →
+                      </a>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </motion.div>
+          </div>
+        </section>
       )}
 
       {/* Work Style */}
