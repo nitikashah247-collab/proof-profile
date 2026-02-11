@@ -4,10 +4,10 @@ interface CoverBannerProps {
 }
 
 const archetypeGradients: Record<string, string> = {
+  executive: "from-slate-950 via-slate-900 to-slate-800",
   creative: "from-blue-600 via-purple-600 to-pink-500",
-  executive: "from-slate-800 via-slate-700 to-slate-600",
-  technical: "from-cyan-600 via-blue-500 to-indigo-600",
-  sales: "from-amber-500 via-orange-500 to-red-500",
+  technical: "from-sky-600 via-blue-500 to-indigo-600",
+  sales: "from-red-500 via-orange-500 to-amber-500",
   operations: "from-emerald-600 via-teal-500 to-cyan-500",
 };
 

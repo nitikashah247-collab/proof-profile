@@ -283,7 +283,14 @@ const PublicProfile = () => {
   const archetype = heroSection?.section_data?.archetype || "";
 
   // Map archetype to theme class for full-page styling
-  const themeClass = archetype === "executive" ? "theme-executive" : "";
+  const archetypeThemeMap: Record<string, string> = {
+    executive: "theme-executive",
+    creative: "theme-creative",
+    technical: "theme-technical",
+    sales: "theme-sales",
+    operations: "theme-operations",
+  };
+  const themeClass = archetypeThemeMap[archetype] || "";
 
   return (
     <div className={`min-h-screen bg-background ${themeClass}`}>
