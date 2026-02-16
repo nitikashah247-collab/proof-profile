@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useParams, Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
@@ -110,6 +110,31 @@ const PublicProfile = () => {
 
     fetchProfile();
   }, [slug]);
+
+  // Apply custom theme from profile settings
+  const themeStyle = useMemo(() => {
+    if (!profile) return {};
+    const isDark = profile.theme_base === "dark";
+    const primary = profile.theme_primary_color || "#3B82F6";
+    const secondary = profile.theme_secondary_color || "#8B5CF6";
+
+    return {
+      "--background": isDark ? "222 47% 6%" : "0 0% 100%",
+      "--foreground": isDark ? "210 40% 98%" : "222 47% 11%",
+      "--card": isDark ? "222 47% 11%" : "220 14% 98%",
+      "--card-foreground": isDark ? "210 40% 98%" : "222 47% 11%",
+      "--popover": isDark ? "222 47% 11%" : "0 0% 100%",
+      "--popover-foreground": isDark ? "210 40% 98%" : "222 47% 11%",
+      "--muted": isDark ? "215 25% 14%" : "220 14% 98%",
+      "--muted-foreground": isDark ? "215 20% 65%" : "220 9% 46%",
+      "--border": isDark ? "215 25% 20%" : "220 13% 91%",
+      "--input": isDark ? "215 25% 20%" : "220 13% 91%",
+      "--secondary": isDark ? "215 25% 17%" : "220 14% 98%",
+      "--secondary-foreground": isDark ? "210 40% 98%" : "222 47% 11%",
+      "--theme-primary-hex": primary,
+      "--theme-secondary-hex": secondary,
+    } as React.CSSProperties;
+  }, [profile]);
 
   if (loading) {
     return (
@@ -279,26 +304,23 @@ const PublicProfile = () => {
   // Visualizations from impact section
   const visualizations = impactSection?.section_data?.visualizations || [];
 
-  // Determine archetype from hero section or industry
-  const archetype = heroSection?.section_data?.archetype || "";
 
-  // Map archetype to theme class for full-page styling
-  const archetypeThemeMap: Record<string, string> = {
-    executive: "theme-executive",
-    creative: "theme-creative",
-    technical: "theme-technical",
-    sales: "theme-sales",
-    operations: "theme-operations",
-  };
-  const themeClass = archetypeThemeMap[archetype] || "";
+  // Legacy archetype support
+  const archetype = heroSection?.section_data?.archetype || heroSection?.section_data?.themeBase || "";
 
   return (
-    <div className={`min-h-screen bg-background ${themeClass}`}>
+    <div className="min-h-screen bg-background" style={themeStyle}>
       {/* Owner controls */}
       {isOwner && <ProfileOwnerBar />}
 
       {/* Cover Banner */}
-      <CoverBanner archetype={archetype} bannerUrl={profile.banner_url || undefined} />
+      <CoverBanner
+        bannerType={profile.banner_type}
+        bannerValue={profile.banner_value}
+        bannerUrl={profile.banner_url || undefined}
+        primaryColor={profile.theme_primary_color}
+        archetype={archetype}
+      />
 
       {/* Hero Section - same as demos */}
       <ProfileHero
