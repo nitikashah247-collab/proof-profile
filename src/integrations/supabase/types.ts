@@ -149,6 +149,56 @@ export type Database = {
           },
         ]
       }
+      interview_responses: {
+        Row: {
+          audio_url: string | null
+          created_at: string
+          id: string
+          profile_id: string | null
+          question_category: string
+          question_id: number
+          question_text: string
+          response_method: string | null
+          response_text: string | null
+          skipped: boolean | null
+          user_id: string
+        }
+        Insert: {
+          audio_url?: string | null
+          created_at?: string
+          id?: string
+          profile_id?: string | null
+          question_category: string
+          question_id: number
+          question_text: string
+          response_method?: string | null
+          response_text?: string | null
+          skipped?: boolean | null
+          user_id: string
+        }
+        Update: {
+          audio_url?: string | null
+          created_at?: string
+          id?: string
+          profile_id?: string | null
+          question_category?: string
+          question_id?: number
+          question_text?: string
+          response_method?: string | null
+          response_text?: string | null
+          skipped?: boolean | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "interview_responses_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       onboarding_conversations: {
         Row: {
           created_at: string
