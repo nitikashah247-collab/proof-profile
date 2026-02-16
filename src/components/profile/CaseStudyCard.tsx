@@ -3,6 +3,12 @@ import { motion, AnimatePresence } from "framer-motion";
 import { ChevronDown, Target, Lightbulb, TrendingUp, ExternalLink, Image } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
+interface CaseStudyArtifact {
+  url: string;
+  caption: string;
+  type: string;
+}
+
 interface CaseStudy {
   title: string;
   company: string;
@@ -12,6 +18,7 @@ interface CaseStudy {
   approach: string;
   outcome: string;
   skills: string[];
+  artifacts?: CaseStudyArtifact[];
   images?: string[];
   testimonial?: {
     quote: string;
@@ -134,8 +141,43 @@ export const CaseStudyCard = ({ study, index, isHighlighted }: CaseStudyCardProp
                 </div>
               </div>
 
-              {/* Images/Screenshots */}
-              {study.images && study.images.length > 0 && (
+              {/* Embedded Artifacts */}
+              {study.artifacts && study.artifacts.length > 0 && (
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2 text-muted-foreground">
+                    <Image className="w-4 h-4" />
+                    <span className="text-sm font-medium">Evidence</span>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    {study.artifacts.map((artifact, i) => (
+                      <div key={i} className="rounded-lg border border-border overflow-hidden bg-muted/30">
+                        {artifact.type?.startsWith("image") || artifact.type === "dashboard" || artifact.type === "screenshot" || artifact.type === "presentation" ? (
+                          <img
+                            src={artifact.url}
+                            alt={artifact.caption}
+                            className="w-full h-48 object-cover"
+                            loading="lazy"
+                          />
+                        ) : (
+                          <a
+                            href={artifact.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex items-center gap-2 p-4 text-primary hover:underline"
+                          >
+                            <ExternalLink className="w-4 h-4" />
+                            {artifact.caption}
+                          </a>
+                        )}
+                        <p className="text-xs text-muted-foreground p-2">{artifact.caption}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Legacy Images/Screenshots */}
+              {study.images && study.images.length > 0 && (!study.artifacts || study.artifacts.length === 0) && (
                 <div className="space-y-2">
                   <div className="flex items-center gap-2 text-muted-foreground">
                     <Image className="w-4 h-4" />

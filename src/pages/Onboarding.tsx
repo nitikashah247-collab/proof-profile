@@ -192,7 +192,11 @@ const Onboarding = () => {
             interviewMessages,
             roleCategory,
             themeSettings,
-            artifactUrls: uploadedArtifacts.map(a => a.url),
+            artifacts: uploadedArtifacts.map(a => ({
+              url: a.url,
+              name: a.name,
+              type: a.type,
+            })),
           }),
         }
       );
@@ -377,115 +381,92 @@ const Onboarding = () => {
         is_visible: boolean;
       }> = [];
 
-      let order = 0;
+      // Use AI-determined section ordering
+      const sectionOrder: string[] = generated?.section_order || [
+        "hero", "impact_charts", "case_studies", "career_timeline", "skills_matrix",
+      ];
 
-      // Hero section with stats
-      sectionsToCreate.push({
-        user_id: user.id,
-        profile_id: profile.id,
-        section_type: "hero",
-        section_order: order++,
-        section_data: {
-          positioning_statement: generated?.positioning_statement || "",
-          hero_stats: generated?.hero_stats || null,
-          email: user.email || "",
-          linkedin_url: linkedinUrl || "",
-          themeBase: themeSettings?.themeBase || "light",
-        },
-        is_visible: true,
-      });
-
-      // Impact charts with visualization configs
-      if (generated?.visualizations?.length > 0 || generated?.impact_metrics?.length > 0) {
-        sectionsToCreate.push({
-          user_id: user.id,
-          profile_id: profile.id,
-          section_type: "impact_charts",
-          section_order: order++,
+      // Build a map of section type → section data
+      const sectionDataMap: Record<string, { section_data: any; condition: boolean }> = {
+        hero: {
           section_data: {
-            metrics: generated.impact_metrics || [],
-            visualizations: generated.visualizations || [],
+            positioning_statement: generated?.positioning_statement || "",
+            hero_stats: generated?.hero_stats || null,
+            email: user.email || "",
+            linkedin_url: linkedinUrl || "",
+            themeBase: themeSettings?.themeBase || "light",
           },
-          is_visible: true,
-        });
-      }
-
-      // Case studies section
-      if (generated?.case_studies?.length > 0) {
-        sectionsToCreate.push({
-          user_id: user.id,
-          profile_id: profile.id,
-          section_type: "case_studies",
-          section_order: order++,
-          section_data: {
-            case_studies: generated.case_studies,
-          },
-          is_visible: true,
-        });
-      }
-
-      // Career timeline section
-      sectionsToCreate.push({
-        user_id: user.id,
-        profile_id: profile.id,
-        section_type: "career_timeline",
-        section_order: order++,
-        section_data: {
-          timeline: generated?.career_timeline || [],
+          condition: true,
         },
-        is_visible: true,
-      });
-
-      // Skills matrix section
-      if (skillsToSave.length > 0) {
-        sectionsToCreate.push({
-          user_id: user.id,
-          profile_id: profile.id,
-          section_type: "skills_matrix",
-          section_order: order++,
+        impact_charts: {
+          section_data: {
+            metrics: generated?.impact_metrics || [],
+            visualizations: generated?.visualizations || [],
+          },
+          condition: (generated?.visualizations?.length > 0 || generated?.impact_metrics?.length > 0),
+        },
+        case_studies: {
+          section_data: {
+            case_studies: generated?.case_studies || [],
+          },
+          condition: generated?.case_studies?.length > 0,
+        },
+        career_timeline: {
+          section_data: {
+            timeline: generated?.career_timeline || [],
+          },
+          condition: true,
+        },
+        skills_matrix: {
           section_data: {
             skills_with_proof: generated?.skills_with_proof || [],
           },
-          is_visible: true,
-        });
+          condition: skillsToSave.length > 0,
+        },
+        languages: {
+          section_data: { languages: generated?.languages || [] },
+          condition: generated?.languages?.length > 0,
+        },
+        publications: {
+          section_data: { publications: generated?.publications || [] },
+          condition: generated?.publications?.length > 0,
+        },
+        work_style: {
+          section_data: { work_style: generated?.work_style || {} },
+          condition: generated?.work_style?.dimensions?.length > 0,
+        },
+      };
+
+      let order = 0;
+
+      // Add sections in AI-determined order first
+      for (const sType of sectionOrder) {
+        const entry = sectionDataMap[sType];
+        if (entry && entry.condition) {
+          sectionsToCreate.push({
+            user_id: user.id,
+            profile_id: profile.id,
+            section_type: sType,
+            section_order: order++,
+            section_data: entry.section_data,
+            is_visible: true,
+          });
+          delete sectionDataMap[sType];
+        }
       }
 
-      // Languages section
-      if (generated?.languages?.length > 0) {
-        sectionsToCreate.push({
-          user_id: user.id,
-          profile_id: profile.id,
-          section_type: "languages",
-          section_order: order++,
-          section_data: { languages: generated.languages },
-          is_visible: true,
-        });
-      }
-
-      // Publications section
-      if (generated?.publications?.length > 0) {
-        sectionsToCreate.push({
-          user_id: user.id,
-          profile_id: profile.id,
-          section_type: "publications",
-          section_order: order++,
-          section_data: { publications: generated.publications },
-          is_visible: true,
-        });
-      }
-
-      // Work style section
-      if (generated?.work_style?.dimensions?.length > 0) {
-        sectionsToCreate.push({
-          user_id: user.id,
-          profile_id: profile.id,
-          section_type: "work_style",
-          section_order: order++,
-          section_data: {
-            work_style: generated.work_style,
-          },
-          is_visible: true,
-        });
+      // Add remaining sections not in the AI order
+      for (const [sType, entry] of Object.entries(sectionDataMap)) {
+        if (entry.condition) {
+          sectionsToCreate.push({
+            user_id: user.id,
+            profile_id: profile.id,
+            section_type: sType,
+            section_order: order++,
+            section_data: entry.section_data,
+            is_visible: true,
+          });
+        }
       }
 
       // Insert all sections
