@@ -19,6 +19,7 @@ import {
 import { ResumeUpload, ResumeData } from "@/components/onboarding/ResumeUpload";
 import { PhotoUpload } from "@/components/onboarding/PhotoUpload";
 import { AdaptiveInterview, type InterviewResponse } from "@/components/onboarding/AdaptiveInterview";
+import { ArtifactUpload, type ArtifactFile } from "@/components/onboarding/ArtifactUpload";
 import {
   HoverCard,
   HoverCardContent,
@@ -99,6 +100,7 @@ const Onboarding = () => {
   const [selectedArchetype, setSelectedArchetype] = useState<string | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
   const [aiSuggesting, setAiSuggesting] = useState(false);
+  const [uploadedArtifacts, setUploadedArtifacts] = useState<ArtifactFile[]>([]);
   const [avatarUrl, setAvatarUrl] = useState<string>("");
   const [aiSuggestion, setAiSuggestion] = useState<{ archetype: string; reason: string } | null>(null);
   const navigate = useNavigate();
@@ -155,7 +157,41 @@ const Onboarding = () => {
 
   const handleInterviewComplete = (responses: InterviewResponse[]) => {
     setInterviewResponses(responses);
-    setStep(3);
+    setStep(3); // Go to artifact upload
+  };
+
+  const handleArtifactComplete = async (artifacts: ArtifactFile[]) => {
+    setUploadedArtifacts(artifacts);
+
+    // Save artifacts to database if any
+    if (artifacts.length > 0 && user) {
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("id")
+        .eq("user_id", user.id)
+        .maybeSingle();
+
+      if (profile) {
+        const artifactRows = artifacts.map((a) => ({
+          profile_id: profile.id,
+          user_id: user.id,
+          file_name: a.name,
+          file_type: a.type,
+          file_size: a.size,
+          file_url: a.url,
+        }));
+
+        const { error } = await supabase
+          .from("profile_artifacts")
+          .insert(artifactRows);
+
+        if (error) {
+          console.error("Failed to save artifacts:", error);
+        }
+      }
+    }
+
+    setStep(4); // Go to theme selection
   };
 
   const handleAiSuggest = useCallback(async () => {
@@ -253,6 +289,7 @@ const Onboarding = () => {
             interviewMessages,
             roleCategory,
             archetype: selectedArchetype,
+            artifactUrls: uploadedArtifacts.map(a => a.url),
           }),
         }
       );
@@ -620,7 +657,7 @@ const Onboarding = () => {
             </div>
 
             <div className="flex items-center gap-4">
-              {[1, 2, 3, 4].map((s) => (
+              {[1, 2, 3, 4, 5].map((s) => (
                 <div key={s} className="flex items-center gap-2">
                   <div
                     className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-all ${
@@ -631,9 +668,9 @@ const Onboarding = () => {
                   >
                     {step > s ? <Check className="w-4 h-4" /> : s}
                   </div>
-                  {s < 4 && (
+                  {s < 5 && (
                     <div
-                      className={`w-12 h-0.5 ${step > s ? "bg-primary" : "bg-muted"}`}
+                      className={`w-8 h-0.5 ${step > s ? "bg-primary" : "bg-muted"}`}
                     />
                   )}
                 </div>
@@ -836,8 +873,25 @@ const Onboarding = () => {
               </motion.div>
             )}
 
-            {/* Step 3: Archetype Selection */}
+            {/* Step 3: Artifact Upload */}
             {step === 3 && (
+              <motion.div
+                key="step3"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.3 }}
+              >
+                <ArtifactUpload
+                  userId={user?.id || ""}
+                  profileId=""
+                  onComplete={handleArtifactComplete}
+                />
+              </motion.div>
+            )}
+
+            {/* Step 4: Archetype Selection */}
+            {step === 4 && (
               <motion.div
                 key="step3"
                 initial={{ opacity: 0, y: 20 }}
@@ -965,7 +1019,7 @@ const Onboarding = () => {
 
                 <Button
                   size="xl"
-                  onClick={() => setStep(4)}
+                  onClick={() => setStep(5)}
                   disabled={!selectedArchetype}
                   className="group"
                 >
@@ -975,10 +1029,10 @@ const Onboarding = () => {
               </motion.div>
             )}
 
-            {/* Step 4: Generate */}
-            {step === 4 && (
+            {/* Step 5: Generate */}
+            {step === 5 && (
               <motion.div
-                key="step4"
+                key="step5"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -20 }}
@@ -1036,6 +1090,19 @@ const Onboarding = () => {
                           </p>
                         </div>
                       </div>
+                      {uploadedArtifacts.length > 0 && (
+                        <div className="flex items-center gap-3 p-4 rounded-xl bg-card border border-border">
+                          <div className="w-10 h-10 rounded-lg bg-proof-success/20 flex items-center justify-center">
+                            <Check className="w-5 h-5 text-proof-success" />
+                          </div>
+                          <div className="text-left">
+                            <p className="font-medium">{uploadedArtifacts.length} artifact{uploadedArtifacts.length > 1 ? "s" : ""} uploaded</p>
+                            <p className="text-sm text-muted-foreground">
+                              Will be analyzed and embedded in your profile
+                            </p>
+                          </div>
+                        </div>
+                      )}
                     </div>
 
                     <Button
