@@ -1,13 +1,11 @@
 import { useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
 import { useNavigate } from "react-router-dom";
 import {
   FileText,
   Linkedin,
   Sparkles,
-  Send,
   Check,
   ArrowRight,
   User,
@@ -19,8 +17,8 @@ import {
   Loader2,
 } from "lucide-react";
 import { ResumeUpload, ResumeData } from "@/components/onboarding/ResumeUpload";
-import { VoiceMemo } from "@/components/onboarding/VoiceMemo";
 import { PhotoUpload } from "@/components/onboarding/PhotoUpload";
+import { AdaptiveInterview, type InterviewResponse } from "@/components/onboarding/AdaptiveInterview";
 import {
   HoverCard,
   HoverCardContent,
@@ -33,10 +31,7 @@ import archetypeSalesImg from "@/assets/archetype-sales.jpg";
 import archetypeOperationsImg from "@/assets/archetype-operations.jpg";
 import {
   detectRoleCategory,
-  getQuestionsForRole,
-  findFollowUp,
   type RoleCategory,
-  type InterviewQuestion,
 } from "@/lib/interviewQuestions";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
@@ -99,12 +94,8 @@ const Onboarding = () => {
   const [linkedinComplete, setLinkedinComplete] = useState(false);
   const [linkedinUrl, setLinkedinUrl] = useState("");
   const [linkedinError, setLinkedinError] = useState("");
-  const [chatMessages, setChatMessages] = useState<Array<{ role: "ai" | "user"; content: string }>>([]);
-  const [currentInput, setCurrentInput] = useState("");
-  const [questionIndex, setQuestionIndex] = useState(0);
   const [roleCategory, setRoleCategory] = useState<RoleCategory>("general");
-  const [questions, setQuestions] = useState<InterviewQuestion[]>([]);
-  const [pendingFollowUp, setPendingFollowUp] = useState(false);
+  const [interviewResponses, setInterviewResponses] = useState<InterviewResponse[]>([]);
   const [selectedArchetype, setSelectedArchetype] = useState<string | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
   const [aiSuggesting, setAiSuggesting] = useState(false);
@@ -112,33 +103,8 @@ const Onboarding = () => {
   const [aiSuggestion, setAiSuggestion] = useState<{ archetype: string; reason: string } | null>(null);
   const navigate = useNavigate();
 
-  const buildInitialMessages = (data: ResumeData | null, role: RoleCategory, roleQuestions: InterviewQuestion[]): Array<{ role: "ai" | "user"; content: string }> => {
-    const roleName = role === "general" ? "professional" : role;
-    
-    if (data && data.full_name) {
-      const rolesSummary = data.roles?.slice(0, 2).map((r) => `${r.title} at ${r.company}`).join(", ") || "your experience";
-      return [
-        {
-          role: "ai",
-          content: `Great, I've analysed your resume, ${data.full_name}! I can see you've worked as ${rolesSummary}. I've tailored my questions for your ${roleName} background — let's surface the stories that make you stand out.`,
-        },
-        { role: "ai", content: roleQuestions[0].question },
-      ];
-    }
-    return [
-      { role: "ai", content: `Hi! I'm here to help surface the stories and achievements that make you stand out. I'll ask questions tailored for ${roleName} professionals. Let's start!` },
-      { role: "ai", content: roleQuestions[0].question },
-    ];
-  };
-
-
-
   const handleStartFresh = () => {
-    const roleQuestions = getQuestionsForRole("general");
-    setQuestions(roleQuestions);
     setRoleCategory("general");
-    const initialMessages = buildInitialMessages(null, "general", roleQuestions);
-    setChatMessages(initialMessages);
     setStep(2);
   };
 
@@ -156,7 +122,6 @@ const Onboarding = () => {
 
   const handleProceedToUploads = () => {
     if (selectedMethods.size === 0) return;
-    // Show the first selected upload
     if (selectedMethods.has("resume")) {
       setActiveUpload("resume");
     } else if (selectedMethods.has("linkedin")) {
@@ -168,17 +133,11 @@ const Onboarding = () => {
     setResumeData(data);
     setResumeFileUrl(fileUrl);
     setResumeComplete(true);
-    // If LinkedIn is also selected and not done, show that next
     if (selectedMethods.has("linkedin") && !linkedinComplete) {
       setActiveUpload("linkedin");
     } else {
-      // All uploads done, proceed to interview
       const detectedRole = detectRoleCategory(data);
       setRoleCategory(detectedRole);
-      const roleQuestions = getQuestionsForRole(detectedRole);
-      setQuestions(roleQuestions);
-      const initialMessages = buildInitialMessages(data, detectedRole, roleQuestions);
-      setChatMessages(initialMessages);
       setStep(2);
     }
   };
@@ -188,64 +147,15 @@ const Onboarding = () => {
     if (resumeData) {
       const detectedRole = detectRoleCategory(resumeData);
       setRoleCategory(detectedRole);
-      const roleQuestions = getQuestionsForRole(detectedRole);
-      setQuestions(roleQuestions);
-      const initialMessages = buildInitialMessages(resumeData, detectedRole, roleQuestions);
-      setChatMessages(initialMessages);
       setStep(2);
     } else {
       handleStartFresh();
     }
   };
 
-  const handleSendMessage = (messageText?: string) => {
-    const text = messageText || currentInput;
-    if (!text.trim()) return;
-
-    setChatMessages((prev) => [...prev, { role: "user", content: text }]);
-    setCurrentInput("");
-
-    setTimeout(() => {
-      const currentQuestion = questions[questionIndex];
-      
-      // Check for adaptive follow-up based on user response
-      if (!pendingFollowUp && currentQuestion) {
-        const followUp = findFollowUp(currentQuestion, text);
-        if (followUp) {
-          setPendingFollowUp(true);
-          setChatMessages((prev) => [
-            ...prev,
-            { role: "ai", content: "That's fascinating — let me dig deeper on that..." },
-            { role: "ai", content: followUp },
-          ]);
-          return;
-        }
-      }
-
-      // Reset follow-up state
-      setPendingFollowUp(false);
-
-      if (questionIndex < questions.length - 1) {
-        const nextIdx = questionIndex + 1;
-        setChatMessages((prev) => [
-          ...prev,
-          { role: "ai", content: "Great insight! Let me ask you something else..." },
-          { role: "ai", content: questions[nextIdx].question },
-        ]);
-        setQuestionIndex(nextIdx);
-      } else {
-        setChatMessages((prev) => [
-          ...prev,
-          { role: "ai", content: "Brilliant! I've got everything I need. Let's move on to choosing your profile style." },
-        ]);
-        setTimeout(() => setStep(3), 1500);
-      }
-    }, 800);
-  };
-
-  const handleVoiceTranscript = (text: string) => {
-    // Put transcript in input for user to review/edit before sending
-    setCurrentInput(text);
+  const handleInterviewComplete = (responses: InterviewResponse[]) => {
+    setInterviewResponses(responses);
+    setStep(3);
   };
 
   const handleAiSuggest = useCallback(async () => {
@@ -321,8 +231,15 @@ const Onboarding = () => {
         profile = newProfile;
       }
 
-      // 2. Call generate-profile edge function with full context
-      console.log("Calling generate-profile with resume data and", chatMessages.length, "interview messages");
+      // 2. Convert interview responses to chat-like format for generate-profile
+      const interviewMessages = interviewResponses
+        .filter(r => !r.skipped)
+        .flatMap(r => [
+          { role: "ai" as const, content: r.questionText },
+          { role: "user" as const, content: r.responseText },
+        ]);
+
+      console.log("Calling generate-profile with resume data and", interviewMessages.length, "interview messages");
       const genResponse = await fetch(
         `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/generate-profile`,
         {
@@ -333,7 +250,7 @@ const Onboarding = () => {
           },
           body: JSON.stringify({
             resumeData,
-            interviewMessages: chatMessages,
+            interviewMessages,
             roleCategory,
             archetype: selectedArchetype,
           }),
@@ -632,18 +549,42 @@ const Onboarding = () => {
         else console.log("Created", sectionsToCreate.length, "profile sections");
       }
 
-      // 10. Save interview conversation
-      if (chatMessages.length > 0) {
+      // 10. Save interview responses
+      if (interviewResponses.length > 0) {
+        const answeredResponses = interviewResponses.filter(r => !r.skipped);
+        const chatFormatMessages = answeredResponses.flatMap(r => [
+          { role: "ai", content: r.questionText },
+          { role: "user", content: r.responseText },
+        ]);
+
         const { error: convoError } = await supabase
           .from("onboarding_conversations")
           .insert([{
             user_id: user.id,
-            messages: JSON.parse(JSON.stringify(chatMessages)),
+            messages: JSON.parse(JSON.stringify(chatFormatMessages)),
             status: "completed",
             extracted_data: resumeData ? JSON.parse(JSON.stringify(resumeData)) : null,
           }]);
 
         if (convoError) console.error("Conversation save error:", convoError);
+
+        // Also save individual responses to interview_responses table
+        const responseRows = interviewResponses.map(r => ({
+          user_id: user.id,
+          profile_id: profile.id,
+          question_id: r.questionId,
+          question_text: r.questionText,
+          question_category: r.questionCategory,
+          response_text: r.responseText || null,
+          response_method: r.responseMethod,
+          skipped: r.skipped,
+        }));
+
+        const { error: respError } = await supabase
+          .from("interview_responses")
+          .insert(responseRows);
+
+        if (respError) console.error("Interview responses save error:", respError);
       }
 
       setIsGenerating(false);
@@ -863,10 +804,6 @@ const Onboarding = () => {
                           if (resumeData) {
                             const detectedRole = detectRoleCategory(resumeData);
                             setRoleCategory(detectedRole);
-                            const roleQuestions = getQuestionsForRole(detectedRole);
-                            setQuestions(roleQuestions);
-                            const initialMessages = buildInitialMessages(resumeData, detectedRole, roleQuestions);
-                            setChatMessages(initialMessages);
                             setStep(2);
                           } else {
                             handleStartFresh();
@@ -882,7 +819,7 @@ const Onboarding = () => {
               </motion.div>
             )}
 
-            {/* Step 2: AI Chat */}
+            {/* Step 2: Adaptive AI Interview */}
             {step === 2 && (
               <motion.div
                 key="step2"
@@ -890,108 +827,12 @@ const Onboarding = () => {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -20 }}
                 transition={{ duration: 0.3 }}
-                className="max-w-2xl mx-auto"
               >
-                <div className="text-center mb-8">
-                  <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-medium mb-4">
-                    <Sparkles className="w-4 h-4" />
-                    AI Interview
-                    {questionIndex > 0 && (
-                      <span className="ml-1 text-xs opacity-75">
-                        · {questionIndex} of {questions.length} answered
-                      </span>
-                    )}
-                  </div>
-                  <h1 className="text-3xl font-bold mb-2">
-                    Let's surface your best stories
-                  </h1>
-                  <p className="text-muted-foreground">
-                    {resumeData
-                      ? `We've tailored questions for your ${roleCategory === "general" ? "professional" : roleCategory} background. Answer as many as you'd like.`
-                      : "Answer a few questions to help me understand your impact"}
-                  </p>
-                </div>
-
-                {/* Chat Window */}
-                <div className="rounded-2xl border border-border bg-card overflow-hidden">
-                  <div className="h-[400px] overflow-y-auto p-6 space-y-4">
-                    {chatMessages.map((message, index) => (
-                      <motion.div
-                        key={index}
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: index * 0.1 }}
-                        className={`flex ${
-                          message.role === "user" ? "justify-end" : "justify-start"
-                        }`}
-                      >
-                        <div
-                          className={`max-w-[80%] p-4 rounded-2xl ${
-                            message.role === "user"
-                              ? "bg-primary text-primary-foreground rounded-br-md"
-                              : "bg-muted rounded-bl-md"
-                          }`}
-                        >
-                          {message.content}
-                        </div>
-                      </motion.div>
-                    ))}
-                  </div>
-
-                  <div className="border-t border-border p-4 space-y-3">
-                    <div className="flex items-center justify-between">
-                      <p className="text-xs text-muted-foreground">
-                        {questionIndex + 1} of {questions.length} questions answered
-                      </p>
-                      <p className="text-xs text-muted-foreground text-center flex-1">
-                        💬 Type your answer or 🎤 record a voice memo (faster and easier!)
-                      </p>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <Textarea
-                        placeholder="Type your answer..."
-                        value={currentInput}
-                        onChange={(e) => setCurrentInput(e.target.value)}
-                        onKeyDown={(e) => {
-                          if (e.key === "Enter" && !e.shiftKey) {
-                            e.preventDefault();
-                            handleSendMessage();
-                          }
-                        }}
-                        className="flex-1 resize-none bg-muted/50 border-0 focus-visible:ring-1"
-                        rows={2}
-                      />
-                      <Button
-                        size="icon"
-                        onClick={() => handleSendMessage()}
-                        disabled={!currentInput.trim()}
-                      >
-                        <Send className="w-5 h-5" />
-                      </Button>
-                    </div>
-                    <VoiceMemo onTranscript={handleVoiceTranscript} />
-                  </div>
-                </div>
-
-                <div className="flex items-center justify-center gap-4 mt-6">
-                  {questionIndex > 0 && (
-                    <Button
-                      onClick={() => setStep(3)}
-                      className="group"
-                    >
-                      Continue with {questionIndex + 1} {questionIndex === 1 ? "answer" : "answers"}
-                      <ArrowRight className="w-4 h-4 ml-2 transition-transform group-hover:translate-x-1" />
-                    </Button>
-                  )}
-                  <Button
-                    variant="ghost"
-                    onClick={() => setStep(3)}
-                    className="text-muted-foreground"
-                  >
-                    {questionIndex > 0 ? "Skip remaining" : "Skip for now"}
-                    <ArrowRight className="w-4 h-4 ml-2" />
-                  </Button>
-                </div>
+                <AdaptiveInterview
+                  resumeData={resumeData}
+                  roleCategory={roleCategory}
+                  onComplete={handleInterviewComplete}
+                />
               </motion.div>
             )}
 
