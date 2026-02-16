@@ -258,6 +258,7 @@ const PublicProfile = () => {
         approach: cs.approach || "",
         outcome: cs.results || "",
         skills: cs.skills_used || cs.skills || [],
+        artifacts: cs.artifacts || [],
       }))
     : caseStudyCards;
 
