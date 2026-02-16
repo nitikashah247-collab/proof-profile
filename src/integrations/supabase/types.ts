@@ -428,6 +428,9 @@ export type Database = {
       profiles: {
         Row: {
           avatar_url: string | null
+          banner_type: string | null
+          banner_url: string | null
+          banner_value: string | null
           bio: string | null
           created_at: string
           full_name: string
@@ -441,12 +444,18 @@ export type Database = {
           slug: string | null
           stripe_customer_id: string | null
           stripe_subscription_id: string | null
+          theme_base: string | null
+          theme_primary_color: string | null
+          theme_secondary_color: string | null
           updated_at: string
           user_id: string
           years_experience: number | null
         }
         Insert: {
           avatar_url?: string | null
+          banner_type?: string | null
+          banner_url?: string | null
+          banner_value?: string | null
           bio?: string | null
           created_at?: string
           full_name?: string
@@ -460,12 +469,18 @@ export type Database = {
           slug?: string | null
           stripe_customer_id?: string | null
           stripe_subscription_id?: string | null
+          theme_base?: string | null
+          theme_primary_color?: string | null
+          theme_secondary_color?: string | null
           updated_at?: string
           user_id: string
           years_experience?: number | null
         }
         Update: {
           avatar_url?: string | null
+          banner_type?: string | null
+          banner_url?: string | null
+          banner_value?: string | null
           bio?: string | null
           created_at?: string
           full_name?: string
@@ -479,6 +494,9 @@ export type Database = {
           slug?: string | null
           stripe_customer_id?: string | null
           stripe_subscription_id?: string | null
+          theme_base?: string | null
+          theme_primary_color?: string | null
+          theme_secondary_color?: string | null
           updated_at?: string
           user_id?: string
           years_experience?: number | null
