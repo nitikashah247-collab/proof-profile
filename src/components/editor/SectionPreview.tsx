@@ -71,7 +71,10 @@ const PreviewCard = ({
             <p className="text-xs text-primary mt-1 font-mono">
               {data.hero_stats.years_experience && `${data.hero_stats.years_experience}+ years`}
               {data.hero_stats.companies_worked && ` · ${data.hero_stats.companies_worked} companies`}
-              {data.hero_stats.key_metric && ` · ${data.hero_stats.key_metric}`}
+              {data.hero_stats.key_metric && typeof data.hero_stats.key_metric === 'object'
+                ? ` · ${data.hero_stats.key_metric.value || ''}${data.hero_stats.key_metric.suffix || ''} ${data.hero_stats.key_metric.label || ''}`
+                : data.hero_stats.key_metric && ` · ${data.hero_stats.key_metric}`
+              }
             </p>
           )}
         </div>
