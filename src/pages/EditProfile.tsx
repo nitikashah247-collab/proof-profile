@@ -14,7 +14,6 @@ import { SectionPreview } from "@/components/editor/SectionPreview";
 import { CareerCoachDrawer } from "@/components/editor/CareerCoachDrawer";
 import { ThemeCustomization, type ThemeSettings } from "@/components/onboarding/ThemeCustomization";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
-import { supabase as supabaseClient } from "@/integrations/supabase/client";
 
 const EditProfile = () => {
   const { user } = useAuth();
@@ -183,7 +182,7 @@ const EditProfile = () => {
           <ThemeCustomization
             userId={user?.id || ""}
             onComplete={async (settings: ThemeSettings) => {
-              await supabaseClient
+              await supabase
                 .from("profiles")
                 .update({
                   theme_base: settings.themeBase,
