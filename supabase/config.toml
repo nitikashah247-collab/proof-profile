@@ -20,3 +20,6 @@ verify_jwt = false
 
 [functions.analyze-artifact]
 verify_jwt = false
+
+[functions.interview-respond]
+verify_jwt = false
