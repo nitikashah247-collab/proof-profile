@@ -60,6 +60,13 @@ Return ONLY a valid JSON object (no markdown fences) with these fields:
       ]
     }
   ],
+  "proofGallery": [
+    {
+      "url": "string - URL of artifact not matched to any case study",
+      "caption": "string - AI-generated description of the artifact",
+      "fileType": "string - png|jpg|pdf|pptx"
+    }
+  ],
   "skills_with_proof": [
     {
       "name": "string - skill name (UNIQUE - never repeat a skill name)",
@@ -113,6 +120,29 @@ Return ONLY a valid JSON object (no markdown fences) with these fields:
   "section_order": ["string - ordered list of section types based on user's strengths. Choose from: hero, impact_charts, case_studies, career_timeline, skills_matrix, work_style, languages, publications"]
 }
 
+STRICT DATA ACCURACY RULES — THESE ARE CRITICAL AND MUST NEVER BE VIOLATED:
+
+1. METRICS (hero_stats and impact_metrics): Only display metrics when the EXACT number appears in the user's resume text or interview answers. Examples:
+   - Resume says "grew revenue 62% year on year" → Show "62% YoY Revenue Growth" ✅
+   - Resume says "led a team" but no number → Do NOT show "8 People Managed" ❌
+   - Interview answer mentions "25+ campaigns launched" → Show "25+ Campaigns Launched" ✅
+   - Nothing about projects → Do NOT show "25 Projects Led" ❌
+   - For hero_stats: set projects_led, people_managed to 0 if no explicit number is found in the resume/interview. Only use numbers the user actually stated.
+
+2. CHARTS (visualizations): Only generate a chart when you have 2 or more EXPLICIT data points from the resume or interview. Rules:
+   - 1 data point (e.g., "62% growth") → Display as a metric card via impact_metrics, NEVER a chart
+   - 2 data points (e.g., "grew from $2M to $5M") → Simple comparison bar chart with exactly those 2 values
+   - 3+ data points (e.g., "2019: $2M, 2020: $5M, 2021: $12M") → Line or bar chart with exactly those values
+   - NEVER invent intermediate data points, quarterly breakdowns, or trend lines
+   - NEVER generate a multi-point chart from a single percentage or number
+   - If no chart-worthy data exists, return an EMPTY visualizations array
+
+3. IMPACT STORIES (case_studies): Never state specific numbers, team sizes, budgets, or percentages that the user did not explicitly provide. Use qualitative language instead:
+   - ✅ "Led a cross-functional team to deliver a major product launch"
+   - ❌ "Led a team of 8 to deliver 25 projects worth $2.5M"
+
+4. For each metric you include, you MUST be able to point to the exact quote from the resume or interview that contains that number. If you cannot, do not include it.
+
 CRITICAL RULES FOR SKILLS:
 - Each skill name MUST be unique — NEVER include duplicates
 - Classify each skill into exactly one of two categories:
@@ -122,16 +152,6 @@ CRITICAL RULES FOR SKILLS:
 - Merge semantically similar skills
 - Limit to 8-12 total skills, balanced between the two categories
 
-CRITICAL RULES FOR VISUALIZATIONS:
-- Scan ALL achievements for ANY quantifiable data: percentages, dollar amounts, team sizes, time periods, ratios
-- For EVERY percentage increase/decrease, create a line_chart showing trajectory (generate 6-12 plausible data points)
-- For EVERY before/after comparison, create a bar_chart
-- For portfolio/segment breakdowns, create a pie_chart
-- Generate at least 3 visualizations, up to 6
-- Use theme colors: primary ${themePrimaryColor}, secondary ${themeSecondaryColor}
-- THE GOLDEN RULE: If it's a number, visualize it
-- NEVER return an empty visualizations array if any metrics exist
-
 CRITICAL RULES FOR CASE STUDIES:
 - Generate EXACTLY 3-5 case studies — NO MORE THAN 5
 - Select the MOST impressive stories based on: quantifiable metrics, recency, seniority
@@ -139,14 +159,14 @@ CRITICAL RULES FOR CASE STUDIES:
 - Make them specific and story-driven using interview responses for context
 - Quality over quantity — 3 excellent stories beats 12 mediocre ones
 
-CRITICAL RULES FOR ARTIFACT EMBEDDING:
-- Match uploaded artifacts to relevant case studies based on their descriptions
-- Dashboard artifacts → Embed in the most relevant Impact Story about metrics/data
-- Presentation artifacts → Embed in Impact Stories about launches/strategies
-- Certificate artifacts → If uploaded, ensure there's a mention in the profile
-- Email/praise artifacts → Reference as supporting evidence
-- ONLY use artifact URLs provided in the ARTIFACTS section — NEVER invent artifact URLs
-- If no artifacts match a case study, leave the artifacts array empty for that story
+ARTIFACT EMBEDDING RULES:
+- You will receive a list of user-uploaded artifacts with their Vision analysis descriptions and storage URLs.
+- For each Impact Story (case study) you generate, check if any artifact is relevant to that story based on the Vision description.
+- If an artifact matches an Impact Story, include it in that story's "artifacts" array with the EXACT url from the ARTIFACTS section.
+- Any artifacts that don't match a specific story MUST go into the top-level "proofGallery" array.
+- Every uploaded artifact MUST appear somewhere — either inline in a story OR in the proofGallery. Never drop an artifact.
+- ONLY use artifact URLs provided in the ARTIFACTS section — NEVER invent artifact URLs.
+- If no artifacts were uploaded, leave artifacts arrays empty and proofGallery empty.
 
 CRITICAL RULES FOR SECTION ORDERING:
 - Analyze the user's strengths from resume and interview data
@@ -164,6 +184,7 @@ CRITICAL RULES FOR CAREER TIMELINE:
 - Each entry = Company | Role Title | Start Year - End Year
 - Maximum 6 entries — focus on most significant career moves
 - Include 3-4 key achievements per role
+- The "role" field MUST contain the actual job title (e.g., "Product Marketing Lead"), not just the company name
 
 CRITICAL RULES FOR WORK STYLE:
 - Infer 4 work style dimensions from interview responses
@@ -332,8 +353,9 @@ function buildContext(
 
   if (artifactDescriptions.length > 0) {
     context += `\n## ARTIFACTS UPLOADED (Proof of Work)\n`;
+    context += `IMPORTANT: Every artifact listed below MUST appear in the output — either embedded in a case study's artifacts array, or in the top-level proofGallery array. Do NOT drop any.\n`;
     for (const a of artifactDescriptions) {
-      context += `- ${a.category}: ${a.description}\n  URL: ${a.url}\n`;
+      context += `- ${a.category}: ${a.description}\n  URL: ${a.url}\n  Filename: ${a.name}\n`;
       if (a.metrics?.length > 0) {
         context += `  Visible metrics: ${a.metrics.join(", ")}\n`;
       }
@@ -461,12 +483,13 @@ serve(async (req) => {
         positioning_statement: "",
         hero_stats: {
           years_experience: resumeData?.years_experience || 5,
-          projects_led: 20,
-          people_managed: 10,
+          projects_led: 0,
+          people_managed: 0,
           key_metric: { value: 0, label: "Projects", suffix: "+" },
         },
         visualizations: [],
         case_studies: [],
+        proofGallery: [],
         skills_with_proof: (resumeData?.skills || []).map((s: any) => ({
           name: s.name,
           category: s.category || "General",
@@ -501,6 +524,39 @@ serve(async (req) => {
       }
     }
 
+    // Post-process: validate proofGallery URLs
+    if (generatedProfile.proofGallery?.length > 0) {
+      generatedProfile.proofGallery = generatedProfile.proofGallery.filter((a: any) => validArtifactUrls.has(a.url));
+    }
+
+    // Post-process: ensure ALL artifacts appear somewhere
+    if (normalizedArtifacts.length > 0) {
+      const usedUrls = new Set<string>();
+      // Collect URLs used in case study artifacts
+      for (const cs of generatedProfile.case_studies || []) {
+        for (const a of cs.artifacts || []) {
+          usedUrls.add(a.url);
+        }
+      }
+      // Collect URLs used in proofGallery
+      for (const a of generatedProfile.proofGallery || []) {
+        usedUrls.add(a.url);
+      }
+      // Add missing artifacts to proofGallery
+      if (!generatedProfile.proofGallery) generatedProfile.proofGallery = [];
+      for (const artifact of normalizedArtifacts) {
+        if (!usedUrls.has(artifact.url)) {
+          const desc = artifactDescriptions.find((d: any) => d.url === artifact.url);
+          const ext = artifact.name?.split(".").pop()?.toLowerCase() || "png";
+          generatedProfile.proofGallery.push({
+            url: artifact.url,
+            caption: desc?.description || `Professional artifact: ${artifact.name}`,
+            fileType: ext,
+          });
+        }
+      }
+    }
+
     // Post-process: limit career timeline to 6 max, deduplicate
     if (generatedProfile.career_timeline?.length > 0) {
       const seen = new Set<string>();
@@ -527,6 +583,13 @@ serve(async (req) => {
         }
       }
       generatedProfile.skills_with_proof = Array.from(seen.values());
+    }
+
+    // Post-process: remove visualizations with fewer than 2 data points
+    if (generatedProfile.visualizations?.length > 0) {
+      generatedProfile.visualizations = generatedProfile.visualizations.filter((viz: any) => {
+        return viz.data && viz.data.length >= 2;
+      });
     }
 
     // Ensure section_order exists

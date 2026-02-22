@@ -12,6 +12,7 @@ import {
   Loader2,
   MessageSquare,
   CheckCircle2,
+  Bot,
 } from "lucide-react";
 import { ResumeData } from "@/components/onboarding/ResumeUpload";
 import { toast } from "@/hooks/use-toast";
@@ -48,6 +49,17 @@ const categoryLabels: Record<string, string> = {
   proof: "Proof & Artifacts",
 };
 
+const acknowledgments = [
+  "Great insight — that really helps paint the picture.",
+  "Love that example. Let's keep going.",
+  "That's the kind of detail that makes a profile stand out.",
+  "Really interesting — let's explore another angle.",
+  "Thanks for sharing that. Here's the next one.",
+  "Good stuff — noted!",
+  "That adds great context. Moving on...",
+  "Brilliant — this is what makes profiles come alive.",
+];
+
 export const AdaptiveInterview = ({
   resumeData,
   roleCategory,
@@ -59,6 +71,9 @@ export const AdaptiveInterview = ({
   const [currentInput, setCurrentInput] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [loadError, setLoadError] = useState(false);
+  const [showAck, setShowAck] = useState(false);
+  const [currentAck, setCurrentAck] = useState("");
+  const lastAckRef = useRef(-1);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const answeredCount = responses.filter((r) => !r.skipped).length;
@@ -67,6 +82,15 @@ export const AdaptiveInterview = ({
   const canFinish = answeredCount >= MIN_ANSWERS;
   const isLastQuestion = currentIndex >= totalQuestions - 1;
   const currentQuestion = questions[currentIndex];
+
+  const getRandomAck = useCallback(() => {
+    let idx: number;
+    do {
+      idx = Math.floor(Math.random() * acknowledgments.length);
+    } while (idx === lastAckRef.current && acknowledgments.length > 1);
+    lastAckRef.current = idx;
+    return acknowledgments[idx];
+  }, []);
 
   // Fetch adaptive questions from edge function
   useEffect(() => {
@@ -101,7 +125,6 @@ export const AdaptiveInterview = ({
           description: "Using standard questions instead.",
           variant: "destructive",
         });
-        // Will retry or use fallback from the edge function
       } finally {
         setIsLoading(false);
       }
@@ -109,6 +132,10 @@ export const AdaptiveInterview = ({
 
     fetchQuestions();
   }, [resumeData, roleCategory]);
+
+  const advanceToNextQuestion = useCallback(() => {
+    setCurrentIndex((prev) => prev + 1);
+  }, []);
 
   const submitAnswer = useCallback(
     (text: string, method: "voice" | "text" = "text") => {
@@ -123,16 +150,26 @@ export const AdaptiveInterview = ({
         skipped: false,
       };
 
-      setResponses((prev) => [...prev, response]);
+      const newResponses = [...responses, response];
+      setResponses(newResponses);
       setCurrentInput("");
 
       if (isLastQuestion) {
-        onComplete([...responses, response]);
-      } else {
-        setCurrentIndex((prev) => prev + 1);
+        onComplete(newResponses);
+        return;
       }
+
+      // Show acknowledgment before advancing
+      setCurrentAck(getRandomAck());
+      setShowAck(true);
+      setTimeout(() => {
+        setShowAck(false);
+        setTimeout(() => {
+          advanceToNextQuestion();
+        }, 300);
+      }, 2500);
     },
-    [currentQuestion, isLastQuestion, onComplete, responses]
+    [currentQuestion, isLastQuestion, onComplete, responses, getRandomAck, advanceToNextQuestion]
   );
 
   const handleSkip = useCallback(() => {
@@ -147,15 +184,16 @@ export const AdaptiveInterview = ({
       skipped: true,
     };
 
-    setResponses((prev) => [...prev, response]);
+    const newResponses = [...responses, response];
+    setResponses(newResponses);
 
     if (isLastQuestion) {
-      const allResponses = [...responses, response];
-      const answered = allResponses.filter((r) => !r.skipped).length;
+      const answered = newResponses.filter((r) => !r.skipped).length;
       if (answered >= MIN_ANSWERS) {
-        onComplete(allResponses);
+        onComplete(newResponses);
       }
     } else {
+      // Skip goes straight to next — no acknowledgment
       setCurrentIndex((prev) => prev + 1);
     }
   }, [currentQuestion, isLastQuestion, onComplete, responses]);
@@ -177,10 +215,10 @@ export const AdaptiveInterview = ({
 
   // Focus textarea on question change
   useEffect(() => {
-    if (!isLoading && textareaRef.current) {
+    if (!isLoading && !showAck && textareaRef.current) {
       setTimeout(() => textareaRef.current?.focus(), 300);
     }
-  }, [currentIndex, isLoading]);
+  }, [currentIndex, isLoading, showAck]);
 
   if (isLoading) {
     return (
@@ -257,88 +295,112 @@ export const AdaptiveInterview = ({
         <Progress value={progress} className="h-2" />
       </div>
 
-      {/* Question Card */}
-      <AnimatePresence mode="wait">
-        <motion.div
-          key={currentIndex}
-          initial={{ opacity: 0, x: 30 }}
-          animate={{ opacity: 1, x: 0 }}
-          exit={{ opacity: 0, x: -30 }}
-          transition={{ duration: 0.25 }}
-          className="rounded-2xl border border-border bg-card overflow-hidden"
-        >
-          {/* Category badge + question */}
-          <div className="p-6 pb-4">
-            <span className="inline-block text-xs font-medium px-2.5 py-1 rounded-full bg-primary/10 text-primary mb-4">
-              {categoryLabels[currentQuestion.category] || currentQuestion.category}
-            </span>
-            <p className="text-lg font-medium leading-relaxed">
-              {currentQuestion.text}
-            </p>
-          </div>
-
-          {/* Input area */}
-          <div className="border-t border-border p-4 space-y-3">
-            <div className="flex items-center gap-2 text-xs text-muted-foreground mb-1">
-              <MessageSquare className="w-3.5 h-3.5" />
-              <span>Type your answer or record a voice memo</span>
+      {/* Acknowledgment Bubble */}
+      <AnimatePresence>
+        {showAck && (
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.3 }}
+            className="flex items-start gap-3 mb-6"
+          >
+            <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0 mt-0.5">
+              <Bot className="w-4 h-4 text-primary" />
             </div>
-
-            <div className="flex items-start gap-3">
-              <Textarea
-                ref={textareaRef}
-                placeholder="Share your story here..."
-                value={currentInput}
-                onChange={(e) => setCurrentInput(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" && !e.shiftKey) {
-                    e.preventDefault();
-                    handleSend();
-                  }
-                }}
-                className="flex-1 resize-none bg-muted/50 border-0 focus-visible:ring-1 min-h-[100px]"
-                rows={4}
-              />
-              <Button
-                size="icon"
-                onClick={handleSend}
-                disabled={!currentInput.trim()}
-                className="mt-1 shrink-0"
-              >
-                <Send className="w-5 h-5" />
-              </Button>
+            <div className="px-4 py-3 rounded-2xl rounded-tl-none bg-muted border border-border">
+              <p className="text-sm text-foreground">{currentAck}</p>
             </div>
-
-            <VoiceMemo onTranscript={handleVoiceTranscript} />
-          </div>
-        </motion.div>
+          </motion.div>
+        )}
       </AnimatePresence>
 
+      {/* Question Card */}
+      {!showAck && (
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={currentIndex}
+            initial={{ opacity: 0, x: 30 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -30 }}
+            transition={{ duration: 0.25 }}
+            className="rounded-2xl border border-border bg-card overflow-hidden"
+          >
+            {/* Category badge + question */}
+            <div className="p-6 pb-4">
+              <span className="inline-block text-xs font-medium px-2.5 py-1 rounded-full bg-primary/10 text-primary mb-4">
+                {categoryLabels[currentQuestion.category] || currentQuestion.category}
+              </span>
+              <p className="text-lg font-medium leading-relaxed">
+                {currentQuestion.text}
+              </p>
+            </div>
+
+            {/* Input area */}
+            <div className="border-t border-border p-4 space-y-3">
+              <div className="flex items-center gap-2 text-xs text-muted-foreground mb-1">
+                <MessageSquare className="w-3.5 h-3.5" />
+                <span>Type your answer or record a voice memo</span>
+              </div>
+
+              <div className="flex items-start gap-3">
+                <Textarea
+                  ref={textareaRef}
+                  placeholder="Share your story here..."
+                  value={currentInput}
+                  onChange={(e) => setCurrentInput(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" && !e.shiftKey) {
+                      e.preventDefault();
+                      handleSend();
+                    }
+                  }}
+                  className="flex-1 resize-none bg-muted/50 border-0 focus-visible:ring-1 min-h-[100px]"
+                  rows={4}
+                />
+                <Button
+                  size="icon"
+                  onClick={handleSend}
+                  disabled={!currentInput.trim()}
+                  className="mt-1 shrink-0"
+                >
+                  <Send className="w-5 h-5" />
+                </Button>
+              </div>
+
+              <VoiceMemo onTranscript={handleVoiceTranscript} />
+            </div>
+          </motion.div>
+        </AnimatePresence>
+      )}
+
       {/* Action buttons */}
-      <div className="flex items-center justify-between mt-6">
-        <Button
-          variant="ghost"
-          onClick={handleSkip}
-          className="text-muted-foreground gap-2"
-        >
-          <SkipForward className="w-4 h-4" />
-          Skip this question
-        </Button>
-
-        {canFinish && !isLastQuestion && (
-          <Button onClick={handleFinishEarly} className="gap-2 group">
-            <CheckCircle2 className="w-4 h-4" />
-            Continue with {answeredCount} answers
-            <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+      {!showAck && (
+        <div className="flex items-center justify-between mt-6">
+          <Button
+            variant="ghost"
+            onClick={handleSkip}
+            className="text-muted-foreground gap-2"
+          >
+            <SkipForward className="w-4 h-4" />
+            Skip this question
           </Button>
-        )}
 
-        {!canFinish && (
-          <span className="text-xs text-muted-foreground">
-            Answer {MIN_ANSWERS - answeredCount} more to continue
-          </span>
-        )}
-      </div>
+          {canFinish && !isLastQuestion && (
+            <Button onClick={handleFinishEarly} className="gap-2 group">
+              <CheckCircle2 className="w-4 h-4" />
+              Continue with {answeredCount} answers
+              <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+            </Button>
+          )}
+
+          {!canFinish && (
+            <span className="text-xs text-muted-foreground">
+              Answer {MIN_ANSWERS - answeredCount} more to continue
+            </span>
+          )}
+        </div>
+      )}
     </motion.div>
   );
 };

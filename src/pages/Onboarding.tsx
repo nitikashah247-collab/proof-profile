@@ -1,6 +1,7 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
+import { Progress } from "@/components/ui/progress";
 import { useNavigate } from "react-router-dom";
 import {
   FileText,
@@ -23,6 +24,17 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "@/hooks/use-toast";
 
+const progressMessages = [
+  "Analyzing your career journey...",
+  "Reading your uploaded artifacts...",
+  "Weaving your impact stories...",
+  "Building your skills matrix...",
+  "Calibrating your metrics...",
+  "Designing your career timeline...",
+  "Applying your chosen theme...",
+  "Polishing the final details...",
+];
+
 const Onboarding = () => {
   const { user } = useAuth();
   const [step, setStep] = useState(1);
@@ -40,7 +52,31 @@ const Onboarding = () => {
   const [uploadedArtifacts, setUploadedArtifacts] = useState<ArtifactFile[]>([]);
   const [avatarUrl, setAvatarUrl] = useState<string>("");
   const [themeSettings, setThemeSettings] = useState<ThemeSettings | null>(null);
+  const [generatingMsgIndex, setGeneratingMsgIndex] = useState(0);
+  const [showLongWait, setShowLongWait] = useState(false);
   const navigate = useNavigate();
+
+  // Rotate progress messages during generation
+  useEffect(() => {
+    if (!isGenerating) {
+      setGeneratingMsgIndex(0);
+      setShowLongWait(false);
+      return;
+    }
+    const interval = setInterval(() => {
+      setGeneratingMsgIndex((prev) => (prev + 1) % progressMessages.length);
+    }, 3500);
+    const longTimeout = setTimeout(() => setShowLongWait(true), 45000);
+    return () => {
+      clearInterval(interval);
+      clearTimeout(longTimeout);
+    };
+  }, [isGenerating]);
+
+  const generationProgress = Math.min(
+    ((generatingMsgIndex + 1) / progressMessages.length) * 95,
+    95
+  );
 
   const handleStartFresh = () => {
     setRoleCategory("general");
@@ -371,7 +407,7 @@ const Onboarding = () => {
         if (testError) console.error("Testimonials insert error:", testError);
       }
 
-      // 9. Create profile_sections with rich data
+      // 9. Create profile_sections with rich data (including proofGallery)
       const sectionsToCreate: Array<{
         user_id: string;
         profile_id: string;
@@ -408,6 +444,7 @@ const Onboarding = () => {
         case_studies: {
           section_data: {
             case_studies: generated?.case_studies || [],
+            proofGallery: generated?.proofGallery || [],
           },
           condition: generated?.case_studies?.length > 0,
         },
@@ -891,12 +928,41 @@ const Onboarding = () => {
                     <div className="w-24 h-24 rounded-full icon-gradient-bg flex items-center justify-center mx-auto mb-8 animate-pulse">
                       <Sparkles className="w-12 h-12 text-white" />
                     </div>
-                    <h2 className="text-2xl font-bold mb-4">
+                    <h2 className="text-2xl font-bold mb-3">
                       Crafting your Proof...
                     </h2>
-                    <p className="text-muted-foreground">
-                      Our AI is analysing your information and building your profile
-                    </p>
+
+                    {/* Rotating subtitle */}
+                    <div className="h-8 mb-6">
+                      <AnimatePresence mode="wait">
+                        <motion.p
+                          key={generatingMsgIndex}
+                          initial={{ opacity: 0, y: 10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, y: -10 }}
+                          transition={{ duration: 0.3 }}
+                          className="text-muted-foreground"
+                        >
+                          {progressMessages[generatingMsgIndex]}
+                        </motion.p>
+                      </AnimatePresence>
+                    </div>
+
+                    {/* Progress bar */}
+                    <div className="max-w-xs mx-auto mb-6">
+                      <Progress value={generationProgress} className="h-1.5" />
+                    </div>
+
+                    {/* Long wait message */}
+                    {showLongWait && (
+                      <motion.p
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        className="text-sm text-muted-foreground mt-4"
+                      >
+                        Taking a bit longer than usual — almost there!
+                      </motion.p>
+                    )}
                   </div>
                 )}
               </motion.div>

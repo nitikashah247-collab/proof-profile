@@ -18,6 +18,7 @@ import { WorkStyleVisual } from "@/components/profile/WorkStyleVisual";
 import { CoverBanner } from "@/components/profile/CoverBanner";
 import { ProfileOwnerBar } from "@/components/profile/ProfileOwnerBar";
 import { CareerCoachDrawer } from "@/components/editor/CareerCoachDrawer";
+import { ProofGallerySection } from "@/components/profile/ProofGallerySection";
 
 interface ProfileSection {
   id: string;
@@ -125,12 +126,14 @@ const PublicProfile = () => {
       "--card-foreground": isDark ? "210 40% 98%" : "222 47% 11%",
       "--popover": isDark ? "222 47% 11%" : "0 0% 100%",
       "--popover-foreground": isDark ? "210 40% 98%" : "222 47% 11%",
-      "--muted": isDark ? "215 25% 14%" : "220 14% 98%",
+      "--muted": isDark ? "215 25% 14%" : "220 14% 96%",
       "--muted-foreground": isDark ? "215 20% 65%" : "220 9% 46%",
       "--border": isDark ? "215 25% 20%" : "220 13% 91%",
       "--input": isDark ? "215 25% 20%" : "220 13% 91%",
-      "--secondary": isDark ? "215 25% 17%" : "220 14% 98%",
+      "--secondary": isDark ? "215 25% 17%" : "220 14% 96%",
       "--secondary-foreground": isDark ? "210 40% 98%" : "222 47% 11%",
+      "--accent": isDark ? "215 25% 17%" : "220 14% 96%",
+      "--accent-foreground": isDark ? "210 40% 98%" : "222 47% 11%",
       "--theme-primary-hex": primary,
       "--theme-secondary-hex": secondary,
     } as React.CSSProperties;
@@ -185,19 +188,14 @@ const PublicProfile = () => {
   const languagesSection = getSection("languages");
   const publicationsSection = getSection("publications");
 
-  // Build hero stats
-  const heroStats = heroSection?.section_data?.hero_stats || {
-    yearsExperience: profile.years_experience || 5,
-    projectsLed: 20,
-    teamsManaged: 10,
-    keyMetric: { value: 0, label: "Projects", suffix: "+" },
-  };
+  // Build hero stats — only use explicitly provided numbers
+  const heroStats = heroSection?.section_data?.hero_stats || {};
 
   const normalizedHeroStats = {
-    yearsExperience: heroStats.years_experience || heroStats.yearsExperience || profile.years_experience || 5,
-    projectsLed: heroStats.projects_led || heroStats.projectsLed || 20,
-    teamsManaged: heroStats.people_managed || heroStats.teamsManaged || 10,
-    keyMetric: heroStats.key_metric || heroStats.keyMetric || { value: 0, label: "Projects", suffix: "+" },
+    yearsExperience: heroStats.years_experience || heroStats.yearsExperience || profile.years_experience || 0,
+    projectsLed: heroStats.projects_led || heroStats.projectsLed || 0,
+    teamsManaged: heroStats.people_managed || heroStats.teamsManaged || 0,
+    keyMetric: heroStats.key_metric || heroStats.keyMetric || { value: 0, label: "", suffix: "" },
   };
 
   // Build skill names for hero tags (deduplicated)
@@ -244,9 +242,10 @@ const PublicProfile = () => {
     approach: cs.approach || "",
     outcome: cs.results || "",
     skills: cs.metrics?.map((m: any) => m.label) || [],
+    artifacts: [],
   }));
 
-  // Use AI-enriched case studies from section_data if available (they have company + skills_used)
+  // Use AI-enriched case studies from section_data if available (they have company + skills_used + artifacts)
   const enrichedCaseStudies = caseStudiesSection?.section_data?.case_studies;
   const finalCaseStudyCards = enrichedCaseStudies?.length > 0
     ? enrichedCaseStudies.map((cs: any) => ({
@@ -305,12 +304,14 @@ const PublicProfile = () => {
   // Visualizations from impact section
   const visualizations = impactSection?.section_data?.visualizations || [];
 
+  // Proof gallery from case_studies section_data
+  const proofGallery = caseStudiesSection?.section_data?.proofGallery || [];
 
   // Legacy archetype support
   const archetype = heroSection?.section_data?.archetype || heroSection?.section_data?.themeBase || "";
 
   return (
-    <div className="min-h-screen bg-background" style={themeStyle}>
+    <div className="min-h-screen bg-background text-foreground" style={themeStyle}>
       {/* Owner controls */}
       {isOwner && <ProfileOwnerBar />}
 
@@ -362,7 +363,7 @@ const PublicProfile = () => {
             >
               <div className="flex items-center justify-between mb-8">
                 <div>
-                  <h2 className="text-3xl font-bold mb-2">Impact Stories</h2>
+                  <h2 className="text-3xl font-bold mb-2 text-foreground">Impact Stories</h2>
                   <p className="text-muted-foreground">
                     {activeSkill
                       ? `Showing ${filteredCaseStudies.length} stories related to "${activeSkill}"`
@@ -390,6 +391,11 @@ const PublicProfile = () => {
         </section>
         );
       })()}
+
+      {/* Proof Gallery - artifacts not embedded in stories */}
+      {proofGallery.length > 0 && (
+        <ProofGallerySection items={proofGallery} />
+      )}
 
       {/* Career Timeline - interactive nodes like demos (limit to 6 roles) */}
       {timelineEntries.length > 0 && (
@@ -420,13 +426,13 @@ const PublicProfile = () => {
               viewport={{ once: true }}
               className="max-w-5xl"
             >
-              <h2 className="text-3xl font-bold mb-8">Languages</h2>
+              <h2 className="text-3xl font-bold mb-8 text-foreground">Languages</h2>
               <div className="flex flex-wrap gap-4">
                 {languagesSection.section_data.languages.map((lang: any, i: number) => (
                   <div key={i} className="px-5 py-3 rounded-xl border border-border bg-card flex items-center gap-3">
                     <span className="text-lg">🌐</span>
                     <div>
-                      <p className="font-semibold text-sm">{lang.name}</p>
+                      <p className="font-semibold text-sm text-foreground">{lang.name}</p>
                       <p className="text-xs text-muted-foreground">{lang.proficiency}</p>
                     </div>
                   </div>
@@ -447,7 +453,7 @@ const PublicProfile = () => {
               viewport={{ once: true }}
               className="max-w-5xl"
             >
-              <h2 className="text-3xl font-bold mb-8">Publications</h2>
+              <h2 className="text-3xl font-bold mb-8 text-foreground">Publications</h2>
               <div className="space-y-4">
                 {publicationsSection.section_data.publications.map((pub: any, i: number) => (
                   <div key={i} className="p-4 rounded-xl border border-border bg-card flex items-start gap-4">
@@ -455,7 +461,7 @@ const PublicProfile = () => {
                       📄
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="font-semibold text-sm">{pub.title}</p>
+                      <p className="font-semibold text-sm text-foreground">{pub.title}</p>
                       <p className="text-xs text-muted-foreground">
                         {[pub.outlet, pub.year].filter(Boolean).join(" · ")}
                       </p>
@@ -491,7 +497,7 @@ const PublicProfile = () => {
             <div className="w-5 h-5 rounded icon-gradient-bg flex items-center justify-center">
               <span className="text-white font-bold text-[10px]">P</span>
             </div>
-            <span className="text-sm font-medium">Made with Proof</span>
+            <span className="text-sm font-medium text-foreground">Made with Proof</span>
           </Link>
         </div>
       )}

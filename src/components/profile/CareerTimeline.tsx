@@ -28,7 +28,7 @@ export const CareerTimeline = ({ entries }: CareerTimelineProps) => {
           viewport={{ once: true }}
           className="max-w-5xl"
         >
-          <h2 className="text-3xl font-bold mb-2">Career Journey</h2>
+          <h2 className="text-3xl font-bold mb-2 text-foreground">Career Journey</h2>
           <p className="text-muted-foreground mb-10">Click on each role to see key achievements</p>
 
           {/* Horizontal Timeline */}
@@ -63,25 +63,32 @@ export const CareerTimeline = ({ entries }: CareerTimelineProps) => {
                   <div
                     className={`w-12 h-12 rounded-full border-4 flex items-center justify-center transition-all duration-300 ${
                       activeIndex === index
-                        ? "bg-primary border-primary text-white scale-110 shadow-lg shadow-primary/25"
+                        ? "bg-primary border-primary text-primary-foreground scale-110 shadow-lg shadow-primary/25"
                         : "bg-background border-border text-muted-foreground hover:border-primary/50"
                     }`}
                   >
                     <Building2 className="w-5 h-5" />
                   </div>
                   
-                  {/* Year Label */}
-                  <span className={`mt-3 text-xs font-medium transition-colors ${
-                    activeIndex === index ? "text-primary" : "text-muted-foreground"
-                  }`}>
-                    {entry.startYear}{entry.endYear && entry.endYear !== entry.startYear ? ` - ${entry.endYear}` : ""}
-                  </span>
-                  
-                  {/* Company Name */}
-                  <span className={`mt-1 text-sm font-semibold text-center max-w-[120px] transition-colors ${
+                  {/* Role Title - primary label */}
+                  <span className={`mt-3 text-xs font-semibold text-center max-w-[120px] transition-colors leading-tight ${
                     activeIndex === index ? "text-foreground" : "text-muted-foreground"
                   }`}>
+                    {entry.role}
+                  </span>
+
+                  {/* Company Name - secondary label */}
+                  <span className={`mt-0.5 text-[10px] text-center max-w-[120px] transition-colors ${
+                    activeIndex === index ? "text-muted-foreground" : "text-muted-foreground/70"
+                  }`}>
                     {entry.company}
+                  </span>
+                  
+                  {/* Year Label */}
+                  <span className={`mt-1 text-[10px] font-medium transition-colors ${
+                    activeIndex === index ? "text-primary" : "text-muted-foreground/60"
+                  }`}>
+                    {entry.startYear}{entry.endYear && entry.endYear !== entry.startYear ? `–${entry.endYear}` : ""}
                   </span>
                 </motion.button>
               ))}
@@ -101,7 +108,7 @@ export const CareerTimeline = ({ entries }: CareerTimelineProps) => {
                   <div className="p-6 rounded-2xl border border-border bg-card">
                     <div className="flex items-start justify-between gap-4 mb-4">
                       <div>
-                        <h3 className="text-xl font-bold">{entries[activeIndex].role}</h3>
+                        <h3 className="text-xl font-bold text-foreground">{entries[activeIndex].role}</h3>
                         <div className="flex items-center gap-4 mt-2 text-sm text-muted-foreground">
                           <span className="flex items-center gap-1.5">
                             <Building2 className="w-4 h-4" />
@@ -109,7 +116,7 @@ export const CareerTimeline = ({ entries }: CareerTimelineProps) => {
                           </span>
                           <span className="flex items-center gap-1.5">
                             <Calendar className="w-4 h-4" />
-                            {entries[activeIndex].startYear} - {entries[activeIndex].endYear}
+                            {entries[activeIndex].startYear} – {entries[activeIndex].endYear}
                           </span>
                         </div>
                       </div>
@@ -130,7 +137,7 @@ export const CareerTimeline = ({ entries }: CareerTimelineProps) => {
                             initial={{ opacity: 0, x: -10 }}
                             animate={{ opacity: 1, x: 0 }}
                             transition={{ delay: i * 0.1 }}
-                            className="flex items-start gap-2 text-sm"
+                            className="flex items-start gap-2 text-sm text-foreground"
                           >
                             <ChevronRight className="w-4 h-4 text-primary flex-shrink-0 mt-0.5" />
                             <span>{achievement}</span>
