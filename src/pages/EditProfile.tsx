@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Palette } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
@@ -12,6 +12,9 @@ import { SectionList } from "@/components/editor/SectionList";
 import { SectionEditModal } from "@/components/editor/SectionEditModal";
 import { SectionPreview } from "@/components/editor/SectionPreview";
 import { CareerCoachDrawer } from "@/components/editor/CareerCoachDrawer";
+import { ThemeCustomization, type ThemeSettings } from "@/components/onboarding/ThemeCustomization";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { supabase as supabaseClient } from "@/integrations/supabase/client";
 
 const EditProfile = () => {
   const { user } = useAuth();
@@ -20,6 +23,7 @@ const EditProfile = () => {
   const [profile, setProfile] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [editingSection, setEditingSection] = useState<ProfileSection | null>(null);
+  const [showThemeModal, setShowThemeModal] = useState(false);
 
   const { data: templates = [], isLoading: templatesLoading } = useSectionTemplates();
   const {
@@ -89,7 +93,7 @@ const EditProfile = () => {
     <div className="h-screen flex flex-col bg-background">
       {/* Top bar */}
       <header className="flex items-center gap-4 px-4 py-3 border-b border-border bg-card shrink-0">
-        <Button variant="ghost" size="icon" onClick={() => navigate("/dashboard")}>
+        <Button variant="ghost" size="icon" onClick={() => navigate(`/p/${profile.slug || ""}`)}>
           <ArrowLeft className="w-5 h-5" />
         </Button>
         <div className="flex-1">
@@ -104,13 +108,22 @@ const EditProfile = () => {
       {/* Three-column layout */}
       <div className="flex-1 flex overflow-hidden">
         {/* Left: Section Library */}
-        <div className="w-72 shrink-0 overflow-hidden">
+        <div className="w-72 shrink-0 overflow-hidden flex flex-col">
           <SectionLibrary
             templates={templates}
             activeSectionTypes={sections.map((s) => s.section_type)}
             userIndustry={profile.industry}
             onAddSection={handleAddSection}
           />
+          <div className="p-3 border-t border-border">
+            <button
+              onClick={() => setShowThemeModal(true)}
+              className="flex items-center gap-2 w-full px-3 py-2 text-sm text-muted-foreground hover:text-foreground hover:bg-muted rounded-md transition-colors"
+            >
+              <Palette className="w-4 h-4" />
+              Change Theme
+            </button>
+          </div>
         </div>
 
         {/* Center: Active Sections */}
@@ -163,6 +176,38 @@ const EditProfile = () => {
         activeSectionTypes={sections.map((s) => s.section_type)}
         onAddSection={handleAddSection}
       />
+
+      {/* Theme Modal */}
+      <Dialog open={showThemeModal} onOpenChange={setShowThemeModal}>
+        <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+          <ThemeCustomization
+            userId={user?.id || ""}
+            onComplete={async (settings: ThemeSettings) => {
+              await supabaseClient
+                .from("profiles")
+                .update({
+                  theme_base: settings.themeBase,
+                  theme_primary_color: settings.primaryColor,
+                  theme_secondary_color: settings.secondaryColor,
+                  banner_type: settings.bannerType,
+                  banner_value: settings.bannerValue,
+                  banner_url: settings.bannerUrl || null,
+                })
+                .eq("id", profile.id);
+              setProfile({ ...profile, ...{
+                theme_base: settings.themeBase,
+                theme_primary_color: settings.primaryColor,
+                theme_secondary_color: settings.secondaryColor,
+                banner_type: settings.bannerType,
+                banner_value: settings.bannerValue,
+                banner_url: settings.bannerUrl || null,
+              }});
+              setShowThemeModal(false);
+              toast({ title: "Theme updated!" });
+            }}
+          />
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

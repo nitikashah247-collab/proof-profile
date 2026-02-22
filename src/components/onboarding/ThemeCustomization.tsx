@@ -129,6 +129,7 @@ export const ThemeCustomization = ({
         setBannerType("custom");
         setBannerUrl(urlData.publicUrl);
         setBannerValue("");
+        toast({ title: "Banner uploaded", description: "Your custom banner has been applied." });
       } catch {
         toast({ title: "Upload failed", variant: "destructive" });
       } finally {
