@@ -14,6 +14,7 @@ import {
   Mail,
   Award,
   Monitor,
+  Link as LinkIcon,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
@@ -70,6 +71,8 @@ export const ArtifactUpload = ({ userId, profileId, onComplete }: ArtifactUpload
   const [artifacts, setArtifacts] = useState<ArtifactFile[]>([]);
   const [uploadingFiles, setUploadingFiles] = useState<string[]>([]);
   const [isDragging, setIsDragging] = useState(false);
+  const [linkInput, setLinkInput] = useState("");
+  const [linkError, setLinkError] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFiles = useCallback(
@@ -153,11 +156,48 @@ export const ArtifactUpload = ({ userId, profileId, onComplete }: ArtifactUpload
     [artifacts.length, userId]
   );
 
+  const handleAddLink = useCallback(() => {
+    const url = linkInput.trim();
+    if (!url) return;
+
+    try {
+      new URL(url);
+    } catch {
+      setLinkError("Please enter a valid URL");
+      return;
+    }
+
+    if (artifacts.length >= MAX_FILES) {
+      setLinkError(`Maximum ${MAX_FILES} items allowed`);
+      return;
+    }
+
+    const parsed = new URL(url);
+    const hostname = parsed.hostname.replace("www.", "");
+    const pathname = parsed.pathname.replace(/\/$/, "");
+    const displayName =
+      pathname.length > 1 ? `${hostname}${pathname}`.substring(0, 60) : hostname;
+
+    const linkArtifact: ArtifactFile = {
+      id: crypto.randomUUID(),
+      name: displayName,
+      type: "link",
+      size: 0,
+      url: url,
+      uploadedAt: new Date().toISOString(),
+    };
+
+    setArtifacts((prev) => [...prev, linkArtifact]);
+    setLinkInput("");
+    setLinkError("");
+  }, [linkInput, artifacts.length]);
+
   const handleRemove = useCallback(
     async (artifact: ArtifactFile) => {
-      const filePath = `${userId}/artifacts/${artifact.id}`;
-      await supabase.storage.from("profile-artifacts").remove([filePath]);
-
+      if (artifact.type !== "link") {
+        const filePath = `${userId}/artifacts/${artifact.id}`;
+        await supabase.storage.from("profile-artifacts").remove([filePath]);
+      }
       setArtifacts((prev) => prev.filter((a) => a.id !== artifact.id));
     },
     [userId]
@@ -218,7 +258,7 @@ export const ArtifactUpload = ({ userId, profileId, onComplete }: ArtifactUpload
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
         onClick={() => fileInputRef.current?.click()}
-        className={`relative cursor-pointer rounded-2xl border-2 border-dashed p-10 transition-all mb-6 ${
+        className={`relative cursor-pointer rounded-2xl border-2 border-dashed p-10 transition-all mb-4 ${
           isDragging
             ? "border-primary bg-primary/5 scale-[1.01]"
             : "border-border hover:border-primary/50 hover:bg-muted/50"
@@ -249,6 +289,42 @@ export const ArtifactUpload = ({ userId, profileId, onComplete }: ArtifactUpload
             PNG, JPG, PDF, PPTX · Max {MAX_FILES} files, 10MB each
           </p>
         </div>
+      </div>
+
+      {/* Link input section */}
+      <div className="mb-6">
+        <div className="flex items-center gap-2 mb-2 justify-center text-sm text-muted-foreground">
+          <LinkIcon className="w-3.5 h-3.5" />
+          Or add a link
+        </div>
+        <div className="flex items-center gap-2 max-w-lg mx-auto">
+          <input
+            type="url"
+            value={linkInput}
+            onChange={(e) => {
+              setLinkInput(e.target.value);
+              setLinkError("");
+            }}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                e.preventDefault();
+                handleAddLink();
+              }
+            }}
+            placeholder="https://example.com/my-published-article"
+            className="flex-1 px-3 py-2 rounded-lg border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+            disabled={artifacts.length >= MAX_FILES}
+          />
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={handleAddLink}
+            disabled={!linkInput.trim() || artifacts.length >= MAX_FILES}
+          >
+            Add
+          </Button>
+        </div>
+        {linkError && <p className="text-sm text-destructive mt-1">{linkError}</p>}
       </div>
 
       {/* Uploading indicators */}
@@ -285,7 +361,11 @@ export const ArtifactUpload = ({ userId, profileId, onComplete }: ArtifactUpload
                   exit={{ opacity: 0, x: -20 }}
                   className="flex items-center gap-3 p-3 rounded-xl bg-card border border-border"
                 >
-                  {artifact.type.startsWith("image/") ? (
+                  {artifact.type === "link" ? (
+                    <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                      <LinkIcon className="w-5 h-5 text-primary" />
+                    </div>
+                  ) : artifact.type.startsWith("image/") ? (
                     <img
                       src={artifact.url}
                       alt={artifact.name}
@@ -298,9 +378,13 @@ export const ArtifactUpload = ({ userId, profileId, onComplete }: ArtifactUpload
                   )}
                   <div className="flex-1 min-w-0 text-left">
                     <p className="text-sm font-medium truncate">{artifact.name}</p>
-                    <p className="text-xs text-muted-foreground">
-                      {formatFileSize(artifact.size)}
-                    </p>
+                    {artifact.type === "link" ? (
+                      <p className="text-xs text-muted-foreground truncate">{artifact.url}</p>
+                    ) : (
+                      <p className="text-xs text-muted-foreground">
+                        {formatFileSize(artifact.size)}
+                      </p>
+                    )}
                   </div>
                   <CheckCircle2 className="w-4 h-4 text-[hsl(var(--proof-success))] shrink-0" />
                   <button

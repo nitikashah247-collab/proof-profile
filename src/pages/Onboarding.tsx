@@ -56,7 +56,7 @@ const Onboarding = () => {
   const [showLongWait, setShowLongWait] = useState(false);
   const navigate = useNavigate();
 
-  // Rotate progress messages during generation
+  // Rotate progress messages during generation — don't cycle back
   useEffect(() => {
     if (!isGenerating) {
       setGeneratingMsgIndex(0);
@@ -64,8 +64,11 @@ const Onboarding = () => {
       return;
     }
     const interval = setInterval(() => {
-      setGeneratingMsgIndex((prev) => (prev + 1) % progressMessages.length);
-    }, 3500);
+      setGeneratingMsgIndex((prev) => {
+        if (prev >= progressMessages.length - 1) return prev;
+        return prev + 1;
+      });
+    }, 4000);
     const longTimeout = setTimeout(() => setShowLongWait(true), 45000);
     return () => {
       clearInterval(interval);
@@ -73,10 +76,13 @@ const Onboarding = () => {
     };
   }, [isGenerating]);
 
-  const generationProgress = Math.min(
-    ((generatingMsgIndex + 1) / progressMessages.length) * 95,
-    95
-  );
+  const generationProgress = (() => {
+    if (!isGenerating) return 0;
+    const linearProgress = (generatingMsgIndex + 1) / progressMessages.length;
+    // Ease-out: fast start, slow end. Caps at 95%.
+    const eased = 1 - Math.pow(1 - linearProgress, 2);
+    return Math.min(eased * 95, 95);
+  })();
 
   const handleStartFresh = () => {
     setRoleCategory("general");

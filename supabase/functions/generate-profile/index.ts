@@ -197,6 +197,18 @@ async function analyzeArtifacts(artifacts: any[], apiKey: string): Promise<any[]
   const descriptions: any[] = [];
 
   for (const artifact of artifacts || []) {
+    // Handle link artifacts — no Vision analysis needed
+    if (artifact.type === "link") {
+      descriptions.push({
+        url: artifact.url,
+        name: artifact.name,
+        category: "link",
+        description: `Published work / online resource: ${artifact.name} (${artifact.url})`,
+        metrics: [],
+      });
+      continue;
+    }
+
     if (artifact.type?.startsWith("image/")) {
       try {
         const response = await fetch(artifact.url);
