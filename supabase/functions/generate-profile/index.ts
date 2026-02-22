@@ -514,39 +514,45 @@ serve(async (req) => {
       generatedProfile.case_studies = generatedProfile.case_studies.slice(0, 5);
     }
 
+    // Helper: normalize URLs for comparison
+    const normalizeUrl = (url: string): string => {
+      try {
+        return url.trim().replace(/\/+$/, '').toLowerCase();
+      } catch {
+        return url.trim().toLowerCase();
+      }
+    };
+
     // Post-process: validate artifact URLs in case studies (only keep real ones)
-    const validArtifactUrls = new Set(normalizedArtifacts.map((a: any) => a.url));
+    const validArtifactUrls = new Set(normalizedArtifacts.map((a: any) => normalizeUrl(a.url)));
     if (generatedProfile.case_studies?.length > 0) {
       for (const cs of generatedProfile.case_studies) {
         if (cs.artifacts?.length > 0) {
-          cs.artifacts = cs.artifacts.filter((a: any) => validArtifactUrls.has(a.url));
+          cs.artifacts = cs.artifacts.filter((a: any) => validArtifactUrls.has(normalizeUrl(a.url)));
         }
       }
     }
 
     // Post-process: validate proofGallery URLs
     if (generatedProfile.proofGallery?.length > 0) {
-      generatedProfile.proofGallery = generatedProfile.proofGallery.filter((a: any) => validArtifactUrls.has(a.url));
+      generatedProfile.proofGallery = generatedProfile.proofGallery.filter((a: any) => validArtifactUrls.has(normalizeUrl(a.url)));
     }
 
     // Post-process: ensure ALL artifacts appear somewhere
     if (normalizedArtifacts.length > 0) {
       const usedUrls = new Set<string>();
-      // Collect URLs used in case study artifacts
       for (const cs of generatedProfile.case_studies || []) {
         for (const a of cs.artifacts || []) {
-          usedUrls.add(a.url);
+          usedUrls.add(normalizeUrl(a.url));
         }
       }
-      // Collect URLs used in proofGallery
       for (const a of generatedProfile.proofGallery || []) {
-        usedUrls.add(a.url);
+        usedUrls.add(normalizeUrl(a.url));
       }
-      // Add missing artifacts to proofGallery
       if (!generatedProfile.proofGallery) generatedProfile.proofGallery = [];
       for (const artifact of normalizedArtifacts) {
-        if (!usedUrls.has(artifact.url)) {
-          const desc = artifactDescriptions.find((d: any) => d.url === artifact.url);
+        if (!usedUrls.has(normalizeUrl(artifact.url))) {
+          const desc = artifactDescriptions.find((d: any) => normalizeUrl(d.url) === normalizeUrl(artifact.url));
           const ext = artifact.name?.split(".").pop()?.toLowerCase() || "png";
           generatedProfile.proofGallery.push({
             url: artifact.url,

@@ -193,52 +193,71 @@ export const ProfileHero = ({
             )}
           </motion.div>
 
-          {/* Quick Stats Bar */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.45 }}
-            className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-10 p-6 rounded-2xl border border-border bg-card"
-          >
-            <div className="text-center md:text-left md:border-r border-border">
-              <div className="flex items-center justify-center md:justify-start gap-2 mb-1">
-                <Briefcase className="w-4 h-4 text-primary" />
-                <span className="text-2xl font-bold">
-                  <AnimatedCounter value={stats.yearsExperience} suffix="+" />
-                </span>
-              </div>
-              <p className="text-xs text-muted-foreground">Years Experience</p>
-            </div>
-            <div className="text-center md:text-left md:border-r border-border">
-              <div className="flex items-center justify-center md:justify-start gap-2 mb-1">
-                <Award className="w-4 h-4 text-primary" />
-                <span className="text-2xl font-bold">
-                  <AnimatedCounter value={stats.projectsLed} suffix="+" />
-                </span>
-              </div>
-              <p className="text-xs text-muted-foreground">Projects Led</p>
-            </div>
-            <div className="text-center md:text-left md:border-r border-border">
-              <div className="flex items-center justify-center md:justify-start gap-2 mb-1">
-                <Users className="w-4 h-4 text-primary" />
-                <span className="text-2xl font-bold">
-                  <AnimatedCounter value={stats.teamsManaged} suffix="+" />
-                </span>
-              </div>
-              <p className="text-xs text-muted-foreground">People Managed</p>
-            </div>
-            <div className="text-center md:text-left">
-              <div className="flex items-center justify-center md:justify-start gap-2 mb-1">
-                <span className="text-2xl font-bold text-primary">
-                  <AnimatedCounter 
-                    value={stats.keyMetric.value} 
-                    suffix={stats.keyMetric.suffix} 
-                  />
-                </span>
-              </div>
-              <p className="text-xs text-muted-foreground">{stats.keyMetric.label}</p>
-            </div>
-          </motion.div>
+          {/* Quick Stats Bar — only show stats with actual values */}
+          {(() => {
+            const statItems = [
+              stats.yearsExperience > 0 && {
+                icon: Briefcase,
+                value: stats.yearsExperience,
+                suffix: "+",
+                label: "Years Experience",
+              },
+              stats.projectsLed > 0 && {
+                icon: Award,
+                value: stats.projectsLed,
+                suffix: "+",
+                label: "Projects Led",
+              },
+              stats.teamsManaged > 0 && {
+                icon: Users,
+                value: stats.teamsManaged,
+                suffix: "+",
+                label: "People Managed",
+              },
+              stats.keyMetric.value > 0 && {
+                icon: null as React.ElementType | null,
+                value: stats.keyMetric.value,
+                suffix: stats.keyMetric.suffix,
+                label: stats.keyMetric.label,
+                isPrimary: true,
+              },
+            ].filter(Boolean) as Array<{
+              icon: React.ElementType | null;
+              value: number;
+              suffix: string;
+              label: string;
+              isPrimary?: boolean;
+            }>;
+
+            if (statItems.length === 0) return null;
+
+            return (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.45 }}
+                className="grid gap-4 mt-10 p-6 rounded-2xl border border-border bg-card"
+                style={{ gridTemplateColumns: `repeat(${Math.min(statItems.length, 4)}, 1fr)` }}
+              >
+                {statItems.map((stat, i) => (
+                  <div
+                    key={i}
+                    className={`text-center md:text-left ${
+                      i < statItems.length - 1 ? "md:border-r border-border" : ""
+                    }`}
+                  >
+                    <div className="flex items-center justify-center md:justify-start gap-2 mb-1">
+                      {stat.icon && <stat.icon className="w-4 h-4 text-primary" />}
+                      <span className={`text-2xl font-bold ${stat.isPrimary ? "text-primary" : ""}`}>
+                        <AnimatedCounter value={stat.value} suffix={stat.suffix} />
+                      </span>
+                    </div>
+                    <p className="text-xs text-muted-foreground">{stat.label}</p>
+                  </div>
+                ))}
+              </motion.div>
+            );
+          })()}
         </div>
       </div>
     </section>
