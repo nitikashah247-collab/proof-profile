@@ -4,6 +4,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Check, Loader2 } from "lucide-react";
+import { toast } from "@/hooks/use-toast";
 
 interface HeroInlineEditProps {
   profileData: any;
@@ -28,6 +29,7 @@ export const HeroInlineEdit = ({ profileData, sectionData, onSave, onCancel }: H
       { ...sectionData, email, linkedin_url: linkedinUrl }
     );
     setSaving(false);
+    toast({ title: "Changes saved", description: "Your profile has been updated." });
   };
 
   return (
@@ -61,8 +63,8 @@ export const HeroInlineEdit = ({ profileData, sectionData, onSave, onCancel }: H
         </div>
       </div>
       <div className="flex justify-end gap-2 pt-2">
-        <Button variant="ghost" size="sm" onClick={onCancel}>Cancel</Button>
-        <Button size="sm" onClick={handleSave} disabled={saving} className="gap-1.5">
+        <Button type="button" variant="ghost" size="sm" onClick={onCancel}>Cancel</Button>
+        <Button type="button" size="sm" onClick={handleSave} disabled={saving} className="gap-1.5">
           {saving ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Check className="w-3.5 h-3.5" />}
           Save Changes
         </Button>

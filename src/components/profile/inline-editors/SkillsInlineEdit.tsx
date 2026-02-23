@@ -4,6 +4,7 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import { Check, Loader2, Plus, Trash2 } from "lucide-react";
+import { toast } from "@/hooks/use-toast";
 
 interface SkillsInlineEditProps {
   sectionData: Record<string, any>;
@@ -45,6 +46,7 @@ export const SkillsInlineEdit = ({ sectionData, skills, onSave, onCancel }: Skil
     setSaving(true);
     await onSave({ ...sectionData, skills_list: items });
     setSaving(false);
+    toast({ title: "Changes saved", description: "Your profile has been updated." });
   };
 
   return (
@@ -71,17 +73,17 @@ export const SkillsInlineEdit = ({ sectionData, skills, onSave, onCancel }: Skil
               step={5}
             />
           </div>
-          <Button variant="ghost" size="icon" onClick={() => removeSkill(i)} className="h-7 w-7 text-destructive">
+          <Button type="button" variant="ghost" size="icon" onClick={() => removeSkill(i)} className="h-7 w-7 text-destructive">
             <Trash2 className="w-3.5 h-3.5" />
           </Button>
         </div>
       ))}
-      <Button variant="outline" size="sm" onClick={addSkill} className="gap-1.5">
+      <Button type="button" variant="outline" size="sm" onClick={addSkill} className="gap-1.5">
         <Plus className="w-3.5 h-3.5" /> Add Skill
       </Button>
       <div className="flex justify-end gap-2 pt-2">
-        <Button variant="ghost" size="sm" onClick={onCancel}>Cancel</Button>
-        <Button size="sm" onClick={handleSave} disabled={saving} className="gap-1.5">
+        <Button type="button" variant="ghost" size="sm" onClick={onCancel}>Cancel</Button>
+        <Button type="button" size="sm" onClick={handleSave} disabled={saving} className="gap-1.5">
           {saving ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Check className="w-3.5 h-3.5" />}
           Save Changes
         </Button>
