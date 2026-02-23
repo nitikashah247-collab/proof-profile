@@ -122,7 +122,7 @@ const PublicProfile = () => {
     };
 
     fetchProfile();
-  }, [slug]);
+  }, [slug, user]);
 
   // --- Inline editing handlers ---
   const handleSectionSave = async (sectionId: string, newData: Record<string, any>) => {
