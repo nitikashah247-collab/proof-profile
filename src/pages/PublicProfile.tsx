@@ -19,6 +19,17 @@ import { CoverBanner } from "@/components/profile/CoverBanner";
 import { ProfileOwnerBar } from "@/components/profile/ProfileOwnerBar";
 import { CareerCoachDrawer } from "@/components/editor/CareerCoachDrawer";
 import { ProofGallerySection } from "@/components/profile/ProofGallerySection";
+import { InlineEditWrapper } from "@/components/profile/InlineEditWrapper";
+import {
+  HeroInlineEdit,
+  CaseStudyInlineEdit,
+  SkillsInlineEdit,
+  TimelineInlineEdit,
+  ImpactChartsInlineEdit,
+  WorkStyleInlineEdit,
+  LanguagesInlineEdit,
+  PublicationsInlineEdit,
+} from "@/components/profile/inline-editors";
 
 interface ProfileSection {
   id: string;
@@ -48,6 +59,7 @@ const PublicProfile = () => {
   const [testimonials, setTestimonials] = useState<any[]>([]);
   const [activeSkill, setActiveSkill] = useState<string | null>(null);
   const [isOwner, setIsOwner] = useState(false);
+  const [editingSection, setEditingSection] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -111,6 +123,35 @@ const PublicProfile = () => {
 
     fetchProfile();
   }, [slug]);
+
+  // --- Inline editing handlers ---
+  const handleSectionSave = async (sectionId: string, newData: Record<string, any>) => {
+    setSections((prev) =>
+      prev.map((s) => (s.id === sectionId ? { ...s, section_data: newData } : s))
+    );
+    await supabase
+      .from("profile_sections")
+      .update({ section_data: newData })
+      .eq("id", sectionId);
+    setEditingSection(null);
+  };
+
+  const handleProfileFieldSave = async (updates: Record<string, any>) => {
+    setProfile((prev: any) => ({ ...prev, ...updates }));
+    await supabase
+      .from("profiles")
+      .update(updates)
+      .eq("id", profile.id);
+  };
+
+  const handleHeroSave = async (profileUpdates: Record<string, any>, sectionUpdates: Record<string, any>) => {
+    await handleProfileFieldSave(profileUpdates);
+    const heroSec = sections.find((s) => s.section_type === "hero");
+    if (heroSec) {
+      await handleSectionSave(heroSec.id, sectionUpdates);
+    }
+    setEditingSection(null);
+  };
 
   // Apply custom theme from profile settings
   const themeStyle = useMemo(() => {
@@ -188,9 +229,8 @@ const PublicProfile = () => {
   const languagesSection = getSection("languages");
   const publicationsSection = getSection("publications");
 
-  // Build hero stats — only use explicitly provided numbers
+  // Build hero stats
   const heroStats = heroSection?.section_data?.hero_stats || {};
-
   const normalizedHeroStats = {
     yearsExperience: heroStats.years_experience || heroStats.yearsExperience || profile.years_experience || 0,
     projectsLed: heroStats.projects_led || heroStats.projectsLed || 0,
@@ -214,7 +254,6 @@ const PublicProfile = () => {
     skillProofMap.set(sp.name?.toLowerCase()?.trim(), sp);
   }
 
-  // Deduplicate skills
   const seenSkills = new Set<string>();
   const skillsData = skills.filter(skill => {
     const key = skill.name.toLowerCase().trim();
@@ -232,7 +271,7 @@ const PublicProfile = () => {
     };
   });
 
-  // Build case studies for CaseStudyCard (matching demo format)
+  // Build case studies
   const caseStudyCards = caseStudies.map((cs) => ({
     title: cs.title,
     company: "—",
@@ -245,7 +284,6 @@ const PublicProfile = () => {
     artifacts: [],
   }));
 
-  // Use AI-enriched case studies from section_data if available (they have company + skills_used + artifacts)
   const enrichedCaseStudies = caseStudiesSection?.section_data?.case_studies;
   const finalCaseStudyCards = enrichedCaseStudies?.length > 0
     ? enrichedCaseStudies.map((cs: any) => ({
@@ -261,12 +299,11 @@ const PublicProfile = () => {
       }))
     : caseStudyCards;
 
-  // Filter case studies by active skill
   const filteredCaseStudies = activeSkill
     ? finalCaseStudyCards.filter((cs: any) => cs.skills.includes(activeSkill))
     : finalCaseStudyCards;
 
-  // Build timeline for CareerTimeline (matching demo format)
+  // Build timeline
   const timelineEntries = timelineSection?.section_data?.timeline?.length > 0
     ? timelineSection.section_data.timeline.map((entry: any) => ({
         company: entry.company,
@@ -283,7 +320,7 @@ const PublicProfile = () => {
         achievements: [entry.key_achievement, entry.description].filter(Boolean),
       }));
 
-  // Build testimonials for TestimonialsCarousel
+  // Build testimonials
   const testimonialCards = testimonials.map((t) => ({
     quote: t.quote,
     author: t.author_name,
@@ -304,7 +341,7 @@ const PublicProfile = () => {
   // Visualizations from impact section
   const visualizations = impactSection?.section_data?.visualizations || [];
 
-  // Proof gallery from case_studies section_data
+  // Proof gallery
   const proofGallery = caseStudiesSection?.section_data?.proofGallery || [];
 
   // Legacy archetype support
@@ -324,167 +361,314 @@ const PublicProfile = () => {
         archetype={archetype}
       />
 
-      {/* Hero Section - same as demos */}
-      <ProfileHero
-        name={profile.full_name || ""}
-        title={profile.headline || ""}
-        location={profile.location || ""}
-        company={profile.industry || ""}
-        tagline={profile.bio || ""}
-        photoUrl={profile.avatar_url || undefined}
-        skills={skillNames.slice(0, 7)}
-        activeSkill={activeSkill}
-        onSkillClick={setActiveSkill}
-        stats={normalizedHeroStats}
-        email={heroSection?.section_data?.email || ""}
-        calendlyUrl={heroSection?.section_data?.calendly_url || ""}
-        linkedinUrl={heroSection?.section_data?.linkedin_url || ""}
-      />
+      {/* Hero Section */}
+      <InlineEditWrapper
+        isOwner={isOwner}
+        sectionId={heroSection?.id || "hero"}
+        sectionType="hero"
+        sectionLabel="Hero"
+        isEditing={editingSection === "hero"}
+        onEditStart={() => setEditingSection("hero")}
+        onEditEnd={() => setEditingSection(null)}
+        onSave={handleSectionSave}
+        editForm={
+          <HeroInlineEdit
+            profileData={profile}
+            sectionData={heroSection?.section_data || {}}
+            onSave={handleHeroSave}
+            onCancel={() => setEditingSection(null)}
+          />
+        }
+      >
+        <ProfileHero
+          name={profile.full_name || ""}
+          title={profile.headline || ""}
+          location={profile.location || ""}
+          company={profile.industry || ""}
+          tagline={profile.bio || ""}
+          photoUrl={profile.avatar_url || undefined}
+          skills={skillNames.slice(0, 7)}
+          activeSkill={activeSkill}
+          onSkillClick={setActiveSkill}
+          stats={normalizedHeroStats}
+          email={heroSection?.section_data?.email || ""}
+          calendlyUrl={heroSection?.section_data?.calendly_url || ""}
+          linkedinUrl={heroSection?.section_data?.linkedin_url || ""}
+        />
+      </InlineEditWrapper>
 
-      {/* Impact Charts - AI-generated visualizations */}
+      {/* Impact Charts */}
       {visualizations.length > 0 && (
-        <DynamicImpactCharts visualizations={visualizations} />
+        <InlineEditWrapper
+          isOwner={isOwner}
+          sectionId={impactSection?.id || "impact"}
+          sectionType="impact_charts"
+          sectionLabel="Impact Metrics"
+          isEditing={editingSection === "impact_charts"}
+          onEditStart={() => setEditingSection("impact_charts")}
+          onEditEnd={() => setEditingSection(null)}
+          onSave={handleSectionSave}
+          editForm={
+            <ImpactChartsInlineEdit
+              sectionData={impactSection?.section_data || {}}
+              onSave={(data) => handleSectionSave(impactSection!.id, data)}
+              onCancel={() => setEditingSection(null)}
+            />
+          }
+        >
+          <DynamicImpactCharts visualizations={visualizations} />
+        </InlineEditWrapper>
       )}
 
-      {/* Case Studies - expandable cards like demos (limit to 5) */}
+      {/* Case Studies */}
       {finalCaseStudyCards.length > 0 && (() => {
         const limitedCaseStudies = finalCaseStudyCards.slice(0, 5);
         const limitedFiltered = activeSkill
           ? limitedCaseStudies.filter((cs: any) => cs.skills.includes(activeSkill))
           : limitedCaseStudies;
         return (
-        <section className="py-16 bg-muted/30">
-          <div className="container mx-auto px-6">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              className="max-w-5xl"
-            >
-              <div className="flex items-center justify-between mb-8">
-                <div>
-                  <h2 className="text-3xl font-bold mb-2 text-foreground">Impact Stories</h2>
-                  <p className="text-muted-foreground">
-                    {activeSkill
-                      ? `Showing ${filteredCaseStudies.length} stories related to "${activeSkill}"`
-                      : "Click a skill above to filter by expertise"}
-                  </p>
-                </div>
-                {activeSkill && (
-                  <Button variant="ghost" size="sm" onClick={() => setActiveSkill(null)}>
-                    Clear filter ×
-                  </Button>
-                )}
+          <InlineEditWrapper
+            isOwner={isOwner}
+            sectionId={caseStudiesSection?.id || "cases"}
+            sectionType="case_studies"
+            sectionLabel="Impact Stories"
+            isEditing={editingSection === "case_studies"}
+            onEditStart={() => setEditingSection("case_studies")}
+            onEditEnd={() => setEditingSection(null)}
+            onSave={handleSectionSave}
+            editForm={
+              <CaseStudyInlineEdit
+                sectionData={caseStudiesSection?.section_data || {}}
+                onSave={(data) => handleSectionSave(caseStudiesSection!.id, data)}
+                onCancel={() => setEditingSection(null)}
+              />
+            }
+          >
+            <section className="py-16 bg-muted/30">
+              <div className="container mx-auto px-6">
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  className="max-w-5xl"
+                >
+                  <div className="flex items-center justify-between mb-8">
+                    <div>
+                      <h2 className="text-3xl font-bold mb-2 text-foreground">Impact Stories</h2>
+                      <p className="text-muted-foreground">
+                        {activeSkill
+                          ? `Showing ${filteredCaseStudies.length} stories related to "${activeSkill}"`
+                          : "Click a skill above to filter by expertise"}
+                      </p>
+                    </div>
+                    {activeSkill && (
+                      <Button variant="ghost" size="sm" onClick={() => setActiveSkill(null)}>
+                        Clear filter ×
+                      </Button>
+                    )}
+                  </div>
+                  <div className="space-y-4">
+                    {limitedFiltered.map((study: any, index: number) => (
+                      <CaseStudyCard
+                        key={index}
+                        study={study}
+                        index={index}
+                        isHighlighted={!activeSkill}
+                      />
+                    ))}
+                  </div>
+                </motion.div>
               </div>
-              <div className="space-y-4">
-                {limitedFiltered.map((study: any, index: number) => (
-                  <CaseStudyCard
-                    key={index}
-                    study={study}
-                    index={index}
-                    isHighlighted={!activeSkill}
-                  />
-                ))}
-              </div>
-            </motion.div>
-          </div>
-        </section>
+            </section>
+          </InlineEditWrapper>
         );
       })()}
 
-      {/* Proof Gallery - artifacts not embedded in stories */}
+      {/* Proof Gallery */}
       {proofGallery.length > 0 && (
         <ProofGallerySection items={proofGallery} />
       )}
 
-      {/* Career Timeline - interactive nodes like demos (limit to 6 roles) */}
+      {/* Career Timeline */}
       {timelineEntries.length > 0 && (
-        <CareerTimeline entries={timelineEntries.slice(0, 6)} />
+        <InlineEditWrapper
+          isOwner={isOwner}
+          sectionId={timelineSection?.id || "timeline"}
+          sectionType="career_timeline"
+          sectionLabel="Career Journey"
+          isEditing={editingSection === "career_timeline"}
+          onEditStart={() => setEditingSection("career_timeline")}
+          onEditEnd={() => setEditingSection(null)}
+          onSave={handleSectionSave}
+          editForm={
+            <TimelineInlineEdit
+              sectionData={timelineSection?.section_data || {}}
+              onSave={(data) => handleSectionSave(timelineSection!.id, data)}
+              onCancel={() => setEditingSection(null)}
+            />
+          }
+        >
+          <CareerTimeline entries={timelineEntries.slice(0, 6)} />
+        </InlineEditWrapper>
       )}
 
-      {/* Skills Matrix - visual grid with proficiency bars */}
+      {/* Skills Matrix */}
       {skillsData.length > 0 && (
-        <SkillsMatrix
-          skills={skillsData}
-          activeSkill={activeSkill}
-          onSkillClick={setActiveSkill}
-        />
+        <InlineEditWrapper
+          isOwner={isOwner}
+          sectionId={skillsSection?.id || "skills"}
+          sectionType="skills_matrix"
+          sectionLabel="Skills"
+          isEditing={editingSection === "skills_matrix"}
+          onEditStart={() => setEditingSection("skills_matrix")}
+          onEditEnd={() => setEditingSection(null)}
+          onSave={handleSectionSave}
+          editForm={
+            <SkillsInlineEdit
+              sectionData={skillsSection?.section_data || {}}
+              skills={skills}
+              profileId={profile.id}
+              onSave={(data) => handleSectionSave(skillsSection!.id, data)}
+              onCancel={() => setEditingSection(null)}
+            />
+          }
+        >
+          <SkillsMatrix
+            skills={skillsData}
+            activeSkill={activeSkill}
+            onSkillClick={setActiveSkill}
+          />
+        </InlineEditWrapper>
       )}
 
-      {/* Testimonials Carousel */}
+      {/* Testimonials */}
       {testimonialCards.length > 0 && (
         <TestimonialsCarousel testimonials={testimonialCards} />
       )}
 
       {/* Languages */}
       {languagesSection?.section_data?.languages?.length > 0 && (
-        <section className="py-16 bg-muted/30">
-          <div className="container mx-auto px-6">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              className="max-w-5xl"
-            >
-              <h2 className="text-3xl font-bold mb-8 text-foreground">Languages</h2>
-              <div className="flex flex-wrap gap-4">
-                {languagesSection.section_data.languages.map((lang: any, i: number) => (
-                  <div key={i} className="px-5 py-3 rounded-xl border border-border bg-card flex items-center gap-3">
-                    <span className="text-lg">🌐</span>
-                    <div>
-                      <p className="font-semibold text-sm text-foreground">{lang.name}</p>
-                      <p className="text-xs text-muted-foreground">{lang.proficiency}</p>
+        <InlineEditWrapper
+          isOwner={isOwner}
+          sectionId={languagesSection.id}
+          sectionType="languages"
+          sectionLabel="Languages"
+          isEditing={editingSection === "languages"}
+          onEditStart={() => setEditingSection("languages")}
+          onEditEnd={() => setEditingSection(null)}
+          onSave={handleSectionSave}
+          editForm={
+            <LanguagesInlineEdit
+              sectionData={languagesSection.section_data}
+              onSave={(data) => handleSectionSave(languagesSection.id, data)}
+              onCancel={() => setEditingSection(null)}
+            />
+          }
+        >
+          <section className="py-16 bg-muted/30">
+            <div className="container mx-auto px-6">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                className="max-w-5xl"
+              >
+                <h2 className="text-3xl font-bold mb-8 text-foreground">Languages</h2>
+                <div className="flex flex-wrap gap-4">
+                  {languagesSection.section_data.languages.map((lang: any, i: number) => (
+                    <div key={i} className="px-5 py-3 rounded-xl border border-border bg-card flex items-center gap-3">
+                      <span className="text-lg">🌐</span>
+                      <div>
+                        <p className="font-semibold text-sm text-foreground">{lang.name}</p>
+                        <p className="text-xs text-muted-foreground">{lang.proficiency}</p>
+                      </div>
                     </div>
-                  </div>
-                ))}
-              </div>
-            </motion.div>
-          </div>
-        </section>
+                  ))}
+                </div>
+              </motion.div>
+            </div>
+          </section>
+        </InlineEditWrapper>
       )}
 
       {/* Publications */}
       {publicationsSection?.section_data?.publications?.length > 0 && (
-        <section className="py-16">
-          <div className="container mx-auto px-6">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              className="max-w-5xl"
-            >
-              <h2 className="text-3xl font-bold mb-8 text-foreground">Publications</h2>
-              <div className="space-y-4">
-                {publicationsSection.section_data.publications.map((pub: any, i: number) => (
-                  <div key={i} className="p-4 rounded-xl border border-border bg-card flex items-start gap-4">
-                    <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary shrink-0 mt-0.5">
-                      📄
+        <InlineEditWrapper
+          isOwner={isOwner}
+          sectionId={publicationsSection.id}
+          sectionType="publications"
+          sectionLabel="Publications"
+          isEditing={editingSection === "publications"}
+          onEditStart={() => setEditingSection("publications")}
+          onEditEnd={() => setEditingSection(null)}
+          onSave={handleSectionSave}
+          editForm={
+            <PublicationsInlineEdit
+              sectionData={publicationsSection.section_data}
+              onSave={(data) => handleSectionSave(publicationsSection.id, data)}
+              onCancel={() => setEditingSection(null)}
+            />
+          }
+        >
+          <section className="py-16">
+            <div className="container mx-auto px-6">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                className="max-w-5xl"
+              >
+                <h2 className="text-3xl font-bold mb-8 text-foreground">Publications</h2>
+                <div className="space-y-4">
+                  {publicationsSection.section_data.publications.map((pub: any, i: number) => (
+                    <div key={i} className="p-4 rounded-xl border border-border bg-card flex items-start gap-4">
+                      <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary shrink-0 mt-0.5">
+                        📄
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="font-semibold text-sm text-foreground">{pub.title}</p>
+                        <p className="text-xs text-muted-foreground">
+                          {[pub.outlet, pub.year].filter(Boolean).join(" · ")}
+                        </p>
+                      </div>
+                      {pub.url && (
+                        <a href={pub.url} target="_blank" rel="noopener noreferrer" className="text-xs text-primary hover:underline shrink-0">
+                          Read →
+                        </a>
+                      )}
                     </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="font-semibold text-sm text-foreground">{pub.title}</p>
-                      <p className="text-xs text-muted-foreground">
-                        {[pub.outlet, pub.year].filter(Boolean).join(" · ")}
-                      </p>
-                    </div>
-                    {pub.url && (
-                      <a href={pub.url} target="_blank" rel="noopener noreferrer" className="text-xs text-primary hover:underline shrink-0">
-                        Read →
-                      </a>
-                    )}
-                  </div>
-                ))}
-              </div>
-            </motion.div>
-          </div>
-        </section>
+                  ))}
+                </div>
+              </motion.div>
+            </div>
+          </section>
+        </InlineEditWrapper>
       )}
 
       {/* Work Style */}
       {workStyleDimensions.length > 0 && (
-        <WorkStyleVisual
-          dimensions={workStyleDimensions}
-          traits={workStyleData?.traits || []}
-        />
+        <InlineEditWrapper
+          isOwner={isOwner}
+          sectionId={workStyleSection?.id || "workstyle"}
+          sectionType="work_style"
+          sectionLabel="Work Style"
+          isEditing={editingSection === "work_style"}
+          onEditStart={() => setEditingSection("work_style")}
+          onEditEnd={() => setEditingSection(null)}
+          onSave={handleSectionSave}
+          editForm={
+            <WorkStyleInlineEdit
+              sectionData={workStyleSection?.section_data || {}}
+              onSave={(data) => handleSectionSave(workStyleSection!.id, data)}
+              onCancel={() => setEditingSection(null)}
+            />
+          }
+        >
+          <WorkStyleVisual
+            dimensions={workStyleDimensions}
+            traits={workStyleData?.traits || []}
+          />
+        </InlineEditWrapper>
       )}
 
       {/* Proof Badge */}
