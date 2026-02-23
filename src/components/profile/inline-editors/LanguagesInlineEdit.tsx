@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Check, Loader2, Plus, Trash2 } from "lucide-react";
+import { toast } from "@/hooks/use-toast";
 
 interface LanguagesInlineEditProps {
   sectionData: Record<string, any>;
@@ -23,6 +24,7 @@ export const LanguagesInlineEdit = ({ sectionData, onSave, onCancel }: Languages
     setSaving(true);
     await onSave({ ...sectionData, languages: languages.filter((l) => l.name.trim()) });
     setSaving(false);
+    toast({ title: "Changes saved", description: "Your profile has been updated." });
   };
 
   return (
@@ -37,17 +39,17 @@ export const LanguagesInlineEdit = ({ sectionData, onSave, onCancel }: Languages
             <option value="Conversational">Conversational</option>
             <option value="Basic">Basic</option>
           </select>
-          <Button variant="ghost" size="icon" onClick={() => setLanguages((p) => p.filter((_, idx) => idx !== i))} className="h-7 w-7 text-destructive">
+          <Button type="button" variant="ghost" size="icon" onClick={() => setLanguages((p) => p.filter((_, idx) => idx !== i))} className="h-7 w-7 text-destructive">
             <Trash2 className="w-3.5 h-3.5" />
           </Button>
         </div>
       ))}
-      <Button variant="outline" size="sm" onClick={() => setLanguages((p) => [...p, { name: "", proficiency: "Professional" }])} className="gap-1.5">
+      <Button type="button" variant="outline" size="sm" onClick={() => setLanguages((p) => [...p, { name: "", proficiency: "Professional" }])} className="gap-1.5">
         <Plus className="w-3.5 h-3.5" /> Add Language
       </Button>
       <div className="flex justify-end gap-2 pt-2">
-        <Button variant="ghost" size="sm" onClick={onCancel}>Cancel</Button>
-        <Button size="sm" onClick={handleSave} disabled={saving} className="gap-1.5">
+        <Button type="button" variant="ghost" size="sm" onClick={onCancel}>Cancel</Button>
+        <Button type="button" size="sm" onClick={handleSave} disabled={saving} className="gap-1.5">
           {saving ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Check className="w-3.5 h-3.5" />}
           Save Changes
         </Button>

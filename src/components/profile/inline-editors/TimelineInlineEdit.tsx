@@ -4,6 +4,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Check, Loader2, Plus, Trash2 } from "lucide-react";
+import { toast } from "@/hooks/use-toast";
 
 interface TimelineInlineEditProps {
   sectionData: Record<string, any>;
@@ -47,6 +48,7 @@ export const TimelineInlineEdit = ({ sectionData, onSave, onCancel }: TimelineIn
     setSaving(true);
     await onSave({ ...sectionData, timeline: entries });
     setSaving(false);
+    toast({ title: "Changes saved", description: "Your profile has been updated." });
   };
 
   return (
@@ -55,7 +57,7 @@ export const TimelineInlineEdit = ({ sectionData, onSave, onCancel }: TimelineIn
         <div key={i} className="p-4 rounded-xl border border-border bg-muted/30 space-y-3">
           <div className="flex items-center justify-between">
             <span className="text-sm font-semibold text-foreground">Role {i + 1}</span>
-            <Button variant="ghost" size="sm" onClick={() => removeEntry(i)} className="text-destructive h-7 text-xs">
+            <Button type="button" variant="ghost" size="sm" onClick={() => removeEntry(i)} className="text-destructive h-7 text-xs">
               <Trash2 className="w-3.5 h-3.5 mr-1" /> Remove
             </Button>
           </div>
@@ -91,12 +93,12 @@ export const TimelineInlineEdit = ({ sectionData, onSave, onCancel }: TimelineIn
           </div>
         </div>
       ))}
-      <Button variant="outline" size="sm" onClick={addEntry} className="gap-1.5">
+      <Button type="button" variant="outline" size="sm" onClick={addEntry} className="gap-1.5">
         <Plus className="w-3.5 h-3.5" /> Add Role
       </Button>
       <div className="flex justify-end gap-2 pt-2">
-        <Button variant="ghost" size="sm" onClick={onCancel}>Cancel</Button>
-        <Button size="sm" onClick={handleSave} disabled={saving} className="gap-1.5">
+        <Button type="button" variant="ghost" size="sm" onClick={onCancel}>Cancel</Button>
+        <Button type="button" size="sm" onClick={handleSave} disabled={saving} className="gap-1.5">
           {saving ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Check className="w-3.5 h-3.5" />}
           Save Changes
         </Button>

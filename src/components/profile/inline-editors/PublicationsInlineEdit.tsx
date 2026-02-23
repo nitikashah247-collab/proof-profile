@@ -3,6 +3,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Check, Loader2, Plus, Trash2 } from "lucide-react";
+import { toast } from "@/hooks/use-toast";
 
 interface PublicationsInlineEditProps {
   sectionData: Record<string, any>;
@@ -29,6 +30,7 @@ export const PublicationsInlineEdit = ({ sectionData, onSave, onCancel }: Public
     setSaving(true);
     await onSave({ ...sectionData, publications: pubs.filter((p) => p.title.trim()) });
     setSaving(false);
+    toast({ title: "Changes saved", description: "Your profile has been updated." });
   };
 
   return (
@@ -37,7 +39,7 @@ export const PublicationsInlineEdit = ({ sectionData, onSave, onCancel }: Public
         <div key={i} className="p-3 rounded-lg border border-border bg-muted/30 space-y-2">
           <div className="flex items-center justify-between">
             <span className="text-xs font-semibold text-foreground">Publication {i + 1}</span>
-            <Button variant="ghost" size="sm" onClick={() => setPubs((p) => p.filter((_, idx) => idx !== i))} className="text-destructive h-7 text-xs">
+            <Button type="button" variant="ghost" size="sm" onClick={() => setPubs((p) => p.filter((_, idx) => idx !== i))} className="text-destructive h-7 text-xs">
               <Trash2 className="w-3.5 h-3.5 mr-1" /> Remove
             </Button>
           </div>
@@ -63,12 +65,12 @@ export const PublicationsInlineEdit = ({ sectionData, onSave, onCancel }: Public
           </div>
         </div>
       ))}
-      <Button variant="outline" size="sm" onClick={() => setPubs((p) => [...p, { title: "", outlet: "", year: "", url: "" }])} className="gap-1.5">
+      <Button type="button" variant="outline" size="sm" onClick={() => setPubs((p) => [...p, { title: "", outlet: "", year: "", url: "" }])} className="gap-1.5">
         <Plus className="w-3.5 h-3.5" /> Add Publication
       </Button>
       <div className="flex justify-end gap-2 pt-2">
-        <Button variant="ghost" size="sm" onClick={onCancel}>Cancel</Button>
-        <Button size="sm" onClick={handleSave} disabled={saving} className="gap-1.5">
+        <Button type="button" variant="ghost" size="sm" onClick={onCancel}>Cancel</Button>
+        <Button type="button" size="sm" onClick={handleSave} disabled={saving} className="gap-1.5">
           {saving ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Check className="w-3.5 h-3.5" />}
           Save Changes
         </Button>
