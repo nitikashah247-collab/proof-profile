@@ -26,7 +26,7 @@ interface CaseStudyItem {
 
 export const CaseStudyInlineEdit = ({ sectionData, onSave, onCancel }: CaseStudyInlineEditProps) => {
   const [studies, setStudies] = useState<CaseStudyItem[]>(
-    (sectionData?.case_studies || []).map((cs: any) => ({
+    (sectionData?.items || sectionData?.case_studies || []).map((cs: any) => ({
       title: cs.title || "",
       company: cs.company || "",
       key_metric: cs.key_metric || "",
@@ -54,7 +54,7 @@ export const CaseStudyInlineEdit = ({ sectionData, onSave, onCancel }: CaseStudy
 
   const handleSave = async () => {
     setSaving(true);
-    await onSave({ ...sectionData, case_studies: studies });
+    await onSave({ ...sectionData, items: studies });
     setSaving(false);
     toast({ title: "Changes saved", description: "Your profile has been updated." });
   };
