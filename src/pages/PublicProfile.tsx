@@ -284,7 +284,7 @@ const PublicProfile = () => {
     artifacts: [],
   }));
 
-  const enrichedCaseStudies = caseStudiesSection?.section_data?.case_studies;
+  const enrichedCaseStudies = caseStudiesSection?.section_data?.items || caseStudiesSection?.section_data?.case_studies;
   const finalCaseStudyCards = enrichedCaseStudies?.length > 0
     ? enrichedCaseStudies.map((cs: any) => ({
         title: cs.title,

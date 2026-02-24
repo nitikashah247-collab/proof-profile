@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Download, Share2, FileText, Copy, Check, Mail, Calendar } from "lucide-react";
+import { Share2, Copy, Check, Mail, Calendar } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 
@@ -25,13 +25,6 @@ export const ProfileActions = ({ profileUrl, name, email, calendlyUrl }: Profile
     }
   };
 
-  const handleDownloadResume = () => {
-    toast.success("Resume download started");
-  };
-
-  const handleDownloadCaseStudy = () => {
-    toast.success("Case study one-pager download started");
-  };
 
   const contactEmail = email || "";
   const mailtoGetInTouch = contactEmail
@@ -95,24 +88,6 @@ export const ProfileActions = ({ profileUrl, name, email, calendlyUrl }: Profile
                   Share Profile
                 </>
               )}
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={handleDownloadResume}
-              className="gap-2"
-            >
-              <Download className="w-4 h-4" />
-              Download Resume
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={handleDownloadCaseStudy}
-              className="gap-2"
-            >
-              <FileText className="w-4 h-4" />
-              Download Case Studies
             </Button>
           </div>
 

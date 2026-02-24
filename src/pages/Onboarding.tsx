@@ -449,7 +449,7 @@ const Onboarding = () => {
         },
         case_studies: {
           section_data: {
-            case_studies: generated?.case_studies || [],
+            items: generated?.case_studies || [],
             proofGallery: generated?.proofGallery || [],
           },
           condition: generated?.case_studies?.length > 0,

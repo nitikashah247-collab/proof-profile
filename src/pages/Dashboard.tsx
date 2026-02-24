@@ -6,8 +6,6 @@ import { Link, useNavigate } from "react-router-dom";
 import {
   Plus,
   Eye,
-  BarChart3,
-  Settings,
   LogOut,
   ExternalLink,
   MoreHorizontal,
@@ -121,18 +119,10 @@ const Dashboard = () => {
         </div>
 
         <nav className="flex-1 space-y-1">
-          <a href="#" className="flex items-center gap-3 px-3 py-2 rounded-lg bg-sidebar-accent text-sidebar-accent-foreground">
+          <button className="w-full flex items-center gap-3 px-3 py-2 rounded-lg bg-sidebar-accent text-sidebar-accent-foreground">
             <Eye className="w-5 h-5" />
             <span className="text-sm font-medium">Profiles</span>
-          </a>
-          <a href="#" className="flex items-center gap-3 px-3 py-2 rounded-lg text-muted-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground transition-colors">
-            <BarChart3 className="w-5 h-5" />
-            <span className="text-sm font-medium">Analytics</span>
-          </a>
-          <a href="#" className="flex items-center gap-3 px-3 py-2 rounded-lg text-muted-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground transition-colors">
-            <Settings className="w-5 h-5" />
-            <span className="text-sm font-medium">Settings</span>
-          </a>
+          </button>
         </nav>
 
         <div className="p-4 rounded-xl bg-primary/5 border border-primary/20 mb-4">
@@ -145,7 +135,7 @@ const Dashboard = () => {
               : `${Math.min(versions.length, 3)} of 3 versions used`}
           </p>
           {!profile?.is_pro && (
-            <Button size="sm" className="w-full">Upgrade to Pro</Button>
+            <Button size="sm" className="w-full" onClick={() => toast({ title: "Coming soon", description: "Pro subscriptions will be available shortly." })}>Upgrade to Pro</Button>
           )}
         </div>
 
