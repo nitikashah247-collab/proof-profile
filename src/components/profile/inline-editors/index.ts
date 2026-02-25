@@ -7,3 +7,4 @@ export { WorkStyleInlineEdit } from "./WorkStyleInlineEdit";
 export { LanguagesInlineEdit } from "./LanguagesInlineEdit";
 export { PublicationsInlineEdit } from "./PublicationsInlineEdit";
 export { TestimonialsInlineEdit } from "./TestimonialsInlineEdit";
+export { GenericInlineEdit } from "./GenericInlineEdit";
