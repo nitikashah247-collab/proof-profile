@@ -24,19 +24,20 @@ export const GenericSectionRenderer = ({
     if (meaningfulEntries.length === 0) return null;
 
     return (
-      <section className="py-16">
-        <div className="container mx-auto px-6">
+      <section className="py-24 lg:py-32">
+        <div className="container mx-auto px-6 lg:px-8">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             className="max-w-5xl"
           >
-            <h2 className="text-3xl font-bold mb-8 text-foreground">{displayName}</h2>
+            <p className="section-overline mb-2">{sectionType.replace(/_/g, " ")}</p>
+            <h2 className="section-heading text-4xl mb-10 text-foreground">{displayName}</h2>
             <div className="space-y-3">
               {meaningfulEntries.map(([key, val], i) => (
-                <div key={i} className="p-4 rounded-xl border border-border bg-card">
-                  <p className="text-xs text-muted-foreground capitalize mb-1">
+                <div key={i} className="p-5 rounded-xl border border-border bg-card hover:border-primary/30 transition-colors">
+                  <p className="text-xs text-muted-foreground capitalize mb-1 tracking-wide">
                     {key.replace(/_/g, " ")}
                   </p>
                   <p className="text-sm text-foreground">{String(val)}</p>
@@ -50,18 +51,19 @@ export const GenericSectionRenderer = ({
   }
 
   return (
-    <section className="py-16">
-      <div className="container mx-auto px-6">
+    <section className="py-24 lg:py-32">
+      <div className="container mx-auto px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           className="max-w-5xl"
         >
-          <h2 className="text-3xl font-bold mb-8 text-foreground">{displayName}</h2>
+          <p className="section-overline mb-2">{sectionType.replace(/_/g, " ")}</p>
+          <h2 className="section-heading text-4xl mb-10 text-foreground">{displayName}</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {items.map((item: any, i: number) => (
-              <div key={i} className="p-5 rounded-xl border border-border bg-card space-y-2">
+              <div key={i} className="p-5 rounded-xl border border-border bg-card space-y-2 hover:border-primary/30 transition-colors">
                 <h3 className="font-semibold text-foreground">
                   {item.title || item.name || item.role || item.company || item.project || `Item ${i + 1}`}
                 </h3>
@@ -75,7 +77,7 @@ export const GenericSectionRenderer = ({
                 )}
 
                 {(item.description || item.summary || item.details || item.content) && (
-                  <p className="text-sm text-muted-foreground">
+                  <p className="text-sm text-muted-foreground leading-relaxed">
                     {item.description || item.summary || item.details || item.content}
                   </p>
                 )}
@@ -92,7 +94,7 @@ export const GenericSectionRenderer = ({
                 )}
 
                 {(item.metric || item.value || item.result) && (
-                  <p className="text-sm font-semibold text-primary">
+                  <p className="text-sm font-mono font-semibold text-primary">
                     {item.metric || item.value || item.result}
                   </p>
                 )}

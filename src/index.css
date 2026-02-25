@@ -38,6 +38,10 @@
 
     --radius: 0.5rem;
 
+    /* Typography */
+    --font-display: 'Instrument Serif', Georgia, serif;
+    --font-body: 'DM Sans', system-ui, sans-serif;
+
     /* Custom Proof tokens */
     --proof-success: 160 84% 39%;
     --proof-warning: 38 92% 50%;
@@ -66,8 +70,58 @@
 
   body {
     @apply bg-background text-foreground antialiased;
+    font-family: var(--font-body);
     font-feature-settings: "cv02", "cv03", "cv04", "cv11";
   }
+}
+
+/* Profile page atmosphere */
+.profile-page {
+  background: linear-gradient(180deg, 
+    hsl(var(--background)) 0%, 
+    hsl(var(--muted) / 0.3) 50%,
+    hsl(var(--background)) 100%
+  );
+}
+
+.profile-page::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 0;
+}
+
+.profile-page > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* Section overline label */
+.section-overline {
+  font-family: var(--font-body);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: hsl(var(--primary));
+}
+
+/* Section heading — editorial serif */
+.section-heading {
+  font-family: var(--font-display);
+  font-weight: 400;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+}
+
+/* Glass card */
+.glass-card {
+  background: hsl(var(--card) / 0.6);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid hsl(var(--border) / 0.5);
 }
 
 @layer components {

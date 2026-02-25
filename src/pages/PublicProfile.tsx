@@ -628,7 +628,7 @@ const PublicProfile = () => {
     .sort((a, b) => a.section_order - b.section_order);
 
   return (
-    <div className="min-h-screen bg-background text-foreground" style={themeStyle}>
+    <div className="min-h-screen profile-page text-foreground" style={themeStyle}>
       {/* Owner controls */}
       {isOwner && (
         <ProfileOwnerBar onAddSection={() => setShowAddSection(true)} />
@@ -686,9 +686,9 @@ const PublicProfile = () => {
           company={profile.industry || ""}
           tagline={profile.bio || ""}
           photoUrl={profile.avatar_url || undefined}
-          skills={skillNames.slice(0, 7)}
-          activeSkill={activeSkill}
-          onSkillClick={setActiveSkill}
+          skills={[]}
+          activeSkill={null}
+          onSkillClick={() => {}}
           stats={normalizedHeroStats}
           email={heroSection?.section_data?.email || ""}
           calendlyUrl={heroSection?.section_data?.calendly_url || ""}
@@ -753,21 +753,22 @@ const PublicProfile = () => {
               />
             }
           >
-            <section className="py-16 bg-muted/30">
-              <div className="container mx-auto px-6">
+            <section className="py-24 lg:py-32 bg-muted/30">
+              <div className="container mx-auto px-6 lg:px-8">
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   className="max-w-5xl"
                 >
-                  <div className="flex items-center justify-between mb-8">
+                  <div className="flex items-center justify-between mb-10">
                     <div>
-                      <h2 className="text-3xl font-bold mb-2 text-foreground">Impact Stories</h2>
-                      <p className="text-muted-foreground">
+                      <p className="section-overline mb-2">Case Studies</p>
+                      <h2 className="section-heading text-4xl text-foreground">Impact Stories</h2>
+                      <p className="text-muted-foreground mt-2">
                         {activeSkill
                           ? `Showing ${filteredCaseStudies.length} stories related to "${activeSkill}"`
-                          : "Click a skill above to filter by expertise"}
+                          : "Real results from real challenges"}
                       </p>
                     </div>
                     {activeSkill && (
@@ -912,15 +913,16 @@ const PublicProfile = () => {
             />
           }
         >
-          <section className="py-16 bg-muted/30">
-            <div className="container mx-auto px-6">
+          <section className="py-24 lg:py-32 bg-muted/30">
+            <div className="container mx-auto px-6 lg:px-8">
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 className="max-w-5xl"
               >
-                <h2 className="text-3xl font-bold mb-8 text-foreground">Languages</h2>
+                <p className="section-overline mb-2">Communication</p>
+                <h2 className="section-heading text-4xl mb-10 text-foreground">Languages</h2>
                 <div className="flex flex-wrap gap-4">
                   {(languagesSection!.section_data.languages || []).map((lang: any, i: number) => (
                     <div key={i} className="px-5 py-3 rounded-xl border border-border bg-card flex items-center gap-3">
@@ -962,24 +964,25 @@ const PublicProfile = () => {
             />
           }
         >
-          <section className="py-16">
-            <div className="container mx-auto px-6">
+          <section className="py-24 lg:py-32">
+            <div className="container mx-auto px-6 lg:px-8">
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 className="max-w-5xl"
               >
-                <h2 className="text-3xl font-bold mb-8 text-foreground">Publications</h2>
+                <p className="section-overline mb-2">Writing & Research</p>
+                <h2 className="section-heading text-4xl mb-10 text-foreground">Publications</h2>
                 <div className="space-y-4">
                   {(publicationsSection!.section_data.publications || []).map((pub: any, i: number) => (
-                    <div key={i} className="p-4 rounded-xl border border-border bg-card flex items-start gap-4">
+                    <div key={i} className="p-5 rounded-xl border border-border bg-card flex items-start gap-4 hover:border-primary/30 transition-colors">
                       <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary shrink-0 mt-0.5">
                         📄
                       </div>
                       <div className="flex-1 min-w-0">
                         <p className="font-semibold text-sm text-foreground">{pub.title}</p>
-                        <p className="text-xs text-muted-foreground">
+                        <p className="text-xs text-muted-foreground mt-1">
                           {[pub.outlet, pub.year].filter(Boolean).join(" · ")}
                         </p>
                       </div>
