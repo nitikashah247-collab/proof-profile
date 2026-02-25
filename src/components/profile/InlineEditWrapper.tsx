@@ -1,6 +1,6 @@
 import { ReactNode } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Pencil, X } from "lucide-react";
+import { Pencil, X, Trash2, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useIsMobile } from "@/hooks/use-mobile";
 
@@ -14,6 +14,9 @@ interface InlineEditWrapperProps {
   isEditing: boolean;
   onEditStart: () => void;
   onEditEnd: () => void;
+  onRemove?: () => void;
+  isEmpty?: boolean;
+  isCoreSection?: boolean;
 }
 
 export const InlineEditWrapper = ({
@@ -26,6 +29,9 @@ export const InlineEditWrapper = ({
   isEditing,
   onEditStart,
   onEditEnd,
+  onRemove,
+  isEmpty,
+  isCoreSection,
 }: InlineEditWrapperProps) => {
   const isMobile = useIsMobile();
 
@@ -39,7 +45,7 @@ export const InlineEditWrapper = ({
       )}
 
       {/* Edit button - appears on hover (or always on mobile), top right of section */}
-      {!isEditing && (
+      {!isEditing && !isEmpty && (
         <div className={`absolute top-4 right-4 z-20 transition-opacity duration-200 ${isMobile ? "opacity-100" : "opacity-0 group-hover/edit:opacity-100"}`}>
           <Button
             size="sm"
@@ -72,14 +78,52 @@ export const InlineEditWrapper = ({
                 <Pencil className="w-3.5 h-3.5" />
                 Editing {sectionLabel}
               </span>
-              <Button variant="ghost" size="sm" onClick={onEditEnd} className="gap-1 text-xs h-7">
-                <X className="w-3.5 h-3.5" />
-                Cancel
-              </Button>
+              <div className="flex items-center gap-2">
+                {onRemove && !isCoreSection && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={onRemove}
+                    className="gap-1 text-xs h-7 text-destructive hover:text-destructive hover:bg-destructive/10"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                    Remove Section
+                  </Button>
+                )}
+                <Button variant="ghost" size="sm" onClick={onEditEnd} className="gap-1 text-xs h-7">
+                  <X className="w-3.5 h-3.5" />
+                  Cancel
+                </Button>
+              </div>
             </div>
             {/* Edit form content */}
             <div className="p-6 border border-primary/20 border-t-0 rounded-b-xl bg-card">
               {editForm}
+            </div>
+          </motion.div>
+        ) : isEmpty ? (
+          <motion.div key="empty" initial={false} animate={{ opacity: 1 }}>
+            <div className="py-12 flex flex-col items-center gap-3">
+              <p className="text-sm text-muted-foreground">
+                No content in {sectionLabel} yet
+              </p>
+              <div className="flex items-center gap-2">
+                <Button size="sm" variant="outline" className="gap-1.5 text-xs" onClick={onEditStart}>
+                  <Plus className="w-3.5 h-3.5" />
+                  Add Content
+                </Button>
+                {onRemove && !isCoreSection && (
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    className="gap-1.5 text-xs text-destructive hover:text-destructive hover:bg-destructive/10"
+                    onClick={onRemove}
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                    Remove
+                  </Button>
+                )}
+              </div>
             </div>
           </motion.div>
         ) : (

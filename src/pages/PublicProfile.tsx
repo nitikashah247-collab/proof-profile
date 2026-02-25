@@ -3,10 +3,11 @@ import { useParams, Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Loader2 } from "lucide-react";
+import { ArrowLeft, Loader2, Plus } from "lucide-react";
 import { Users, Zap, Brain, MessageSquare } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "@/hooks/use-toast";
+import { useSectionTemplates } from "@/hooks/useSectionTemplates";
 
 // Reuse demo-quality components
 import { ProfileHero } from "@/components/profile/ProfileHero";
@@ -19,6 +20,8 @@ import { WorkStyleVisual } from "@/components/profile/WorkStyleVisual";
 import { CoverBanner } from "@/components/profile/CoverBanner";
 import { ProfileOwnerBar } from "@/components/profile/ProfileOwnerBar";
 import { AnalyticsPreview } from "@/components/profile/AnalyticsPreview";
+import { AddSectionModal } from "@/components/profile/AddSectionModal";
+import { GenericSectionRenderer } from "@/components/profile/GenericSectionRenderer";
 import { CareerCoachDrawer } from "@/components/editor/CareerCoachDrawer";
 import { ProofGallerySection } from "@/components/profile/ProofGallerySection";
 import { InlineEditWrapper } from "@/components/profile/InlineEditWrapper";
@@ -33,6 +36,7 @@ import {
   PublicationsInlineEdit,
   TestimonialsInlineEdit,
 } from "@/components/profile/inline-editors";
+import { GenericInlineEdit } from "@/components/profile/inline-editors/GenericInlineEdit";
 
 interface ProfileSection {
   id: string;
@@ -49,6 +53,13 @@ const WORK_STYLE_ICONS: Record<string, React.ElementType> = {
   "Communication": MessageSquare,
 };
 
+// Section types that have dedicated renderers (not handled by the generic loop)
+const DEDICATED_SECTION_TYPES = [
+  "hero", "about", "contact", "impact_charts", "case_studies",
+  "career_timeline", "skills_matrix", "skills", "testimonials",
+  "client_testimonials", "work_style", "languages", "publications",
+];
+
 const PublicProfile = () => {
   const { slug } = useParams<{ slug: string }>();
   const { user } = useAuth();
@@ -63,7 +74,9 @@ const PublicProfile = () => {
   const [activeSkill, setActiveSkill] = useState<string | null>(null);
   const [isOwner, setIsOwner] = useState(false);
   const [editingSection, setEditingSection] = useState<string | null>(null);
+  const [showAddSection, setShowAddSection] = useState(false);
   const [analyticsData, setAnalyticsData] = useState({ totalViews: 0, avgTimeOnPage: "0s", topSection: "—", viewsThisWeek: 0 });
+  const { data: sectionTemplates = [] } = useSectionTemplates();
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -86,14 +99,15 @@ const PublicProfile = () => {
       }
 
       setProfile(data);
-      setIsOwner(!!user && data.user_id === user.id);
+      const ownerCheck = !!user && data.user_id === user.id;
+      setIsOwner(ownerCheck);
+
       // Fetch all related data in parallel
       const [sectionsRes, timelineRes, skillsRes, caseStudiesRes, testimonialsRes] = await Promise.all([
         supabase
           .from("profile_sections")
           .select("*")
           .eq("profile_id", data.id)
-          .eq("is_visible", true)
           .order("section_order", { ascending: true }),
         supabase
           .from("career_timeline")
@@ -117,14 +131,39 @@ const PublicProfile = () => {
           .order("sort_order", { ascending: true }),
       ]);
 
-      setSections((sectionsRes.data as ProfileSection[]) || []);
+      // For owners, show all sections; for visitors, only visible ones
+      const allSections = (sectionsRes.data as ProfileSection[]) || [];
+      setSections(ownerCheck ? allSections : allSections.filter((s) => s.is_visible));
       setTimeline(timelineRes.data || []);
       setSkills(skillsRes.data || []);
       setCaseStudies(caseStudiesRes.data || []);
       setTestimonials(testimonialsRes.data || []);
 
+      // Record profile view for non-owners
+      if (!ownerCheck) {
+        const versionRes = await supabase
+          .from("profile_versions")
+          .select("id")
+          .eq("profile_id", data.id)
+          .eq("is_published", true)
+          .limit(1)
+          .maybeSingle();
+
+        if (versionRes.data) {
+          supabase
+            .from("profile_views")
+            .insert({
+              profile_id: data.id,
+              profile_version_id: versionRes.data.id,
+            })
+            .then(({ error: viewErr }) => {
+              if (viewErr) console.error("Failed to record view:", viewErr);
+            });
+        }
+      }
+
       // Fetch analytics for owner
-      if (!!user && data.user_id === user.id) {
+      if (ownerCheck) {
         const now = new Date();
         const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
         const { data: views } = await supabase
@@ -160,14 +199,6 @@ const PublicProfile = () => {
   const handleAddSection = async (sectionType: string) => {
     if (!profile || !user) return;
     const maxOrder = sections.length > 0 ? Math.max(...sections.map((s) => s.section_order)) + 1 : 0;
-    const defaultData: Record<string, any> = {};
-    // Provide empty structure so inline editors have something to render
-    if (sectionType === "testimonials") defaultData.testimonials = [];
-    if (sectionType === "languages") defaultData.languages = [];
-    if (sectionType === "publications") defaultData.publications = [];
-    if (sectionType === "work_style") defaultData.work_style = { dimensions: [], traits: [] };
-    if (sectionType === "impact_charts") defaultData.visualizations = [];
-    if (sectionType === "case_studies") defaultData.items = [];
 
     const { data: created, error } = await supabase
       .from("profile_sections")
@@ -176,7 +207,8 @@ const PublicProfile = () => {
         user_id: user.id,
         section_type: sectionType,
         section_order: maxOrder,
-        section_data: defaultData,
+        section_data: {},
+        is_visible: true,
       })
       .select()
       .single();
@@ -187,9 +219,25 @@ const PublicProfile = () => {
     }
     if (created) {
       setSections((prev) => [...prev, created as ProfileSection]);
-      setEditingSection(sectionType);
-      toast({ title: "Section added", description: "Start editing below." });
+      toast({ title: "Section added! Hover over it to start editing." });
     }
+  };
+
+  // --- Remove section handler ---
+  const handleRemoveSection = async (sectionId: string) => {
+    const { error } = await supabase
+      .from("profile_sections")
+      .delete()
+      .eq("id", sectionId);
+
+    if (error) {
+      toast({ title: "Error removing section", description: error.message, variant: "destructive" });
+      return;
+    }
+
+    setSections((prev) => prev.filter((s) => s.id !== sectionId));
+    setEditingSection(null);
+    toast({ title: "Section removed" });
   };
 
   // --- Inline editing handlers ---
@@ -203,6 +251,7 @@ const PublicProfile = () => {
       .eq("id", sectionId);
     if (error) {
       console.error("Failed to save section:", error);
+      toast({ title: "Save failed", description: error.message, variant: "destructive" });
     }
     setEditingSection(null);
   };
@@ -211,7 +260,6 @@ const PublicProfile = () => {
     if (caseStudiesSection) {
       await handleSectionSave(caseStudiesSection.id, newData);
     } else if (profile && user) {
-      // No profile_sections row exists yet — create one
       const { data: created, error } = await supabase
         .from("profile_sections")
         .insert({
@@ -255,7 +303,6 @@ const PublicProfile = () => {
 
   const handleTestimonialsSave = async (items: Array<{ quote: string; author: string; role: string; company: string }>) => {
     if (!profile || !user) return;
-    // Delete existing testimonials and re-insert
     const { error: delError } = await supabase
       .from("testimonials")
       .delete()
@@ -283,7 +330,6 @@ const PublicProfile = () => {
         return;
       }
     }
-    // Update local state
     setTestimonials(items.map((t, idx) => ({
       id: `temp-${idx}`,
       quote: t.quote,
@@ -491,13 +537,37 @@ const PublicProfile = () => {
   // Legacy archetype support
   const archetype = heroSection?.section_data?.archetype || heroSection?.section_data?.themeBase || "";
 
+  // Helper to check if a section has meaningful content
+  const sectionHasContent = (section: ProfileSection | undefined) => {
+    if (!section) return false;
+    const d = section.section_data;
+    if (!d || Object.keys(d).length === 0) return false;
+    // Check for items array or type-specific array
+    const items = d.items || d[section.section_type];
+    if (Array.isArray(items) && items.length > 0) return true;
+    // Check for any string values
+    return Object.values(d).some((v) => typeof v === "string" && v.length > 0);
+  };
+
+  // Generic sections (not handled by dedicated renderers)
+  const genericSections = sections
+    .filter((s) => !DEDICATED_SECTION_TYPES.includes(s.section_type) && (s.is_visible || isOwner))
+    .sort((a, b) => a.section_order - b.section_order);
+
   return (
     <div className="min-h-screen bg-background text-foreground" style={themeStyle}>
       {/* Owner controls */}
       {isOwner && (
-        <ProfileOwnerBar
-          existingSectionTypes={sections.map((s) => s.section_type)}
+        <ProfileOwnerBar onAddSection={() => setShowAddSection(true)} />
+      )}
+
+      {/* Add Section Modal */}
+      {showAddSection && (
+        <AddSectionModal
+          open={showAddSection}
+          onClose={() => setShowAddSection(false)}
           onAddSection={handleAddSection}
+          activeSectionTypes={sections.map((s) => s.section_type)}
         />
       )}
 
@@ -522,6 +592,7 @@ const PublicProfile = () => {
         isEditing={editingSection === "hero"}
         onEditStart={() => setEditingSection("hero")}
         onEditEnd={() => setEditingSection(null)}
+        isCoreSection={true}
         editForm={
           <HeroInlineEdit
             profileData={profile}
@@ -549,7 +620,7 @@ const PublicProfile = () => {
       </InlineEditWrapper>
 
       {/* Impact Charts */}
-      {visualizations.length > 0 && (
+      {(visualizations.length > 0 || (isOwner && impactSection)) && (
         <InlineEditWrapper
           isOwner={isOwner}
           sectionId={impactSection?.id || "impact"}
@@ -558,6 +629,8 @@ const PublicProfile = () => {
           isEditing={editingSection === "impact_charts"}
           onEditStart={() => setEditingSection("impact_charts")}
           onEditEnd={() => setEditingSection(null)}
+          onRemove={impactSection ? () => handleRemoveSection(impactSection.id) : undefined}
+          isEmpty={visualizations.length === 0}
           editForm={
             <ImpactChartsInlineEdit
               sectionData={impactSection?.section_data || {}}
@@ -571,7 +644,7 @@ const PublicProfile = () => {
       )}
 
       {/* Case Studies */}
-      {finalCaseStudyCards.length > 0 && (() => {
+      {(finalCaseStudyCards.length > 0 || (isOwner && caseStudiesSection)) && (() => {
         const limitedCaseStudies = finalCaseStudyCards.slice(0, 5);
         const limitedFiltered = activeSkill
           ? limitedCaseStudies.filter((cs: any) => cs.skills.includes(activeSkill))
@@ -585,6 +658,8 @@ const PublicProfile = () => {
             isEditing={editingSection === "case_studies"}
             onEditStart={() => setEditingSection("case_studies")}
             onEditEnd={() => setEditingSection(null)}
+            onRemove={caseStudiesSection ? () => handleRemoveSection(caseStudiesSection.id) : undefined}
+            isEmpty={finalCaseStudyCards.length === 0}
             editForm={
               <CaseStudyInlineEdit
                 sectionData={caseStudiesSection?.section_data || {}}
@@ -639,7 +714,7 @@ const PublicProfile = () => {
       )}
 
       {/* Career Timeline */}
-      {timelineEntries.length > 0 && (
+      {(timelineEntries.length > 0 || (isOwner && timelineSection)) && (
         <InlineEditWrapper
           isOwner={isOwner}
           sectionId={timelineSection?.id || "timeline"}
@@ -648,6 +723,8 @@ const PublicProfile = () => {
           isEditing={editingSection === "career_timeline"}
           onEditStart={() => setEditingSection("career_timeline")}
           onEditEnd={() => setEditingSection(null)}
+          onRemove={timelineSection ? () => handleRemoveSection(timelineSection.id) : undefined}
+          isEmpty={timelineEntries.length === 0}
           editForm={
             <TimelineInlineEdit
               sectionData={timelineSection?.section_data || {}}
@@ -661,7 +738,7 @@ const PublicProfile = () => {
       )}
 
       {/* Skills Matrix */}
-      {skillsData.length > 0 && (
+      {(skillsData.length > 0 || (isOwner && skillsSection)) && (
         <InlineEditWrapper
           isOwner={isOwner}
           sectionId={skillsSection?.id || "skills"}
@@ -670,6 +747,8 @@ const PublicProfile = () => {
           isEditing={editingSection === "skills_matrix"}
           onEditStart={() => setEditingSection("skills_matrix")}
           onEditEnd={() => setEditingSection(null)}
+          onRemove={skillsSection ? () => handleRemoveSection(skillsSection.id) : undefined}
+          isEmpty={skillsData.length === 0}
           editForm={
             <SkillsInlineEdit
               sectionData={skillsSection?.section_data || {}}
@@ -688,6 +767,7 @@ const PublicProfile = () => {
         </InlineEditWrapper>
       )}
 
+      {/* Testimonials */}
       {(testimonialCards.length > 0 || (isOwner && testimonialsSection)) && (
         <InlineEditWrapper
           isOwner={isOwner}
@@ -697,6 +777,8 @@ const PublicProfile = () => {
           isEditing={editingSection === "testimonials"}
           onEditStart={() => setEditingSection("testimonials")}
           onEditEnd={() => setEditingSection(null)}
+          onRemove={testimonialsSection ? () => handleRemoveSection(testimonialsSection.id) : undefined}
+          isEmpty={testimonialCards.length === 0}
           editForm={
             <TestimonialsInlineEdit
               testimonials={testimonialCards}
@@ -705,32 +787,26 @@ const PublicProfile = () => {
             />
           }
         >
-          {testimonialCards.length > 0 ? (
-            <TestimonialsCarousel testimonials={testimonialCards} />
-          ) : (
-            <section className="py-12">
-              <div className="container mx-auto px-6 text-center">
-                <p className="text-muted-foreground italic">No testimonials yet — hover to add some.</p>
-              </div>
-            </section>
-          )}
+          <TestimonialsCarousel testimonials={testimonialCards} />
         </InlineEditWrapper>
       )}
 
       {/* Languages */}
-      {(languagesSection?.section_data?.languages?.length > 0 || (isOwner && languagesSection)) && (
+      {((languagesSection?.section_data?.languages?.length > 0) || (isOwner && languagesSection)) && (
         <InlineEditWrapper
           isOwner={isOwner}
-          sectionId={languagesSection.id}
+          sectionId={languagesSection!.id}
           sectionType="languages"
           sectionLabel="Languages"
           isEditing={editingSection === "languages"}
           onEditStart={() => setEditingSection("languages")}
           onEditEnd={() => setEditingSection(null)}
+          onRemove={() => handleRemoveSection(languagesSection!.id)}
+          isEmpty={!(languagesSection!.section_data.languages || []).length}
           editForm={
             <LanguagesInlineEdit
-              sectionData={languagesSection.section_data}
-              onSave={(data) => handleSectionSave(languagesSection.id, data)}
+              sectionData={languagesSection!.section_data}
+              onSave={(data) => handleSectionSave(languagesSection!.id, data)}
               onCancel={() => setEditingSection(null)}
             />
           }
@@ -744,21 +820,17 @@ const PublicProfile = () => {
                 className="max-w-5xl"
               >
                 <h2 className="text-3xl font-bold mb-8 text-foreground">Languages</h2>
-                {(languagesSection.section_data.languages || []).length > 0 ? (
-                  <div className="flex flex-wrap gap-4">
-                    {languagesSection.section_data.languages.map((lang: any, i: number) => (
-                      <div key={i} className="px-5 py-3 rounded-xl border border-border bg-card flex items-center gap-3">
-                        <span className="text-lg">🌐</span>
-                        <div>
-                          <p className="font-semibold text-sm text-foreground">{lang.name}</p>
-                          <p className="text-xs text-muted-foreground">{lang.proficiency}</p>
-                        </div>
+                <div className="flex flex-wrap gap-4">
+                  {(languagesSection!.section_data.languages || []).map((lang: any, i: number) => (
+                    <div key={i} className="px-5 py-3 rounded-xl border border-border bg-card flex items-center gap-3">
+                      <span className="text-lg">🌐</span>
+                      <div>
+                        <p className="font-semibold text-sm text-foreground">{lang.name}</p>
+                        <p className="text-xs text-muted-foreground">{lang.proficiency}</p>
                       </div>
-                    ))}
-                  </div>
-                ) : (
-                  <p className="text-muted-foreground italic">No languages yet — hover to add some.</p>
-                )}
+                    </div>
+                  ))}
+                </div>
               </motion.div>
             </div>
           </section>
@@ -766,19 +838,21 @@ const PublicProfile = () => {
       )}
 
       {/* Publications */}
-      {(publicationsSection?.section_data?.publications?.length > 0 || (isOwner && publicationsSection)) && (
+      {((publicationsSection?.section_data?.publications?.length > 0) || (isOwner && publicationsSection)) && (
         <InlineEditWrapper
           isOwner={isOwner}
-          sectionId={publicationsSection.id}
+          sectionId={publicationsSection!.id}
           sectionType="publications"
           sectionLabel="Publications"
           isEditing={editingSection === "publications"}
           onEditStart={() => setEditingSection("publications")}
           onEditEnd={() => setEditingSection(null)}
+          onRemove={() => handleRemoveSection(publicationsSection!.id)}
+          isEmpty={!(publicationsSection!.section_data.publications || []).length}
           editForm={
             <PublicationsInlineEdit
-              sectionData={publicationsSection.section_data}
-              onSave={(data) => handleSectionSave(publicationsSection.id, data)}
+              sectionData={publicationsSection!.section_data}
+              onSave={(data) => handleSectionSave(publicationsSection!.id, data)}
               onCancel={() => setEditingSection(null)}
             />
           }
@@ -792,30 +866,26 @@ const PublicProfile = () => {
                 className="max-w-5xl"
               >
                 <h2 className="text-3xl font-bold mb-8 text-foreground">Publications</h2>
-                {(publicationsSection.section_data.publications || []).length > 0 ? (
-                  <div className="space-y-4">
-                    {publicationsSection.section_data.publications.map((pub: any, i: number) => (
-                      <div key={i} className="p-4 rounded-xl border border-border bg-card flex items-start gap-4">
-                        <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary shrink-0 mt-0.5">
-                          📄
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <p className="font-semibold text-sm text-foreground">{pub.title}</p>
-                          <p className="text-xs text-muted-foreground">
-                            {[pub.outlet, pub.year].filter(Boolean).join(" · ")}
-                          </p>
-                        </div>
-                        {pub.url && (
-                          <a href={pub.url} target="_blank" rel="noopener noreferrer" className="text-xs text-primary hover:underline shrink-0">
-                            Read →
-                          </a>
-                        )}
+                <div className="space-y-4">
+                  {(publicationsSection!.section_data.publications || []).map((pub: any, i: number) => (
+                    <div key={i} className="p-4 rounded-xl border border-border bg-card flex items-start gap-4">
+                      <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary shrink-0 mt-0.5">
+                        📄
                       </div>
-                    ))}
-                  </div>
-                ) : (
-                  <p className="text-muted-foreground italic">No publications yet — hover to add some.</p>
-                )}
+                      <div className="flex-1 min-w-0">
+                        <p className="font-semibold text-sm text-foreground">{pub.title}</p>
+                        <p className="text-xs text-muted-foreground">
+                          {[pub.outlet, pub.year].filter(Boolean).join(" · ")}
+                        </p>
+                      </div>
+                      {pub.url && (
+                        <a href={pub.url} target="_blank" rel="noopener noreferrer" className="text-xs text-primary hover:underline shrink-0">
+                          Read →
+                        </a>
+                      )}
+                    </div>
+                  ))}
+                </div>
               </motion.div>
             </div>
           </section>
@@ -832,6 +902,8 @@ const PublicProfile = () => {
           isEditing={editingSection === "work_style"}
           onEditStart={() => setEditingSection("work_style")}
           onEditEnd={() => setEditingSection(null)}
+          onRemove={workStyleSection ? () => handleRemoveSection(workStyleSection.id) : undefined}
+          isEmpty={workStyleDimensions.length === 0}
           editForm={
             <WorkStyleInlineEdit
               sectionData={workStyleSection?.section_data || {}}
@@ -840,19 +912,73 @@ const PublicProfile = () => {
             />
           }
         >
-          {workStyleDimensions.length > 0 ? (
-            <WorkStyleVisual
-              dimensions={workStyleDimensions}
-              traits={workStyleData?.traits || []}
-            />
-          ) : (
-            <section className="py-12">
-              <div className="container mx-auto px-6 text-center">
-                <p className="text-muted-foreground italic">No work style data yet — hover to add dimensions.</p>
-              </div>
-            </section>
-          )}
+          <WorkStyleVisual
+            dimensions={workStyleDimensions}
+            traits={workStyleData?.traits || []}
+          />
         </InlineEditWrapper>
+      )}
+
+      {/* Dynamic generic sections — render ALL other section types */}
+      {genericSections.map((section) => {
+        const template = sectionTemplates.find((t) => t.section_type === section.section_type);
+        const displayName = template?.display_name || section.section_type.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
+        const items = section.section_data?.items || section.section_data?.[section.section_type] || [];
+        const hasItems = Array.isArray(items) && items.length > 0;
+        const hasContent = hasItems || sectionHasContent(section);
+
+        return (
+          <InlineEditWrapper
+            key={section.id}
+            isOwner={isOwner}
+            sectionId={section.id}
+            sectionType={section.section_type}
+            sectionLabel={displayName}
+            isEditing={editingSection === section.section_type}
+            onEditStart={() => setEditingSection(section.section_type)}
+            onEditEnd={() => setEditingSection(null)}
+            onRemove={() => handleRemoveSection(section.id)}
+            isEmpty={!hasContent}
+            isCoreSection={false}
+            editForm={
+              <GenericInlineEdit
+                sectionData={section.section_data || {}}
+                sectionType={section.section_type}
+                displayName={displayName}
+                onSave={(data) => handleSectionSave(section.id, data)}
+                onCancel={() => setEditingSection(null)}
+              />
+            }
+          >
+            {hasContent ? (
+              <GenericSectionRenderer
+                sectionType={section.section_type}
+                displayName={displayName}
+                sectionData={section.section_data}
+              />
+            ) : null}
+          </InlineEditWrapper>
+        );
+      })}
+
+      {/* Add Section — bottom of profile, owner only */}
+      {isOwner && (
+        <section className="py-12">
+          <div className="container mx-auto px-6">
+            <div className="max-w-5xl">
+              <button
+                onClick={() => setShowAddSection(true)}
+                className="w-full py-8 rounded-xl border-2 border-dashed border-border hover:border-primary/40 transition-colors flex flex-col items-center gap-2 text-muted-foreground hover:text-foreground"
+              >
+                <Plus className="w-6 h-6" />
+                <span className="font-medium">Add a new section to your profile</span>
+                <span className="text-xs text-muted-foreground">
+                  Choose from {sectionTemplates.filter((t) => !t.is_core).length}+ section types for any industry
+                </span>
+              </button>
+            </div>
+          </div>
+        </section>
       )}
 
       {/* Proof Badge */}
@@ -876,7 +1002,7 @@ const PublicProfile = () => {
           profileData={profile}
           sections={sections}
           activeSectionTypes={sections.map((s) => s.section_type)}
-          onAddSection={() => {}}
+          onAddSection={() => setShowAddSection(true)}
         />
       )}
     </div>
