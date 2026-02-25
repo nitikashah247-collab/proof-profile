@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import { useParams, Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
@@ -223,21 +223,85 @@ const PublicProfile = () => {
     }
   };
 
-  // --- Remove section handler ---
-  const handleRemoveSection = async (sectionId: string) => {
-    const { error } = await supabase
-      .from("profile_sections")
-      .delete()
-      .eq("id", sectionId);
+  // --- Remove section handler with undo ---
+  const pendingRemovalRef = useRef<{ section: ProfileSection; timeoutId: ReturnType<typeof setTimeout> } | null>(null);
 
-    if (error) {
-      toast({ title: "Error removing section", description: error.message, variant: "destructive" });
-      return;
+  useEffect(() => {
+    return () => {
+      if (pendingRemovalRef.current) {
+        clearTimeout(pendingRemovalRef.current.timeoutId);
+        supabase.from("profile_sections").delete().eq("id", pendingRemovalRef.current.section.id);
+      }
+    };
+  }, []);
+
+  const handleRemoveSection = async (sectionId: string) => {
+    const section = sections.find((s) => s.id === sectionId);
+    if (!section) return;
+
+    // Commit any previous pending removal immediately
+    if (pendingRemovalRef.current) {
+      clearTimeout(pendingRemovalRef.current.timeoutId);
+      await supabase.from("profile_sections").delete().eq("id", pendingRemovalRef.current.section.id);
     }
 
+    // Optimistic UI removal
     setSections((prev) => prev.filter((s) => s.id !== sectionId));
     setEditingSection(null);
-    toast({ title: "Section removed" });
+
+    // Set 5-second timer for permanent deletion
+    const timeoutId = setTimeout(async () => {
+      await supabase.from("profile_sections").delete().eq("id", sectionId);
+      pendingRemovalRef.current = null;
+    }, 5000);
+
+    pendingRemovalRef.current = { section, timeoutId };
+
+    const template = sectionTemplates.find((t) => t.section_type === section.section_type);
+    const displayName = template?.display_name || section.section_type.replace(/_/g, " ");
+
+    toast({
+      title: `${displayName} removed`,
+      description: (
+        <div className="flex items-center gap-3 mt-1">
+          <span className="text-sm">Section removed from profile</span>
+          <button
+            type="button"
+            onClick={() => {
+              clearTimeout(timeoutId);
+              setSections((prev) => [...prev, section].sort((a, b) => a.section_order - b.section_order));
+              pendingRemovalRef.current = null;
+              toast({ title: `${displayName} restored` });
+            }}
+            className="px-3 py-1.5 rounded-md bg-primary text-primary-foreground text-xs font-medium hover:bg-primary/90 transition-colors"
+          >
+            Undo
+          </button>
+        </div>
+      ) as any,
+      duration: 5000,
+    });
+  };
+
+  // --- Section reordering handler ---
+  const handleMoveSection = async (sectionId: string, direction: "up" | "down") => {
+    const sorted = [...sections].sort((a, b) => a.section_order - b.section_order);
+    const idx = sorted.findIndex((s) => s.id === sectionId);
+    if (idx === -1) return;
+    const swapIdx = direction === "up" ? idx - 1 : idx + 1;
+    if (swapIdx < 0 || swapIdx >= sorted.length) return;
+
+    const updated = [...sorted];
+    const tempOrder = updated[idx].section_order;
+    updated[idx] = { ...updated[idx], section_order: updated[swapIdx].section_order };
+    updated[swapIdx] = { ...updated[swapIdx], section_order: tempOrder };
+    updated.sort((a, b) => a.section_order - b.section_order);
+    setSections(updated);
+
+    await Promise.all([
+      supabase.from("profile_sections").update({ section_order: updated.find(s => s.id === sectionId)!.section_order }).eq("id", sectionId),
+      supabase.from("profile_sections").update({ section_order: updated.find(s => s.id === sorted[swapIdx].id)!.section_order }).eq("id", sorted[swapIdx].id),
+    ]);
   };
 
   // --- Inline editing handlers ---
@@ -419,6 +483,15 @@ const PublicProfile = () => {
   const languagesSection = getSection("languages");
   const publicationsSection = getSection("publications");
 
+  // Helper to get section position info
+  const getSectionPosition = (sectionType: string) => {
+    const section = getSection(sectionType);
+    if (!section) return { isFirst: true, isLast: true };
+    const sorted = [...sections].sort((a, b) => a.section_order - b.section_order);
+    const idx = sorted.findIndex((s) => s.id === section.id);
+    return { isFirst: idx === 0, isLast: idx === sorted.length - 1 };
+  };
+
   // Build hero stats
   const heroStats = heroSection?.section_data?.hero_stats || {};
   const normalizedHeroStats = {
@@ -593,6 +666,10 @@ const PublicProfile = () => {
         onEditStart={() => setEditingSection("hero")}
         onEditEnd={() => setEditingSection(null)}
         isCoreSection={true}
+        onMoveUp={heroSection ? () => handleMoveSection(heroSection.id, "up") : undefined}
+        onMoveDown={heroSection ? () => handleMoveSection(heroSection.id, "down") : undefined}
+        isFirst={getSectionPosition("hero").isFirst}
+        isLast={getSectionPosition("hero").isLast}
         editForm={
           <HeroInlineEdit
             profileData={profile}
@@ -631,6 +708,10 @@ const PublicProfile = () => {
           onEditEnd={() => setEditingSection(null)}
           onRemove={impactSection ? () => handleRemoveSection(impactSection.id) : undefined}
           isEmpty={visualizations.length === 0}
+          onMoveUp={impactSection ? () => handleMoveSection(impactSection.id, "up") : undefined}
+          onMoveDown={impactSection ? () => handleMoveSection(impactSection.id, "down") : undefined}
+          isFirst={getSectionPosition("impact_charts").isFirst}
+          isLast={getSectionPosition("impact_charts").isLast}
           editForm={
             <ImpactChartsInlineEdit
               sectionData={impactSection?.section_data || {}}
@@ -660,6 +741,10 @@ const PublicProfile = () => {
             onEditEnd={() => setEditingSection(null)}
             onRemove={caseStudiesSection ? () => handleRemoveSection(caseStudiesSection.id) : undefined}
             isEmpty={finalCaseStudyCards.length === 0}
+            onMoveUp={caseStudiesSection ? () => handleMoveSection(caseStudiesSection.id, "up") : undefined}
+            onMoveDown={caseStudiesSection ? () => handleMoveSection(caseStudiesSection.id, "down") : undefined}
+            isFirst={getSectionPosition("case_studies").isFirst}
+            isLast={getSectionPosition("case_studies").isLast}
             editForm={
               <CaseStudyInlineEdit
                 sectionData={caseStudiesSection?.section_data || {}}
@@ -725,6 +810,10 @@ const PublicProfile = () => {
           onEditEnd={() => setEditingSection(null)}
           onRemove={timelineSection ? () => handleRemoveSection(timelineSection.id) : undefined}
           isEmpty={timelineEntries.length === 0}
+          onMoveUp={timelineSection ? () => handleMoveSection(timelineSection.id, "up") : undefined}
+          onMoveDown={timelineSection ? () => handleMoveSection(timelineSection.id, "down") : undefined}
+          isFirst={getSectionPosition("career_timeline").isFirst}
+          isLast={getSectionPosition("career_timeline").isLast}
           editForm={
             <TimelineInlineEdit
               sectionData={timelineSection?.section_data || {}}
@@ -749,6 +838,10 @@ const PublicProfile = () => {
           onEditEnd={() => setEditingSection(null)}
           onRemove={skillsSection ? () => handleRemoveSection(skillsSection.id) : undefined}
           isEmpty={skillsData.length === 0}
+          onMoveUp={skillsSection ? () => handleMoveSection(skillsSection.id, "up") : undefined}
+          onMoveDown={skillsSection ? () => handleMoveSection(skillsSection.id, "down") : undefined}
+          isFirst={getSectionPosition("skills_matrix").isFirst}
+          isLast={getSectionPosition("skills_matrix").isLast}
           editForm={
             <SkillsInlineEdit
               sectionData={skillsSection?.section_data || {}}
@@ -779,6 +872,10 @@ const PublicProfile = () => {
           onEditEnd={() => setEditingSection(null)}
           onRemove={testimonialsSection ? () => handleRemoveSection(testimonialsSection.id) : undefined}
           isEmpty={testimonialCards.length === 0}
+          onMoveUp={testimonialsSection ? () => handleMoveSection(testimonialsSection.id, "up") : undefined}
+          onMoveDown={testimonialsSection ? () => handleMoveSection(testimonialsSection.id, "down") : undefined}
+          isFirst={getSectionPosition("testimonials").isFirst}
+          isLast={getSectionPosition("testimonials").isLast}
           editForm={
             <TestimonialsInlineEdit
               testimonials={testimonialCards}
@@ -803,6 +900,10 @@ const PublicProfile = () => {
           onEditEnd={() => setEditingSection(null)}
           onRemove={() => handleRemoveSection(languagesSection!.id)}
           isEmpty={!(languagesSection!.section_data.languages || []).length}
+          onMoveUp={() => handleMoveSection(languagesSection!.id, "up")}
+          onMoveDown={() => handleMoveSection(languagesSection!.id, "down")}
+          isFirst={getSectionPosition("languages").isFirst}
+          isLast={getSectionPosition("languages").isLast}
           editForm={
             <LanguagesInlineEdit
               sectionData={languagesSection!.section_data}
@@ -849,6 +950,10 @@ const PublicProfile = () => {
           onEditEnd={() => setEditingSection(null)}
           onRemove={() => handleRemoveSection(publicationsSection!.id)}
           isEmpty={!(publicationsSection!.section_data.publications || []).length}
+          onMoveUp={() => handleMoveSection(publicationsSection!.id, "up")}
+          onMoveDown={() => handleMoveSection(publicationsSection!.id, "down")}
+          isFirst={getSectionPosition("publications").isFirst}
+          isLast={getSectionPosition("publications").isLast}
           editForm={
             <PublicationsInlineEdit
               sectionData={publicationsSection!.section_data}
@@ -904,6 +1009,10 @@ const PublicProfile = () => {
           onEditEnd={() => setEditingSection(null)}
           onRemove={workStyleSection ? () => handleRemoveSection(workStyleSection.id) : undefined}
           isEmpty={workStyleDimensions.length === 0}
+          onMoveUp={workStyleSection ? () => handleMoveSection(workStyleSection.id, "up") : undefined}
+          onMoveDown={workStyleSection ? () => handleMoveSection(workStyleSection.id, "down") : undefined}
+          isFirst={getSectionPosition("work_style").isFirst}
+          isLast={getSectionPosition("work_style").isLast}
           editForm={
             <WorkStyleInlineEdit
               sectionData={workStyleSection?.section_data || {}}
@@ -926,6 +1035,8 @@ const PublicProfile = () => {
         const items = section.section_data?.items || section.section_data?.[section.section_type] || [];
         const hasItems = Array.isArray(items) && items.length > 0;
         const hasContent = hasItems || sectionHasContent(section);
+        const sortedAll = [...sections].sort((a, b) => a.section_order - b.section_order);
+        const globalIdx = sortedAll.findIndex((s) => s.id === section.id);
 
         return (
           <InlineEditWrapper
@@ -940,6 +1051,10 @@ const PublicProfile = () => {
             onRemove={() => handleRemoveSection(section.id)}
             isEmpty={!hasContent}
             isCoreSection={false}
+            onMoveUp={() => handleMoveSection(section.id, "up")}
+            onMoveDown={() => handleMoveSection(section.id, "down")}
+            isFirst={globalIdx === 0}
+            isLast={globalIdx === sortedAll.length - 1}
             editForm={
               <GenericInlineEdit
                 sectionData={section.section_data || {}}

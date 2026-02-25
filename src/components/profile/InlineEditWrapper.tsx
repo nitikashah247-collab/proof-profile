@@ -1,6 +1,6 @@
 import { ReactNode } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Pencil, X, Trash2, Plus } from "lucide-react";
+import { Pencil, X, Trash2, Plus, ChevronUp, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useIsMobile } from "@/hooks/use-mobile";
 
@@ -17,6 +17,10 @@ interface InlineEditWrapperProps {
   onRemove?: () => void;
   isEmpty?: boolean;
   isCoreSection?: boolean;
+  onMoveUp?: () => void;
+  onMoveDown?: () => void;
+  isFirst?: boolean;
+  isLast?: boolean;
 }
 
 export const InlineEditWrapper = ({
@@ -32,6 +36,10 @@ export const InlineEditWrapper = ({
   onRemove,
   isEmpty,
   isCoreSection,
+  onMoveUp,
+  onMoveDown,
+  isFirst,
+  isLast,
 }: InlineEditWrapperProps) => {
   const isMobile = useIsMobile();
 
@@ -44,9 +52,33 @@ export const InlineEditWrapper = ({
         <div className="absolute inset-0 border-2 border-transparent group-hover/edit:border-primary/30 rounded-xl pointer-events-none transition-colors duration-200 z-10" />
       )}
 
-      {/* Edit button - appears on hover (or always on mobile), top right of section */}
+      {/* Reorder + Edit buttons - appears on hover */}
       {!isEditing && !isEmpty && (
-        <div className={`absolute top-4 right-4 z-20 transition-opacity duration-200 ${isMobile ? "opacity-100" : "opacity-0 group-hover/edit:opacity-100"}`}>
+        <div className={`absolute top-4 right-4 z-20 transition-opacity duration-200 flex items-center gap-1 ${isMobile ? "opacity-100" : "opacity-0 group-hover/edit:opacity-100"}`}>
+          {onMoveUp && !isFirst && (
+            <Button
+              type="button"
+              size="icon"
+              variant="secondary"
+              className="h-8 w-8 shadow-lg rounded-full"
+              onClick={(e) => { e.stopPropagation(); onMoveUp(); }}
+              title="Move up"
+            >
+              <ChevronUp className="w-4 h-4" />
+            </Button>
+          )}
+          {onMoveDown && !isLast && (
+            <Button
+              type="button"
+              size="icon"
+              variant="secondary"
+              className="h-8 w-8 shadow-lg rounded-full"
+              onClick={(e) => { e.stopPropagation(); onMoveDown(); }}
+              title="Move down"
+            >
+              <ChevronDown className="w-4 h-4" />
+            </Button>
+          )}
           <Button
             size="sm"
             variant="secondary"
@@ -103,11 +135,21 @@ export const InlineEditWrapper = ({
           </motion.div>
         ) : isEmpty ? (
           <motion.div key="empty" initial={false} animate={{ opacity: 1 }}>
-            <div className="py-12 flex flex-col items-center gap-3">
-              <p className="text-sm text-muted-foreground">
+            <div className="py-8 px-6 text-center border-2 border-dashed border-border rounded-xl">
+              <p className="text-sm text-muted-foreground mb-3">
                 No content in {sectionLabel} yet
               </p>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center justify-center gap-2">
+                {onMoveUp && !isFirst && (
+                  <Button type="button" size="icon" variant="ghost" onClick={onMoveUp} className="h-8 w-8" title="Move up">
+                    <ChevronUp className="w-4 h-4" />
+                  </Button>
+                )}
+                {onMoveDown && !isLast && (
+                  <Button type="button" size="icon" variant="ghost" onClick={onMoveDown} className="h-8 w-8" title="Move down">
+                    <ChevronDown className="w-4 h-4" />
+                  </Button>
+                )}
                 <Button size="sm" variant="outline" className="gap-1.5 text-xs" onClick={onEditStart}>
                   <Plus className="w-3.5 h-3.5" />
                   Add Content

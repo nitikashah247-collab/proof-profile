@@ -7,7 +7,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { ScrollArea } from "@/components/ui/scroll-area";
+
 import { Search, Plus, Check, Loader2 } from "lucide-react";
 import { useSectionTemplates, SECTION_CATEGORIES, SectionTemplate } from "@/hooks/useSectionTemplates";
 import { SectionIcon } from "@/components/editor/SectionIcon";
@@ -60,7 +60,7 @@ export const AddSectionModal = ({
 
   return (
     <Dialog open={open} onOpenChange={(o) => !o && onClose()}>
-      <DialogContent className="max-w-2xl max-h-[80vh] flex flex-col p-0 gap-0">
+      <DialogContent className="max-w-2xl max-h-[85vh] flex flex-col p-0 gap-0 overflow-hidden">
         <DialogHeader className="p-6 pb-4">
           <DialogTitle>Add a Section</DialogTitle>
           <p className="text-sm text-muted-foreground mt-1">
@@ -77,7 +77,7 @@ export const AddSectionModal = ({
           </div>
         </DialogHeader>
 
-        <ScrollArea className="flex-1 px-6 pb-6">
+        <div className="flex-1 overflow-y-auto px-6 pb-6">
           <div className="space-y-6">
             {filteredCategories.map((category) => (
               <div key={category.key}>
@@ -136,7 +136,7 @@ export const AddSectionModal = ({
               </p>
             )}
           </div>
-        </ScrollArea>
+        </div>
       </DialogContent>
     </Dialog>
   );
