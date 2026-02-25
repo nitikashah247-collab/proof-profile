@@ -129,11 +129,39 @@ const PublicProfile = () => {
     setSections((prev) =>
       prev.map((s) => (s.id === sectionId ? { ...s, section_data: newData } : s))
     );
-    await supabase
+    const { error } = await supabase
       .from("profile_sections")
       .update({ section_data: newData })
       .eq("id", sectionId);
+    if (error) {
+      console.error("Failed to save section:", error);
+    }
     setEditingSection(null);
+  };
+
+  const handleCaseStudySave = async (newData: Record<string, any>) => {
+    if (caseStudiesSection) {
+      await handleSectionSave(caseStudiesSection.id, newData);
+    } else if (profile && user) {
+      // No profile_sections row exists yet — create one
+      const { data: created, error } = await supabase
+        .from("profile_sections")
+        .insert({
+          profile_id: profile.id,
+          user_id: user.id,
+          section_type: "case_studies",
+          section_order: sections.length,
+          section_data: newData,
+        })
+        .select()
+        .single();
+      if (error) {
+        console.error("Failed to create case studies section:", error);
+      } else if (created) {
+        setSections((prev) => [...prev, created as ProfileSection]);
+      }
+      setEditingSection(null);
+    }
   };
 
   const handleProfileFieldSave = async (updates: Record<string, any>) => {
@@ -439,7 +467,7 @@ const PublicProfile = () => {
             editForm={
               <CaseStudyInlineEdit
                 sectionData={caseStudiesSection?.section_data || {}}
-                onSave={(data) => handleSectionSave(caseStudiesSection!.id, data)}
+                onSave={handleCaseStudySave}
                 onCancel={() => setEditingSection(null)}
               />
             }
