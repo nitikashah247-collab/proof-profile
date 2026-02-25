@@ -303,20 +303,37 @@ const Onboarding = () => {
         throw new Error("Failed to update profile.");
       }
 
-      // 5. Create a default profile version
-      const { error: versionError } = await supabase
+      // 5. Create a default profile version (only if one doesn't already exist)
+      const { data: existingVersion } = await supabase
         .from("profile_versions")
-        .insert({
-          user_id: user.id,
-          profile_id: profile.id,
-          version_name: "Base Profile",
-          is_default: true,
-          is_published: true,
-          slug,
-        });
+        .select("id")
+        .eq("profile_id", profile.id)
+        .eq("is_default", true)
+        .maybeSingle();
 
-      if (versionError) {
-        console.error("Version creation error:", versionError);
+      if (existingVersion) {
+        // Update existing default version
+        const { error: versionError } = await supabase
+          .from("profile_versions")
+          .update({ slug, is_published: true })
+          .eq("id", existingVersion.id);
+        if (versionError) {
+          console.error("Version update error:", versionError);
+        }
+      } else {
+        const { error: versionError } = await supabase
+          .from("profile_versions")
+          .insert({
+            user_id: user.id,
+            profile_id: profile.id,
+            version_name: "Base Profile",
+            is_default: true,
+            is_published: true,
+            slug,
+          });
+        if (versionError) {
+          console.error("Version creation error:", versionError);
+        }
       }
 
       // 5. Save career timeline from AI-enriched data or resume
