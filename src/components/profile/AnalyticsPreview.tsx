@@ -73,9 +73,6 @@ export const AnalyticsPreview = ({ data, isOwner }: AnalyticsPreviewProps) => {
               </span>
             </div>
             <AnalyticsContent data={data} />
-            <button className="w-full mt-3 text-xs text-primary hover:underline text-center">
-              View Full Analytics →
-            </button>
           </div>
         </SheetContent>
       </Sheet>
@@ -127,9 +124,6 @@ export const AnalyticsPreview = ({ data, isOwner }: AnalyticsPreviewProps) => {
 
             <AnalyticsContent data={data} />
 
-            <button className="w-full mt-3 text-xs text-primary hover:underline text-center">
-              View Full Analytics →
-            </button>
           </div>
         </motion.div>
       )}

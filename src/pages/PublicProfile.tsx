@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft, Loader2 } from "lucide-react";
 import { Users, Zap, Brain, MessageSquare } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
+import { toast } from "@/hooks/use-toast";
 
 // Reuse demo-quality components
 import { ProfileHero } from "@/components/profile/ProfileHero";
@@ -29,6 +30,7 @@ import {
   WorkStyleInlineEdit,
   LanguagesInlineEdit,
   PublicationsInlineEdit,
+  TestimonialsInlineEdit,
 } from "@/components/profile/inline-editors";
 
 interface ProfileSection {
@@ -166,10 +168,14 @@ const PublicProfile = () => {
 
   const handleProfileFieldSave = async (updates: Record<string, any>) => {
     setProfile((prev: any) => ({ ...prev, ...updates }));
-    await supabase
+    const { error } = await supabase
       .from("profiles")
       .update(updates)
       .eq("id", profile.id);
+    if (error) {
+      console.error("Failed to save profile field:", error);
+      toast({ title: "Save failed", description: error.message, variant: "destructive" });
+    }
   };
 
   const handleHeroSave = async (profileUpdates: Record<string, any>, sectionUpdates: Record<string, any>) => {
@@ -178,6 +184,50 @@ const PublicProfile = () => {
     if (heroSec) {
       await handleSectionSave(heroSec.id, sectionUpdates);
     }
+    setEditingSection(null);
+  };
+
+  const handleTestimonialsSave = async (items: Array<{ quote: string; author: string; role: string; company: string }>) => {
+    if (!profile || !user) return;
+    // Delete existing testimonials and re-insert
+    const { error: delError } = await supabase
+      .from("testimonials")
+      .delete()
+      .eq("profile_id", profile.id)
+      .eq("user_id", user.id);
+    if (delError) {
+      console.error("Failed to delete old testimonials:", delError);
+      toast({ title: "Save failed", description: delError.message, variant: "destructive" });
+      return;
+    }
+    if (items.length > 0) {
+      const rows = items.map((t, idx) => ({
+        user_id: user.id,
+        profile_id: profile.id,
+        quote: t.quote,
+        author_name: t.author,
+        author_role: t.role,
+        author_company: t.company,
+        sort_order: idx,
+      }));
+      const { error: insError } = await supabase.from("testimonials").insert(rows);
+      if (insError) {
+        console.error("Failed to save testimonials:", insError);
+        toast({ title: "Save failed", description: insError.message, variant: "destructive" });
+        return;
+      }
+    }
+    // Update local state
+    setTestimonials(items.map((t, idx) => ({
+      id: `temp-${idx}`,
+      quote: t.quote,
+      author_name: t.author,
+      author_role: t.role,
+      author_company: t.company,
+      sort_order: idx,
+      profile_id: profile.id,
+      user_id: user.id,
+    })));
     setEditingSection(null);
   };
 
@@ -398,7 +448,6 @@ const PublicProfile = () => {
         isEditing={editingSection === "hero"}
         onEditStart={() => setEditingSection("hero")}
         onEditEnd={() => setEditingSection(null)}
-        onSave={handleSectionSave}
         editForm={
           <HeroInlineEdit
             profileData={profile}
@@ -435,7 +484,6 @@ const PublicProfile = () => {
           isEditing={editingSection === "impact_charts"}
           onEditStart={() => setEditingSection("impact_charts")}
           onEditEnd={() => setEditingSection(null)}
-          onSave={handleSectionSave}
           editForm={
             <ImpactChartsInlineEdit
               sectionData={impactSection?.section_data || {}}
@@ -463,7 +511,6 @@ const PublicProfile = () => {
             isEditing={editingSection === "case_studies"}
             onEditStart={() => setEditingSection("case_studies")}
             onEditEnd={() => setEditingSection(null)}
-            onSave={handleSectionSave}
             editForm={
               <CaseStudyInlineEdit
                 sectionData={caseStudiesSection?.section_data || {}}
@@ -527,7 +574,6 @@ const PublicProfile = () => {
           isEditing={editingSection === "career_timeline"}
           onEditStart={() => setEditingSection("career_timeline")}
           onEditEnd={() => setEditingSection(null)}
-          onSave={handleSectionSave}
           editForm={
             <TimelineInlineEdit
               sectionData={timelineSection?.section_data || {}}
@@ -550,7 +596,6 @@ const PublicProfile = () => {
           isEditing={editingSection === "skills_matrix"}
           onEditStart={() => setEditingSection("skills_matrix")}
           onEditEnd={() => setEditingSection(null)}
-          onSave={handleSectionSave}
           editForm={
             <SkillsInlineEdit
               sectionData={skillsSection?.section_data || {}}
@@ -569,9 +614,25 @@ const PublicProfile = () => {
         </InlineEditWrapper>
       )}
 
-      {/* Testimonials */}
       {testimonialCards.length > 0 && (
-        <TestimonialsCarousel testimonials={testimonialCards} />
+        <InlineEditWrapper
+          isOwner={isOwner}
+          sectionId={testimonialsSection?.id || "testimonials"}
+          sectionType="testimonials"
+          sectionLabel="Testimonials"
+          isEditing={editingSection === "testimonials"}
+          onEditStart={() => setEditingSection("testimonials")}
+          onEditEnd={() => setEditingSection(null)}
+          editForm={
+            <TestimonialsInlineEdit
+              testimonials={testimonialCards}
+              onSave={handleTestimonialsSave}
+              onCancel={() => setEditingSection(null)}
+            />
+          }
+        >
+          <TestimonialsCarousel testimonials={testimonialCards} />
+        </InlineEditWrapper>
       )}
 
       {/* Languages */}
@@ -584,7 +645,6 @@ const PublicProfile = () => {
           isEditing={editingSection === "languages"}
           onEditStart={() => setEditingSection("languages")}
           onEditEnd={() => setEditingSection(null)}
-          onSave={handleSectionSave}
           editForm={
             <LanguagesInlineEdit
               sectionData={languagesSection.section_data}
@@ -629,7 +689,6 @@ const PublicProfile = () => {
           isEditing={editingSection === "publications"}
           onEditStart={() => setEditingSection("publications")}
           onEditEnd={() => setEditingSection(null)}
-          onSave={handleSectionSave}
           editForm={
             <PublicationsInlineEdit
               sectionData={publicationsSection.section_data}
@@ -683,7 +742,6 @@ const PublicProfile = () => {
           isEditing={editingSection === "work_style"}
           onEditStart={() => setEditingSection("work_style")}
           onEditEnd={() => setEditingSection(null)}
-          onSave={handleSectionSave}
           editForm={
             <WorkStyleInlineEdit
               sectionData={workStyleSection?.section_data || {}}

@@ -11,7 +11,6 @@ interface InlineEditWrapperProps {
   sectionLabel: string;
   children: ReactNode;
   editForm: ReactNode;
-  onSave: (sectionId: string, data: Record<string, any>) => Promise<void>;
   isEditing: boolean;
   onEditStart: () => void;
   onEditEnd: () => void;
@@ -24,7 +23,6 @@ export const InlineEditWrapper = ({
   sectionLabel,
   children,
   editForm,
-  onSave,
   isEditing,
   onEditStart,
   onEditEnd,
