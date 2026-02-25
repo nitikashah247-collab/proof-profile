@@ -18,6 +18,7 @@ import { TestimonialsCarousel } from "@/components/profile/TestimonialsCarousel"
 import { WorkStyleVisual } from "@/components/profile/WorkStyleVisual";
 import { CoverBanner } from "@/components/profile/CoverBanner";
 import { ProfileOwnerBar } from "@/components/profile/ProfileOwnerBar";
+import { AnalyticsPreview } from "@/components/profile/AnalyticsPreview";
 import { CareerCoachDrawer } from "@/components/editor/CareerCoachDrawer";
 import { ProofGallerySection } from "@/components/profile/ProofGallerySection";
 import { InlineEditWrapper } from "@/components/profile/InlineEditWrapper";
@@ -62,6 +63,7 @@ const PublicProfile = () => {
   const [activeSkill, setActiveSkill] = useState<string | null>(null);
   const [isOwner, setIsOwner] = useState(false);
   const [editingSection, setEditingSection] = useState<string | null>(null);
+  const [analyticsData, setAnalyticsData] = useState({ totalViews: 0, avgTimeOnPage: "0s", topSection: "—", viewsThisWeek: 0 });
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -120,11 +122,75 @@ const PublicProfile = () => {
       setSkills(skillsRes.data || []);
       setCaseStudies(caseStudiesRes.data || []);
       setTestimonials(testimonialsRes.data || []);
+
+      // Fetch analytics for owner
+      if (!!user && data.user_id === user.id) {
+        const now = new Date();
+        const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+        const { data: views } = await supabase
+          .from("profile_views")
+          .select("*")
+          .eq("profile_id", data.id);
+
+        const allViews = views || [];
+        const weekViews = allViews.filter((v) => new Date(v.viewed_at) >= weekAgo);
+        const avgTime = allViews.length > 0
+          ? Math.round(allViews.reduce((sum, v) => sum + (v.time_on_page_seconds || 0), 0) / allViews.length)
+          : 0;
+        const sectionCounts: Record<string, number> = {};
+        allViews.forEach((v) => (v.sections_viewed || []).forEach((s: string) => {
+          sectionCounts[s] = (sectionCounts[s] || 0) + 1;
+        }));
+        const topSection = Object.entries(sectionCounts).sort((a, b) => b[1] - a[1])[0]?.[0] || "—";
+        setAnalyticsData({
+          totalViews: allViews.length,
+          avgTimeOnPage: avgTime > 60 ? `${Math.round(avgTime / 60)}m` : `${avgTime}s`,
+          topSection,
+          viewsThisWeek: weekViews.length,
+        });
+      }
+
       setLoading(false);
     };
 
     fetchProfile();
   }, [slug, user]);
+
+  // --- Add section handler ---
+  const handleAddSection = async (sectionType: string) => {
+    if (!profile || !user) return;
+    const maxOrder = sections.length > 0 ? Math.max(...sections.map((s) => s.section_order)) + 1 : 0;
+    const defaultData: Record<string, any> = {};
+    // Provide empty structure so inline editors have something to render
+    if (sectionType === "testimonials") defaultData.testimonials = [];
+    if (sectionType === "languages") defaultData.languages = [];
+    if (sectionType === "publications") defaultData.publications = [];
+    if (sectionType === "work_style") defaultData.work_style = { dimensions: [], traits: [] };
+    if (sectionType === "impact_charts") defaultData.visualizations = [];
+    if (sectionType === "case_studies") defaultData.items = [];
+
+    const { data: created, error } = await supabase
+      .from("profile_sections")
+      .insert({
+        profile_id: profile.id,
+        user_id: user.id,
+        section_type: sectionType,
+        section_order: maxOrder,
+        section_data: defaultData,
+      })
+      .select()
+      .single();
+
+    if (error) {
+      toast({ title: "Failed to add section", description: error.message, variant: "destructive" });
+      return;
+    }
+    if (created) {
+      setSections((prev) => [...prev, created as ProfileSection]);
+      setEditingSection(sectionType);
+      toast({ title: "Section added", description: "Start editing below." });
+    }
+  };
 
   // --- Inline editing handlers ---
   const handleSectionSave = async (sectionId: string, newData: Record<string, any>) => {
@@ -428,7 +494,15 @@ const PublicProfile = () => {
   return (
     <div className="min-h-screen bg-background text-foreground" style={themeStyle}>
       {/* Owner controls */}
-      {isOwner && <ProfileOwnerBar />}
+      {isOwner && (
+        <ProfileOwnerBar
+          existingSectionTypes={sections.map((s) => s.section_type)}
+          onAddSection={handleAddSection}
+        />
+      )}
+
+      {/* Analytics Preview - owner only */}
+      <AnalyticsPreview data={analyticsData} isOwner={isOwner} />
 
       {/* Cover Banner */}
       <CoverBanner
@@ -614,7 +688,7 @@ const PublicProfile = () => {
         </InlineEditWrapper>
       )}
 
-      {testimonialCards.length > 0 && (
+      {(testimonialCards.length > 0 || (isOwner && testimonialsSection)) && (
         <InlineEditWrapper
           isOwner={isOwner}
           sectionId={testimonialsSection?.id || "testimonials"}
@@ -631,12 +705,20 @@ const PublicProfile = () => {
             />
           }
         >
-          <TestimonialsCarousel testimonials={testimonialCards} />
+          {testimonialCards.length > 0 ? (
+            <TestimonialsCarousel testimonials={testimonialCards} />
+          ) : (
+            <section className="py-12">
+              <div className="container mx-auto px-6 text-center">
+                <p className="text-muted-foreground italic">No testimonials yet — hover to add some.</p>
+              </div>
+            </section>
+          )}
         </InlineEditWrapper>
       )}
 
       {/* Languages */}
-      {languagesSection?.section_data?.languages?.length > 0 && (
+      {(languagesSection?.section_data?.languages?.length > 0 || (isOwner && languagesSection)) && (
         <InlineEditWrapper
           isOwner={isOwner}
           sectionId={languagesSection.id}
@@ -662,17 +744,21 @@ const PublicProfile = () => {
                 className="max-w-5xl"
               >
                 <h2 className="text-3xl font-bold mb-8 text-foreground">Languages</h2>
-                <div className="flex flex-wrap gap-4">
-                  {languagesSection.section_data.languages.map((lang: any, i: number) => (
-                    <div key={i} className="px-5 py-3 rounded-xl border border-border bg-card flex items-center gap-3">
-                      <span className="text-lg">🌐</span>
-                      <div>
-                        <p className="font-semibold text-sm text-foreground">{lang.name}</p>
-                        <p className="text-xs text-muted-foreground">{lang.proficiency}</p>
+                {(languagesSection.section_data.languages || []).length > 0 ? (
+                  <div className="flex flex-wrap gap-4">
+                    {languagesSection.section_data.languages.map((lang: any, i: number) => (
+                      <div key={i} className="px-5 py-3 rounded-xl border border-border bg-card flex items-center gap-3">
+                        <span className="text-lg">🌐</span>
+                        <div>
+                          <p className="font-semibold text-sm text-foreground">{lang.name}</p>
+                          <p className="text-xs text-muted-foreground">{lang.proficiency}</p>
+                        </div>
                       </div>
-                    </div>
-                  ))}
-                </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-muted-foreground italic">No languages yet — hover to add some.</p>
+                )}
               </motion.div>
             </div>
           </section>
@@ -680,7 +766,7 @@ const PublicProfile = () => {
       )}
 
       {/* Publications */}
-      {publicationsSection?.section_data?.publications?.length > 0 && (
+      {(publicationsSection?.section_data?.publications?.length > 0 || (isOwner && publicationsSection)) && (
         <InlineEditWrapper
           isOwner={isOwner}
           sectionId={publicationsSection.id}
@@ -706,26 +792,30 @@ const PublicProfile = () => {
                 className="max-w-5xl"
               >
                 <h2 className="text-3xl font-bold mb-8 text-foreground">Publications</h2>
-                <div className="space-y-4">
-                  {publicationsSection.section_data.publications.map((pub: any, i: number) => (
-                    <div key={i} className="p-4 rounded-xl border border-border bg-card flex items-start gap-4">
-                      <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary shrink-0 mt-0.5">
-                        📄
+                {(publicationsSection.section_data.publications || []).length > 0 ? (
+                  <div className="space-y-4">
+                    {publicationsSection.section_data.publications.map((pub: any, i: number) => (
+                      <div key={i} className="p-4 rounded-xl border border-border bg-card flex items-start gap-4">
+                        <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary shrink-0 mt-0.5">
+                          📄
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="font-semibold text-sm text-foreground">{pub.title}</p>
+                          <p className="text-xs text-muted-foreground">
+                            {[pub.outlet, pub.year].filter(Boolean).join(" · ")}
+                          </p>
+                        </div>
+                        {pub.url && (
+                          <a href={pub.url} target="_blank" rel="noopener noreferrer" className="text-xs text-primary hover:underline shrink-0">
+                            Read →
+                          </a>
+                        )}
                       </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="font-semibold text-sm text-foreground">{pub.title}</p>
-                        <p className="text-xs text-muted-foreground">
-                          {[pub.outlet, pub.year].filter(Boolean).join(" · ")}
-                        </p>
-                      </div>
-                      {pub.url && (
-                        <a href={pub.url} target="_blank" rel="noopener noreferrer" className="text-xs text-primary hover:underline shrink-0">
-                          Read →
-                        </a>
-                      )}
-                    </div>
-                  ))}
-                </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-muted-foreground italic">No publications yet — hover to add some.</p>
+                )}
               </motion.div>
             </div>
           </section>
@@ -733,7 +823,7 @@ const PublicProfile = () => {
       )}
 
       {/* Work Style */}
-      {workStyleDimensions.length > 0 && (
+      {(workStyleDimensions.length > 0 || (isOwner && workStyleSection)) && (
         <InlineEditWrapper
           isOwner={isOwner}
           sectionId={workStyleSection?.id || "workstyle"}
@@ -750,10 +840,18 @@ const PublicProfile = () => {
             />
           }
         >
-          <WorkStyleVisual
-            dimensions={workStyleDimensions}
-            traits={workStyleData?.traits || []}
-          />
+          {workStyleDimensions.length > 0 ? (
+            <WorkStyleVisual
+              dimensions={workStyleDimensions}
+              traits={workStyleData?.traits || []}
+            />
+          ) : (
+            <section className="py-12">
+              <div className="container mx-auto px-6 text-center">
+                <p className="text-muted-foreground italic">No work style data yet — hover to add dimensions.</p>
+              </div>
+            </section>
+          )}
         </InlineEditWrapper>
       )}
 
