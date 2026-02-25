@@ -15,16 +15,18 @@ interface SkillsMatrixProps {
   onSkillClick: (skill: string | null) => void;
 }
 
+const EASE = [0.22, 1, 0.36, 1];
+
 export const SkillsMatrix = ({ skills, activeSkill, onSkillClick }: SkillsMatrixProps) => {
   const ref = useRef<HTMLDivElement>(null);
-  const isInView = useInView(ref, { once: true, margin: "-100px" });
+  const isInView = useInView(ref, { once: true, margin: "-80px" });
 
   const getLevelLabel = (level: number) => {
     const labels = ["Beginner", "Intermediate", "Advanced", "Expert", "Master"];
     return labels[level - 1] || "Unknown";
   };
 
-  // Deduplicate skills by name (case-insensitive), keep highest level
+  // Deduplicate skills by name
   const deduped = (() => {
     const seen = new Map<string, Skill>();
     for (const skill of skills) {
@@ -39,103 +41,73 @@ export const SkillsMatrix = ({ skills, activeSkill, onSkillClick }: SkillsMatrix
     return Array.from(seen.values());
   })();
 
-  // Split into two groups
   const coreCompetencies = deduped.filter(s => s.category === "Core Competency");
   const technicalProficiencies = deduped.filter(s => s.category === "Technical Proficiency");
   const uncategorized = deduped.filter(s => s.category !== "Core Competency" && s.category !== "Technical Proficiency");
-
-  // If no categorization, show all in one grid
   const hasCategorization = coreCompetencies.length > 0 || technicalProficiencies.length > 0;
 
-  const renderSkillCard = (skill: Skill, index: number) => (
+  const renderSkillPill = (skill: Skill, index: number) => (
     <motion.button
       key={skill.name}
-      initial={{ opacity: 0, x: -20 }}
-      animate={isInView ? { opacity: 1, x: 0 } : {}}
-      transition={{ duration: 0.4, delay: index * 0.05 }}
+      initial={{ opacity: 0, scale: 0.9 }}
+      animate={isInView ? { opacity: 1, scale: 1 } : {}}
+      transition={{ duration: 0.4, delay: index * 0.05, ease: EASE as any }}
       onClick={() => onSkillClick(activeSkill === skill.name ? null : skill.name)}
-      className={`p-4 rounded-xl border text-left transition-all duration-300 group ${
+      className={`group relative rounded-full px-5 py-2.5 text-sm font-medium border transition-all duration-300 ${
         activeSkill === skill.name
-          ? "border-primary bg-primary/5 shadow-lg shadow-primary/10"
-          : "border-border bg-card hover:border-primary/30"
+          ? "bg-primary text-primary-foreground border-primary shadow-lg shadow-primary/25"
+          : "bg-primary/8 border-primary/15 text-foreground hover:bg-primary/15 hover:border-primary/30 hover:shadow-lg hover:shadow-primary/5"
       }`}
     >
-      <div className="flex items-center justify-between mb-3">
-        <span className={`font-semibold transition-colors ${
-          activeSkill === skill.name ? "text-primary" : "text-foreground"
-        }`}>
-          {skill.name}
-        </span>
-        <span className="text-xs text-muted-foreground">
-          {skill.yearsOfExperience}+ years
-        </span>
-      </div>
-
-      <div className="relative h-2 bg-muted rounded-full overflow-hidden mb-2">
-        <motion.div
-          className="absolute inset-y-0 left-0 bg-primary rounded-full"
-          initial={{ width: 0 }}
-          animate={isInView ? { width: `${(skill.level / 5) * 100}%` } : {}}
-          transition={{ duration: 0.8, delay: index * 0.05 + 0.3 }}
-        />
-      </div>
-
-      <div className="flex items-center justify-between">
-        <span className="text-xs text-muted-foreground">
-          {getLevelLabel(skill.level)}
-        </span>
-        {skill.relatedCaseStudies.length > 0 && (
-          <span className={`text-xs transition-colors ${
-            activeSkill === skill.name ? "text-primary" : "text-muted-foreground"
-          }`}>
-            {skill.relatedCaseStudies.length} case {skill.relatedCaseStudies.length === 1 ? "study" : "studies"}
-          </span>
-        )}
-      </div>
+      <span>{skill.name}</span>
+      <span className={`ml-2 text-xs ${
+        activeSkill === skill.name ? "text-primary-foreground/70" : "text-muted-foreground"
+      }`}>
+        {skill.yearsOfExperience}y · {getLevelLabel(skill.level)}
+      </span>
     </motion.button>
   );
 
+  const renderCategoryGroup = (title: string, items: Skill[], startIndex: number) => {
+    if (items.length === 0) return null;
+    return (
+      <div className="space-y-4">
+        <h3 className="text-xs uppercase tracking-wider text-muted-foreground font-medium">{title}</h3>
+        <div className="flex flex-wrap gap-3">
+          {items.map((skill, index) => renderSkillPill(skill, startIndex + index))}
+        </div>
+      </div>
+    );
+  };
+
   return (
-    <section ref={ref} className="py-16">
-      <div className="container mx-auto px-6">
+    <section ref={ref} className="py-24 lg:py-32">
+      <div className="container mx-auto px-6 lg:px-8">
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 30 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.6 }}
+          transition={{ duration: 0.7, ease: EASE as any }}
           className="max-w-5xl"
         >
-          <h2 className="text-3xl font-bold mb-2">Skills & Expertise</h2>
-          <p className="text-muted-foreground mb-8">
+          <p className="section-overline mb-2">Expertise</p>
+          <h2 className="section-heading text-4xl mb-3 text-foreground">Skills & Expertise</h2>
+          <p className="text-muted-foreground mb-10">
             Click a skill to filter related case studies
           </p>
 
           {hasCategorization ? (
-            <div className="space-y-10">
-              {coreCompetencies.length > 0 && (
-                <div>
-                  <h3 className="text-lg font-semibold mb-4 text-muted-foreground">Core Competencies</h3>
-                  <div className="grid md:grid-cols-2 gap-4">
-                    {coreCompetencies.map((skill, index) => renderSkillCard(skill, index))}
-                  </div>
-                </div>
-              )}
-              {technicalProficiencies.length > 0 && (
-                <div>
-                  <h3 className="text-lg font-semibold mb-4 text-muted-foreground">Technical Proficiencies</h3>
-                  <div className="grid md:grid-cols-2 gap-4">
-                    {technicalProficiencies.map((skill, index) => renderSkillCard(skill, index + coreCompetencies.length))}
-                  </div>
-                </div>
-              )}
+            <div className="space-y-8">
+              {renderCategoryGroup("Core Competencies", coreCompetencies, 0)}
+              {renderCategoryGroup("Technical Proficiencies", technicalProficiencies, coreCompetencies.length)}
               {uncategorized.length > 0 && (
-                <div className="grid md:grid-cols-2 gap-4">
-                  {uncategorized.map((skill, index) => renderSkillCard(skill, index + coreCompetencies.length + technicalProficiencies.length))}
+                <div className="flex flex-wrap gap-3">
+                  {uncategorized.map((skill, index) => renderSkillPill(skill, coreCompetencies.length + technicalProficiencies.length + index))}
                 </div>
               )}
             </div>
           ) : (
-            <div className="grid md:grid-cols-2 gap-4">
-              {deduped.map((skill, index) => renderSkillCard(skill, index))}
+            <div className="flex flex-wrap gap-3">
+              {deduped.map((skill, index) => renderSkillPill(skill, index))}
             </div>
           )}
         </motion.div>

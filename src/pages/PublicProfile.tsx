@@ -1099,20 +1099,22 @@ const PublicProfile = () => {
         </section>
       )}
 
-      {/* Proof Badge */}
-      {!isOwner && (
-        <div className="fixed bottom-6 right-6 z-50">
-          <Link
-            to="/"
-            className="flex items-center gap-2 px-4 py-2 rounded-full bg-card border border-border shadow-lg hover:shadow-xl transition-shadow"
-          >
-            <div className="w-5 h-5 rounded icon-gradient-bg flex items-center justify-center">
-              <span className="text-white font-bold text-[10px]">P</span>
-            </div>
-            <span className="text-sm font-medium text-foreground">Made with Proof</span>
-          </Link>
+      {/* Footer */}
+      <div className="profile-footer">
+        <div className="container mx-auto px-6 lg:px-8 flex justify-center">
+          {!isOwner && (
+            <Link
+              to="/"
+              className="flex items-center gap-2 px-4 py-2 rounded-full glass-card hover:shadow-lg transition-shadow"
+            >
+              <div className="w-5 h-5 rounded icon-gradient-bg flex items-center justify-center">
+                <span className="text-white font-bold text-[10px]">P</span>
+              </div>
+              <span className="text-xs text-muted-foreground">Built with Proof</span>
+            </Link>
+          )}
         </div>
-      )}
+      </div>
 
       {/* AI Career Coach - only for profile owner */}
       {isOwner && (
