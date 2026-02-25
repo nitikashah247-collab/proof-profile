@@ -124,6 +124,25 @@
   border: 1px solid hsl(var(--border) / 0.5);
 }
 
+/* Profile footer fade */
+.profile-footer {
+  padding: 4rem 0 3rem;
+  background: linear-gradient(to bottom, transparent, hsl(var(--muted) / 0.2));
+}
+
+/* Smooth scroll */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Respect reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
 @layer components {
   /* Gradient icon styles */
   .icon-gradient {
