@@ -32,7 +32,7 @@ export const ProofGallerySection = ({ items }: ProofGallerySectionProps) => {
         <div className="container mx-auto px-6 lg:px-8">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
-            animate={isInView ? { opacity: 1, y: 0 } : {}}
+            animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
             transition={{ duration: 0.7, ease: EASE as any }}
             className="max-w-5xl"
           >
@@ -47,7 +47,7 @@ export const ProofGallerySection = ({ items }: ProofGallerySectionProps) => {
                 <motion.div
                   key={i}
                   initial={{ opacity: 0, y: 20 }}
-                  animate={isInView ? { opacity: 1, y: 0 } : {}}
+                  animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
                   transition={{ duration: 0.5, delay: i * 0.1, ease: EASE as any }}
                   className="rounded-2xl border border-border/50 bg-card overflow-hidden group cursor-pointer hover:border-primary/30 hover:shadow-lg transition-all duration-300"
                   onClick={() => {
