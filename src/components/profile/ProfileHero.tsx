@@ -207,7 +207,7 @@ export const ProfileHero = ({
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.7, ease: appleEase as any, delay: 0.5 }}
-              className="glass-card rounded-2xl p-6 mt-14"
+              className="bg-white/60 backdrop-blur-xl border border-black/5 rounded-3xl shadow-[0_8px_32px_rgba(0,0,0,0.06)] p-6 mt-14"
             >
               <div
                 className="grid gap-6"
@@ -222,7 +222,7 @@ export const ProfileHero = ({
                   >
                     <div className="flex items-center justify-center md:justify-start gap-2 mb-1">
                       {stat.icon && <stat.icon className="w-4 h-4 text-primary/60" />}
-                      <span className={`text-3xl font-mono font-semibold tracking-tight ${stat.isPrimary ? "text-primary" : "text-foreground"}`}>
+                      <span className="text-3xl font-mono font-semibold tracking-tight text-foreground">
                         <AnimatedCounter value={stat.value} suffix={stat.suffix} />
                       </span>
                     </div>

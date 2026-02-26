@@ -116,12 +116,18 @@
   line-height: 1.15;
 }
 
-/* Glass card */
+/* Glass card — FIX 7: visible on light backgrounds */
 .glass-card {
-  background: hsl(var(--card) / 0.6);
+  background: hsl(0 0% 100% / 0.7);
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
-  border: 1px solid hsl(var(--border) / 0.5);
+  border: 1px solid hsl(0 0% 0% / 0.05);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+}
+
+/* FIX 6: Alternating section backgrounds */
+.profile-sections > *:nth-child(even) {
+  background-color: hsl(var(--muted) / 0.3);
 }
 
 /* Profile footer fade */

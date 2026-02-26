@@ -62,6 +62,12 @@ const DEDICATED_SECTION_TYPES = [
 
 const PublicProfile = () => {
   const { slug } = useParams<{ slug: string }>();
+
+  // FIX 1: Force light theme on public profile
+  useEffect(() => {
+    document.documentElement.classList.remove('dark');
+    document.documentElement.setAttribute('data-theme', 'light');
+  }, []);
   const { user } = useAuth();
   const [profile, setProfile] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -696,8 +702,8 @@ const PublicProfile = () => {
         />
       </InlineEditWrapper>
 
-      {/* Impact Charts */}
-      {(visualizations.length > 0 || (isOwner && impactSection)) && (
+      {/* Impact Charts — FIX 4: hide empty for non-owners */}
+      {(visualizations.length > 0 || (isOwner && impactSection)) && (isOwner || visualizations.length > 0) && (
         <InlineEditWrapper
           isOwner={isOwner}
           sectionId={impactSection?.id || "impact"}
@@ -724,8 +730,8 @@ const PublicProfile = () => {
         </InlineEditWrapper>
       )}
 
-      {/* Case Studies */}
-      {(finalCaseStudyCards.length > 0 || (isOwner && caseStudiesSection)) && (() => {
+      {/* Case Studies — FIX 4: hide empty for non-owners */}
+      {(finalCaseStudyCards.length > 0 || (isOwner && caseStudiesSection)) && (isOwner || finalCaseStudyCards.length > 0) && (() => {
         const limitedCaseStudies = finalCaseStudyCards.slice(0, 5);
         const limitedFiltered = activeSkill
           ? limitedCaseStudies.filter((cs: any) => cs.skills.includes(activeSkill))
@@ -753,7 +759,7 @@ const PublicProfile = () => {
               />
             }
           >
-            <section className="py-24 lg:py-32 bg-muted/30">
+            <section className="py-16 lg:py-20">
               <div className="container mx-auto px-6 lg:px-8">
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
@@ -799,8 +805,8 @@ const PublicProfile = () => {
         <ProofGallerySection items={proofGallery} />
       )}
 
-      {/* Career Timeline */}
-      {(timelineEntries.length > 0 || (isOwner && timelineSection)) && (
+      {/* Career Timeline — FIX 4: hide empty for non-owners */}
+      {(timelineEntries.length > 0 || (isOwner && timelineSection)) && (isOwner || timelineEntries.length > 0) && (
         <InlineEditWrapper
           isOwner={isOwner}
           sectionId={timelineSection?.id || "timeline"}
@@ -827,8 +833,8 @@ const PublicProfile = () => {
         </InlineEditWrapper>
       )}
 
-      {/* Skills Matrix */}
-      {(skillsData.length > 0 || (isOwner && skillsSection)) && (
+      {/* Skills Matrix — FIX 4: hide empty for non-owners */}
+      {(skillsData.length > 0 || (isOwner && skillsSection)) && (isOwner || skillsData.length > 0) && (
         <InlineEditWrapper
           isOwner={isOwner}
           sectionId={skillsSection?.id || "skills"}
@@ -861,8 +867,8 @@ const PublicProfile = () => {
         </InlineEditWrapper>
       )}
 
-      {/* Testimonials */}
-      {(testimonialCards.length > 0 || (isOwner && testimonialsSection)) && (
+      {/* Testimonials — FIX 4: hide empty for non-owners */}
+      {(testimonialCards.length > 0 || (isOwner && testimonialsSection)) && (isOwner || testimonialCards.length > 0) && (
         <InlineEditWrapper
           isOwner={isOwner}
           sectionId={testimonialsSection?.id || "testimonials"}
@@ -889,8 +895,8 @@ const PublicProfile = () => {
         </InlineEditWrapper>
       )}
 
-      {/* Languages */}
-      {((languagesSection?.section_data?.languages?.length > 0) || (isOwner && languagesSection)) && (
+      {/* Languages — FIX 4: hide empty for non-owners */}
+      {((languagesSection?.section_data?.languages?.length > 0) || (isOwner && languagesSection)) && (isOwner || languagesSection?.section_data?.languages?.length > 0) && (
         <InlineEditWrapper
           isOwner={isOwner}
           sectionId={languagesSection!.id}
@@ -913,7 +919,7 @@ const PublicProfile = () => {
             />
           }
         >
-          <section className="py-24 lg:py-32 bg-muted/30">
+          <section className="py-16 lg:py-20">
             <div className="container mx-auto px-6 lg:px-8">
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
@@ -940,8 +946,8 @@ const PublicProfile = () => {
         </InlineEditWrapper>
       )}
 
-      {/* Publications */}
-      {((publicationsSection?.section_data?.publications?.length > 0) || (isOwner && publicationsSection)) && (
+      {/* Publications — FIX 4: hide empty for non-owners */}
+      {((publicationsSection?.section_data?.publications?.length > 0) || (isOwner && publicationsSection)) && (isOwner || publicationsSection?.section_data?.publications?.length > 0) && (
         <InlineEditWrapper
           isOwner={isOwner}
           sectionId={publicationsSection!.id}
@@ -964,7 +970,7 @@ const PublicProfile = () => {
             />
           }
         >
-          <section className="py-24 lg:py-32">
+          <section className="py-16 lg:py-20">
             <div className="container mx-auto px-6 lg:px-8">
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
@@ -1000,8 +1006,8 @@ const PublicProfile = () => {
         </InlineEditWrapper>
       )}
 
-      {/* Work Style */}
-      {(workStyleDimensions.length > 0 || (isOwner && workStyleSection)) && (
+      {/* Work Style — FIX 4: hide empty for non-owners */}
+      {(workStyleDimensions.length > 0 || (isOwner && workStyleSection)) && (isOwner || workStyleDimensions.length > 0) && (
         <InlineEditWrapper
           isOwner={isOwner}
           sectionId={workStyleSection?.id || "workstyle"}

@@ -24,7 +24,7 @@ export const GenericSectionRenderer = ({
     if (meaningfulEntries.length === 0) return null;
 
     return (
-      <section className="py-24 lg:py-32">
+      <section className="py-16 lg:py-20">
         <div className="container mx-auto px-6 lg:px-8">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -51,7 +51,7 @@ export const GenericSectionRenderer = ({
   }
 
   return (
-    <section className="py-24 lg:py-32">
+    <section className="py-16 lg:py-20">
       <div className="container mx-auto px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
