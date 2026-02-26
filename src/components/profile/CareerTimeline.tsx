@@ -38,9 +38,9 @@ export const CareerTimeline = ({ entries }: CareerTimelineProps) => {
           <p className="text-muted-foreground mb-12">Click on each role to see key achievements</p>
 
           {/* Vertical timeline */}
-          <div className="relative pl-8">
+          <div className="relative pl-10">
           {/* Vertical line */}
-            <div className="absolute left-[7px] md:left-[7px] top-0 bottom-0 w-px bg-border" />
+            <div className="absolute left-[5px] top-0 bottom-0 w-0.5 bg-border" />
 
             <div className="space-y-6">
               {entries.map((entry, index) => (
@@ -53,17 +53,16 @@ export const CareerTimeline = ({ entries }: CareerTimelineProps) => {
                 >
                   {/* Single dot on line */}
                   <div
-                    className="absolute top-6 w-[15px] h-[15px] rounded-full border-[3px] border-background z-10 transition-all duration-300"
-                    style={{
-                      left: "0px",
-                      background: activeIndex === index ? "hsl(var(--foreground))" : "hsl(var(--border))",
-                    }}
+                    className={`absolute top-6 w-3 h-3 rounded-full border-4 border-background z-10 transition-all duration-300 ${
+                      activeIndex === index ? "bg-foreground" : "bg-border"
+                    }`}
+                    style={{ left: "-1px" }}
                   />
 
                   {/* Card */}
                   <button
                     onClick={() => setActiveIndex(activeIndex === index ? null : index)}
-                    className={`w-full text-left ml-4 glass-card rounded-2xl p-6 transition-all duration-300 ${
+                    className={`w-full text-left ml-2 rounded-2xl bg-card border border-border p-6 transition-all duration-300 ${
                       activeIndex === index
                         ? "border-primary/30 shadow-lg shadow-primary/5"
                         : "hover:border-primary/20"

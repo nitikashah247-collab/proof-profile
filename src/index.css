@@ -116,12 +116,12 @@
   line-height: 1.15;
 }
 
-/* Glass card — FIX 7: visible on light backgrounds */
+/* Glass card — theme-aware */
 .glass-card {
-  background: hsl(0 0% 100% / 0.7);
+  background: hsl(var(--card) / 0.85);
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
-  border: 1px solid hsl(0 0% 0% / 0.05);
+  border: 1px solid hsl(var(--border) / 0.5);
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
 }
 
@@ -130,36 +130,6 @@
   background-color: hsl(var(--muted) / 0.3);
 }
 
-/* FORCE LIGHT THEME — CSS variable override, immune to ThemeProvider/dark class */
-.force-light-theme {
-  --background: 0 0% 100%;
-  --foreground: 240 10% 3.9%;
-  --card: 0 0% 100%;
-  --card-foreground: 240 10% 3.9%;
-  --popover: 0 0% 100%;
-  --popover-foreground: 240 10% 3.9%;
-  --primary: 240 5.9% 10%;
-  --primary-foreground: 0 0% 98%;
-  --secondary: 240 4.8% 95.9%;
-  --secondary-foreground: 240 5.9% 10%;
-  --muted: 240 4.8% 95.9%;
-  --muted-foreground: 240 3.8% 46.1%;
-  --accent: 240 4.8% 95.9%;
-  --accent-foreground: 240 5.9% 10%;
-  --destructive: 0 84.2% 60.2%;
-  --destructive-foreground: 0 0% 98%;
-  --border: 240 5.9% 90%;
-  --input: 240 5.9% 90%;
-  --ring: 240 5.9% 10%;
-  --radius: 0.75rem;
-  color-scheme: light;
-  background-color: hsl(0 0% 100%);
-  color: hsl(240 10% 3.9%);
-}
-
-.force-light-theme .profile-sections > *:nth-child(even) {
-  background-color: hsl(240 4.8% 95.9% / 0.3);
-}
 
 /* Profile footer fade */
 .profile-footer {

@@ -63,11 +63,6 @@ const DEDICATED_SECTION_TYPES = [
 const PublicProfile = () => {
   const { slug } = useParams<{ slug: string }>();
 
-  // FIX 1: Force light theme on public profile
-  useEffect(() => {
-    document.documentElement.classList.remove('dark');
-    document.documentElement.setAttribute('data-theme', 'light');
-  }, []);
   const { user } = useAuth();
   const [profile, setProfile] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -413,12 +408,28 @@ const PublicProfile = () => {
     setEditingSection(null);
   };
 
-  // Theme style — force light always on public profile (CSS .force-light-theme handles variables)
+  // Theme style — apply user's dark/light theme choice from Step 4
   const themeStyle = useMemo(() => {
     if (!profile) return {};
+    const isDark = profile.theme_base === "dark";
     const primary = profile.theme_primary_color || "#3B82F6";
     const secondary = profile.theme_secondary_color || "#8B5CF6";
+
     return {
+      "--background": isDark ? "222 47% 6%" : "0 0% 100%",
+      "--foreground": isDark ? "210 40% 98%" : "222 47% 11%",
+      "--card": isDark ? "222 47% 11%" : "220 14% 98%",
+      "--card-foreground": isDark ? "210 40% 98%" : "222 47% 11%",
+      "--popover": isDark ? "222 47% 11%" : "0 0% 100%",
+      "--popover-foreground": isDark ? "210 40% 98%" : "222 47% 11%",
+      "--muted": isDark ? "215 25% 14%" : "220 14% 96%",
+      "--muted-foreground": isDark ? "215 20% 65%" : "220 9% 46%",
+      "--border": isDark ? "215 25% 20%" : "220 13% 91%",
+      "--input": isDark ? "215 25% 20%" : "220 13% 91%",
+      "--secondary": isDark ? "215 25% 17%" : "220 14% 96%",
+      "--secondary-foreground": isDark ? "210 40% 98%" : "222 47% 11%",
+      "--accent": isDark ? "215 25% 17%" : "220 14% 96%",
+      "--accent-foreground": isDark ? "210 40% 98%" : "222 47% 11%",
       "--theme-primary-hex": primary,
       "--theme-secondary-hex": secondary,
     } as React.CSSProperties;
@@ -618,7 +629,7 @@ const PublicProfile = () => {
     .sort((a, b) => a.section_order - b.section_order);
 
   return (
-    <div className="min-h-screen profile-page text-foreground force-light-theme" style={themeStyle}>
+    <div className="min-h-screen profile-page text-foreground" style={themeStyle}>
       {/* Owner controls */}
       {isOwner && (
         <ProfileOwnerBar onAddSection={() => setShowAddSection(true)} />
