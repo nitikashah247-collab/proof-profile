@@ -22,7 +22,7 @@ export const WorkStyleVisual = ({ dimensions, traits }: WorkStyleVisualProps) =>
   const isInView = useInView(ref, { once: true, margin: "-80px" });
 
   return (
-    <section ref={ref} className="py-24 lg:py-32 bg-muted/30">
+    <section ref={ref} className="py-16 lg:py-20">
       <div className="container mx-auto px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 30 }}

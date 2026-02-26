@@ -76,7 +76,7 @@ export const DynamicImpactCharts = ({ visualizations }: DynamicImpactChartsProps
   const metricCards = visualizations.filter(v => !v.data || v.data.length < 2);
 
   return (
-    <section ref={ref} className="py-24 lg:py-32">
+    <section ref={ref} className="py-16 lg:py-20">
       <div className="container mx-auto px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -99,7 +99,7 @@ export const DynamicImpactCharts = ({ visualizations }: DynamicImpactChartsProps
                   transition={{ duration: 0.5, delay: i * 0.1, ease: EASE as any }}
                   className="glass-card p-6 rounded-2xl text-center"
                 >
-                  <p className="text-3xl font-mono font-bold text-primary">{viz.headline_value}</p>
+                  <p className="text-3xl font-mono font-bold text-foreground">{viz.headline_value}</p>
                   <p className="text-sm text-muted-foreground mt-2">{viz.headline_label || viz.title}</p>
                 </motion.div>
               ))}
@@ -118,7 +118,7 @@ export const DynamicImpactCharts = ({ visualizations }: DynamicImpactChartsProps
                 >
                   <h3 className="text-xs uppercase tracking-wider text-muted-foreground mb-1">{viz.title}</h3>
                   <p className="text-2xl font-mono font-bold mb-4 text-foreground">
-                    <span className="text-primary">{viz.headline_value}</span>{" "}
+                    <span className="text-foreground">{viz.headline_value}</span>{" "}
                     <span className="text-sm font-sans font-normal text-muted-foreground">{viz.headline_label}</span>
                   </p>
                   <div className="h-56">

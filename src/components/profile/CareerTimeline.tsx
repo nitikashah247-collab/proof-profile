@@ -25,7 +25,7 @@ export const CareerTimeline = ({ entries }: CareerTimelineProps) => {
   const isInView = useInView(ref, { once: true, margin: "-80px" });
 
   return (
-    <section ref={ref} className="py-24 lg:py-32 bg-muted/30">
+    <section ref={ref} className="py-16 lg:py-20">
       <div className="container mx-auto px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -40,7 +40,7 @@ export const CareerTimeline = ({ entries }: CareerTimelineProps) => {
           {/* Vertical timeline */}
           <div className="relative pl-8 md:pl-12">
             {/* Vertical line */}
-            <div className="absolute left-3 md:left-5 top-0 bottom-0 w-px bg-border" />
+            <div className="absolute left-3 md:left-5 top-0 bottom-0 w-px bg-border/70" />
             <motion.div
               className="absolute left-3 md:left-5 top-0 w-px bg-primary"
               initial={{ height: 0 }}
@@ -57,21 +57,13 @@ export const CareerTimeline = ({ entries }: CareerTimelineProps) => {
                   transition={{ duration: 0.5, delay: index * 0.12, ease: EASE as any }}
                   className="relative"
                 >
-                  {/* Dot on line */}
+                  {/* Single dot on line — FIX 3 */}
                   <div
-                    className={`absolute -left-8 md:-left-12 top-6 w-3 h-3 rounded-full border-2 transition-all duration-300 ${
-                      activeIndex === index
-                        ? "bg-primary border-primary scale-125 shadow-lg shadow-primary/25"
-                        : "bg-background border-border"
-                    }`}
-                    style={{ left: "-1.25rem", marginLeft: index === 0 ? "0" : "0" }}
-                  />
-                  <div
-                    className="absolute top-6 w-3 h-3 rounded-full border-2 transition-all duration-300"
+                    className={`absolute top-6 w-3 h-3 rounded-full border-2 transition-all duration-300`}
                     style={{
                       left: "-5px",
                       ...(activeIndex === index
-                        ? { background: "hsl(var(--primary))", borderColor: "hsl(var(--primary))" }
+                        ? { background: "hsl(var(--primary))", borderColor: "hsl(var(--primary))", transform: "scale(1.25)", boxShadow: "0 0 8px hsl(var(--primary) / 0.25)" }
                         : { background: "hsl(var(--background))", borderColor: "hsl(var(--border))" })
                     }}
                   />
@@ -91,7 +83,7 @@ export const CareerTimeline = ({ entries }: CareerTimelineProps) => {
                         <p className="text-xs uppercase tracking-wider text-muted-foreground mt-1">
                           {entry.company}
                         </p>
-                        <p className="text-xs text-primary mt-1 font-mono">
+                        <p className="text-xs text-muted-foreground mt-1 font-mono">
                           {entry.startYear}{entry.endYear && entry.endYear !== entry.startYear ? ` – ${entry.endYear}` : ""}
                         </p>
                       </div>

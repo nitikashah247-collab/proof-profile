@@ -69,7 +69,7 @@ export const CaseStudyCard = ({ study, index, isHighlighted }: CaseStudyCardProp
         >
           <div className="flex-1">
             {/* Key metric as pull-quote */}
-            <p className="text-3xl md:text-4xl font-display text-primary mb-3 tracking-tight">
+            <p className="text-3xl md:text-4xl font-display text-foreground mb-3 tracking-tight">
               {study.keyMetric}
             </p>
             <div className="flex items-center gap-3 mb-2">
