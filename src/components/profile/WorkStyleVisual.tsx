@@ -26,7 +26,7 @@ export const WorkStyleVisual = ({ dimensions, traits }: WorkStyleVisualProps) =>
       <div className="container mx-auto px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
-          animate={isInView ? { opacity: 1, y: 0 } : {}}
+          animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
           transition={{ duration: 0.7, ease: EASE as any }}
           className="max-w-4xl"
         >
@@ -41,7 +41,7 @@ export const WorkStyleVisual = ({ dimensions, traits }: WorkStyleVisualProps) =>
                 <motion.div
                   key={dim.label}
                   initial={{ opacity: 0, x: -20 }}
-                  animate={isInView ? { opacity: 1, x: 0 } : {}}
+                  animate={isInView ? { opacity: 1, x: 0 } : { opacity: 0, x: -20 }}
                   transition={{ duration: 0.5, delay: index * 0.1, ease: EASE as any }}
                   className="space-y-3"
                 >
@@ -89,7 +89,7 @@ export const WorkStyleVisual = ({ dimensions, traits }: WorkStyleVisualProps) =>
                   <motion.div
                     key={trait}
                     initial={{ opacity: 0, scale: 0.9 }}
-                    animate={isInView ? { opacity: 1, scale: 1 } : {}}
+                    animate={isInView ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.9 }}
                     transition={{ duration: 0.3, delay: index * 0.06 + 0.4, ease: EASE as any }}
                     className="glass-card rounded-full px-5 py-2.5 text-sm font-medium text-foreground hover:border-primary/30 transition-colors"
                   >

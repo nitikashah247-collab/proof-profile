@@ -80,7 +80,7 @@ export const DynamicImpactCharts = ({ visualizations }: DynamicImpactChartsProps
       <div className="container mx-auto px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
-          animate={isInView ? { opacity: 1, y: 0 } : {}}
+          animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
           transition={{ duration: 0.7, ease: EASE as any }}
           className="max-w-5xl"
         >
@@ -95,7 +95,7 @@ export const DynamicImpactCharts = ({ visualizations }: DynamicImpactChartsProps
                 <motion.div
                   key={`mc-${i}`}
                   initial={{ opacity: 0, y: 20 }}
-                  animate={isInView ? { opacity: 1, y: 0 } : {}}
+                  animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
                   transition={{ duration: 0.5, delay: i * 0.1, ease: EASE as any }}
                   className="glass-card p-6 rounded-2xl text-center"
                 >
@@ -112,7 +112,7 @@ export const DynamicImpactCharts = ({ visualizations }: DynamicImpactChartsProps
                 <motion.div
                   key={i}
                   initial={{ opacity: 0, y: 20 }}
-                  animate={isInView ? { opacity: 1, y: 0 } : {}}
+                  animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
                   transition={{ duration: 0.6, delay: i * 0.15, ease: EASE as any }}
                   className="glass-card p-6 rounded-2xl"
                 >

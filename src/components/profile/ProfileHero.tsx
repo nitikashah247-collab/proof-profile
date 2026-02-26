@@ -207,7 +207,7 @@ export const ProfileHero = ({
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.7, ease: appleEase as any, delay: 0.5 }}
-              className="bg-white/60 backdrop-blur-xl border border-black/5 rounded-3xl shadow-[0_8px_32px_rgba(0,0,0,0.06)] p-6 mt-14"
+              className="bg-white/60 backdrop-blur-xl border border-gray-200/60 rounded-3xl shadow-[0_8px_30px_rgba(0,0,0,0.04)] p-6 mt-14"
             >
               <div
                 className="grid gap-6"

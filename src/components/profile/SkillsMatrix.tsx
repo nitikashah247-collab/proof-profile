@@ -50,7 +50,7 @@ export const SkillsMatrix = ({ skills, activeSkill, onSkillClick }: SkillsMatrix
     <motion.button
       key={skill.name}
       initial={{ opacity: 0, scale: 0.9 }}
-      animate={isInView ? { opacity: 1, scale: 1 } : {}}
+      animate={isInView ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.9 }}
       transition={{ duration: 0.4, delay: index * 0.05, ease: EASE as any }}
       onClick={() => onSkillClick(activeSkill === skill.name ? null : skill.name)}
       className={`group relative rounded-full px-5 py-2.5 text-sm font-medium border transition-all duration-300 ${
@@ -85,7 +85,7 @@ export const SkillsMatrix = ({ skills, activeSkill, onSkillClick }: SkillsMatrix
       <div className="container mx-auto px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
-          animate={isInView ? { opacity: 1, y: 0 } : {}}
+          animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
           transition={{ duration: 0.7, ease: EASE as any }}
           className="max-w-5xl"
         >

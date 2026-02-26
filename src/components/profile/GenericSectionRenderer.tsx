@@ -94,7 +94,7 @@ export const GenericSectionRenderer = ({
                 )}
 
                 {(item.metric || item.value || item.result) && (
-                  <p className="text-sm font-mono font-semibold text-primary">
+                  <p className="text-sm font-mono font-semibold text-foreground">
                     {item.metric || item.value || item.result}
                   </p>
                 )}

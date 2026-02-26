@@ -29,7 +29,7 @@ export const CareerTimeline = ({ entries }: CareerTimelineProps) => {
       <div className="container mx-auto px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
-          animate={isInView ? { opacity: 1, y: 0 } : {}}
+          animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
           transition={{ duration: 0.7, ease: EASE as any }}
           className="max-w-5xl"
         >
@@ -38,33 +38,25 @@ export const CareerTimeline = ({ entries }: CareerTimelineProps) => {
           <p className="text-muted-foreground mb-12">Click on each role to see key achievements</p>
 
           {/* Vertical timeline */}
-          <div className="relative pl-8 md:pl-12">
-            {/* Vertical line */}
-            <div className="absolute left-3 md:left-5 top-0 bottom-0 w-px bg-border/70" />
-            <motion.div
-              className="absolute left-3 md:left-5 top-0 w-px bg-primary"
-              initial={{ height: 0 }}
-              animate={isInView ? { height: "100%" } : {}}
-              transition={{ duration: 1.5, ease: "easeOut" }}
-            />
+          <div className="relative pl-8">
+          {/* Vertical line */}
+            <div className="absolute left-[7px] md:left-[7px] top-0 bottom-0 w-px bg-border" />
 
             <div className="space-y-6">
               {entries.map((entry, index) => (
                 <motion.div
                   key={index}
                   initial={{ opacity: 0, x: -20 }}
-                  animate={isInView ? { opacity: 1, x: 0 } : {}}
+                  animate={isInView ? { opacity: 1, x: 0 } : { opacity: 0, x: -20 }}
                   transition={{ duration: 0.5, delay: index * 0.12, ease: EASE as any }}
                   className="relative"
                 >
-                  {/* Single dot on line — FIX 3 */}
+                  {/* Single dot on line */}
                   <div
-                    className={`absolute top-6 w-3 h-3 rounded-full border-2 transition-all duration-300`}
+                    className="absolute top-6 w-[15px] h-[15px] rounded-full border-[3px] border-background z-10 transition-all duration-300"
                     style={{
-                      left: "-5px",
-                      ...(activeIndex === index
-                        ? { background: "hsl(var(--primary))", borderColor: "hsl(var(--primary))", transform: "scale(1.25)", boxShadow: "0 0 8px hsl(var(--primary) / 0.25)" }
-                        : { background: "hsl(var(--background))", borderColor: "hsl(var(--border))" })
+                      left: "0px",
+                      background: activeIndex === index ? "hsl(var(--foreground))" : "hsl(var(--border))",
                     }}
                   />
 
