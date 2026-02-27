@@ -24,7 +24,7 @@ export const SkillsMatrix = ({ skills, activeSkill, onSkillClick }: SkillsMatrix
     return labels[level - 1] || "Unknown";
   };
 
-  // Deduplicate skills by name (case-insensitive), keep highest level
+  // Deduplicate
   const deduped = (() => {
     const seen = new Map<string, Skill>();
     for (const skill of skills) {
@@ -39,64 +39,41 @@ export const SkillsMatrix = ({ skills, activeSkill, onSkillClick }: SkillsMatrix
     return Array.from(seen.values());
   })();
 
-  // Split into two groups
   const coreCompetencies = deduped.filter(s => s.category === "Core Competency");
   const technicalProficiencies = deduped.filter(s => s.category === "Technical Proficiency");
   const uncategorized = deduped.filter(s => s.category !== "Core Competency" && s.category !== "Technical Proficiency");
-
-  // If no categorization, show all in one grid
   const hasCategorization = coreCompetencies.length > 0 || technicalProficiencies.length > 0;
 
-  const renderSkillCard = (skill: Skill, index: number) => (
+  const renderSkillPill = (skill: Skill, index: number) => (
     <motion.button
       key={skill.name}
-      initial={{ opacity: 0, x: -20 }}
-      animate={isInView ? { opacity: 1, x: 0 } : {}}
-      transition={{ duration: 0.4, delay: index * 0.05 }}
+      initial={{ opacity: 0, scale: 0.9 }}
+      animate={isInView ? { opacity: 1, scale: 1 } : {}}
+      transition={{ duration: 0.3, delay: index * 0.03 }}
       onClick={() => onSkillClick(activeSkill === skill.name ? null : skill.name)}
-      className={`p-4 rounded-xl border text-left transition-all duration-300 group ${
+      className={`flex items-center gap-2 bg-card border rounded-full px-4 py-2 text-sm transition-all ${
         activeSkill === skill.name
-          ? "border-primary bg-primary/5 shadow-lg shadow-primary/10"
-          : "border-border bg-card hover:border-primary/30"
+          ? "border-primary bg-primary/5 shadow-md shadow-primary/10"
+          : "border-border hover:border-primary/30 hover:shadow-sm"
       }`}
     >
-      <div className="flex items-center justify-between mb-3">
-        <span className={`font-semibold transition-colors ${
-          activeSkill === skill.name ? "text-foreground" : "text-foreground"
-        }`}>
-          {skill.name}
-        </span>
-        <span className="text-xs text-muted-foreground">
-          {skill.yearsOfExperience}+ years
-        </span>
-      </div>
-
-      <div className="relative h-2 bg-muted rounded-full overflow-hidden mb-2">
-        <motion.div
-          className="absolute inset-y-0 left-0 bg-primary rounded-full"
-          initial={{ width: 0 }}
-          animate={isInView ? { width: `${(skill.level / 5) * 100}%` } : {}}
-          transition={{ duration: 0.8, delay: index * 0.05 + 0.3 }}
-        />
-      </div>
-
-      <div className="flex items-center justify-between">
-        <span className="text-xs text-muted-foreground">
-          {getLevelLabel(skill.level)}
-        </span>
-        {skill.relatedCaseStudies.length > 0 && (
-          <span className={`text-xs transition-colors ${
-            activeSkill === skill.name ? "text-muted-foreground" : "text-muted-foreground"
-          }`}>
-            {skill.relatedCaseStudies.length} case {skill.relatedCaseStudies.length === 1 ? "study" : "studies"}
-          </span>
-        )}
-      </div>
+      <span className="font-medium text-foreground">{skill.name}</span>
+      <span className="text-xs text-muted-foreground">{skill.yearsOfExperience}y</span>
+      <span className="text-xs text-muted-foreground capitalize">· {getLevelLabel(skill.level)}</span>
     </motion.button>
   );
 
+  const renderCategory = (label: string, items: Skill[], startIndex: number) => (
+    <div className="mb-8" key={label}>
+      <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground mb-3">{label}</p>
+      <div className="flex flex-wrap gap-2">
+        {items.map((skill, i) => renderSkillPill(skill, startIndex + i))}
+      </div>
+    </div>
+  );
+
   return (
-    <section ref={ref} className="py-16">
+    <section ref={ref} className="py-12">
       <div className="container mx-auto px-6">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -104,38 +81,25 @@ export const SkillsMatrix = ({ skills, activeSkill, onSkillClick }: SkillsMatrix
           transition={{ duration: 0.6 }}
           className="max-w-5xl"
         >
-          <h2 className="text-3xl font-bold mb-2">Skills & Expertise</h2>
-          <p className="text-muted-foreground mb-8">
-            Click a skill to filter related case studies
-          </p>
+          <div className="mb-6">
+            <p className="text-xs font-medium uppercase tracking-widest text-primary/60 mb-1">Expertise</p>
+            <h2 className="text-2xl font-semibold text-foreground">Skills & Expertise</h2>
+            <p className="text-sm text-muted-foreground mt-1">Click a skill to filter related case studies</p>
+          </div>
 
           {hasCategorization ? (
-            <div className="space-y-10">
-              {coreCompetencies.length > 0 && (
-                <div>
-                  <h3 className="text-lg font-semibold mb-4 text-muted-foreground">Core Competencies</h3>
-                  <div className="grid md:grid-cols-2 gap-4">
-                    {coreCompetencies.map((skill, index) => renderSkillCard(skill, index))}
-                  </div>
-                </div>
-              )}
-              {technicalProficiencies.length > 0 && (
-                <div>
-                  <h3 className="text-lg font-semibold mb-4 text-muted-foreground">Technical Proficiencies</h3>
-                  <div className="grid md:grid-cols-2 gap-4">
-                    {technicalProficiencies.map((skill, index) => renderSkillCard(skill, index + coreCompetencies.length))}
-                  </div>
-                </div>
-              )}
+            <div>
+              {coreCompetencies.length > 0 && renderCategory("Core Competencies", coreCompetencies, 0)}
+              {technicalProficiencies.length > 0 && renderCategory("Technical Proficiencies", technicalProficiencies, coreCompetencies.length)}
               {uncategorized.length > 0 && (
-                <div className="grid md:grid-cols-2 gap-4">
-                  {uncategorized.map((skill, index) => renderSkillCard(skill, index + coreCompetencies.length + technicalProficiencies.length))}
+                <div className="flex flex-wrap gap-2">
+                  {uncategorized.map((skill, i) => renderSkillPill(skill, coreCompetencies.length + technicalProficiencies.length + i))}
                 </div>
               )}
             </div>
           ) : (
-            <div className="grid md:grid-cols-2 gap-4">
-              {deduped.map((skill, index) => renderSkillCard(skill, index))}
+            <div className="flex flex-wrap gap-2">
+              {deduped.map((skill, i) => renderSkillPill(skill, i))}
             </div>
           )}
         </motion.div>

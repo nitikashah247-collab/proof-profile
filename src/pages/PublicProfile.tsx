@@ -768,7 +768,7 @@ const PublicProfile = () => {
               />
             }
           >
-            <section className="py-16 bg-muted/30">
+            <section className="py-12 bg-muted/30">
               <div className="container mx-auto px-6">
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
@@ -776,21 +776,22 @@ const PublicProfile = () => {
                   viewport={{ once: true }}
                   className="max-w-5xl"
                 >
-                  <div className="flex items-center justify-between mb-8">
-                    <div>
-                      <h2 className="text-3xl font-bold mb-2 text-foreground">Impact Stories</h2>
-                      <p className="text-muted-foreground">
-                        {activeSkill
-                          ? `Showing ${filteredCaseStudies.length} stories related to "${activeSkill}"`
-                          : "Click a skill above to filter by expertise"}
-                      </p>
-                    </div>
+                  <div className="mb-6">
+                    <p className="text-xs font-medium uppercase tracking-widest text-primary/60 mb-1">Case Studies</p>
+                    <h2 className="text-2xl font-semibold text-foreground">Impact Stories</h2>
                     {activeSkill && (
+                      <p className="text-sm text-muted-foreground mt-1">
+                        Showing stories related to "{activeSkill}"
+                      </p>
+                    )}
+                  </div>
+                  {activeSkill && (
+                    <div className="mb-4">
                       <Button variant="ghost" size="sm" onClick={() => setActiveSkill(null)}>
                         Clear filter ×
                       </Button>
-                    )}
-                  </div>
+                    </div>
+                  )}
                   <div className="space-y-4">
                     {limitedFiltered.map((study: any, index: number) => (
                       <CaseStudyCard
@@ -927,7 +928,7 @@ const PublicProfile = () => {
             />
           }
         >
-          <section className="py-16 bg-muted/30">
+          <section className="py-12">
             <div className="container mx-auto px-6">
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
@@ -935,10 +936,13 @@ const PublicProfile = () => {
                 viewport={{ once: true }}
                 className="max-w-5xl"
               >
-                <h2 className="text-3xl font-bold mb-8 text-foreground">Languages</h2>
+                <div className="mb-6">
+                  <p className="text-xs font-medium uppercase tracking-widest text-primary/60 mb-1">Communication</p>
+                  <h2 className="text-2xl font-semibold text-foreground">Languages</h2>
+                </div>
                 <div className="flex flex-wrap gap-4">
                   {(languagesSection!.section_data.languages || []).map((lang: any, i: number) => (
-                    <div key={i} className="px-5 py-3 rounded-xl border border-border bg-card flex items-center gap-3">
+                    <div key={i} className="px-5 py-3 rounded-2xl border border-border bg-card flex items-center gap-3 hover:shadow-md transition-shadow">
                       <span className="text-lg">🌐</span>
                       <div>
                         <p className="font-semibold text-sm text-foreground">{lang.name}</p>
@@ -977,7 +981,7 @@ const PublicProfile = () => {
             />
           }
         >
-          <section className="py-16">
+          <section className="py-12 bg-muted/30">
             <div className="container mx-auto px-6">
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
@@ -985,10 +989,13 @@ const PublicProfile = () => {
                 viewport={{ once: true }}
                 className="max-w-5xl"
               >
-                <h2 className="text-3xl font-bold mb-8 text-foreground">Publications</h2>
+                <div className="mb-6">
+                  <p className="text-xs font-medium uppercase tracking-widest text-primary/60 mb-1">Publications</p>
+                  <h2 className="text-2xl font-semibold text-foreground">Published Work</h2>
+                </div>
                 <div className="space-y-4">
                   {(publicationsSection!.section_data.publications || []).map((pub: any, i: number) => (
-                    <div key={i} className="p-4 rounded-xl border border-border bg-card flex items-start gap-4">
+                    <div key={i} className="p-4 rounded-2xl border border-border bg-card flex items-start gap-4 hover:shadow-md transition-shadow">
                       <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary shrink-0 mt-0.5">
                         📄
                       </div>
