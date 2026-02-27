@@ -48,7 +48,7 @@ const CustomTooltip = ({ active, payload, label }: any) => {
       <div className="bg-card border border-border rounded-lg shadow-lg p-3">
         <p className="text-sm font-medium text-foreground">{label}</p>
         {payload.map((entry: any, index: number) => (
-          <p key={index} className="text-sm text-primary">
+          <p key={index} className="text-sm text-foreground font-metrics">
             {entry.value}
           </p>
         ))}
@@ -97,7 +97,7 @@ export const DynamicImpactCharts = ({ visualizations }: DynamicImpactChartsProps
                   transition={{ duration: 0.4, delay: i * 0.1 }}
                   className="p-5 rounded-2xl border border-border bg-card text-center"
                 >
-                  <p className="text-3xl font-bold text-primary">{viz.headline_value}</p>
+                  <p className="text-3xl font-bold text-foreground font-metrics">{viz.headline_value}</p>
                   <p className="text-sm text-muted-foreground mt-1">{viz.headline_label || viz.title}</p>
                 </motion.div>
               ))}
@@ -116,7 +116,7 @@ export const DynamicImpactCharts = ({ visualizations }: DynamicImpactChartsProps
                 >
                   <h3 className="text-sm font-medium text-muted-foreground mb-1">{viz.title}</h3>
                   <p className="text-2xl font-bold mb-4 text-foreground">
-                    <span className="text-primary">{viz.headline_value}</span>{" "}
+                    <span className="font-metrics">{viz.headline_value}</span>{" "}
                     {viz.headline_label}
                   </p>
                   <div className="h-48">

@@ -248,7 +248,7 @@ export const ProfileHero = ({
                   >
                     <div className="flex items-center justify-center md:justify-start gap-2 mb-1">
                       {stat.icon && <stat.icon className="w-4 h-4 text-primary" />}
-                      <span className={`text-2xl font-bold ${stat.isPrimary ? "text-primary" : ""}`}>
+                <span className="text-2xl font-bold font-metrics text-foreground">
                         <AnimatedCounter value={stat.value} suffix={stat.suffix} />
                       </span>
                     </div>

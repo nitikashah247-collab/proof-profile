@@ -1,8 +1,10 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* Proof Design System - SuperSkills Inspired */
+/* Proof Design System */
 
 @layer base {
   :root {
@@ -38,6 +40,9 @@
 
     --radius: 0.5rem;
 
+    --font-body: 'Poppins', system-ui, sans-serif;
+    --font-numbers: 'Space Grotesk', 'Poppins', system-ui, sans-serif;
+
     /* Custom Proof tokens */
     --proof-success: 160 84% 39%;
     --proof-warning: 38 92% 50%;
@@ -66,7 +71,13 @@
 
   body {
     @apply bg-background text-foreground antialiased;
+    font-family: var(--font-body);
     font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  }
+
+  h1, h2, h3 {
+    font-family: var(--font-body);
+    font-weight: 600;
   }
 }
 
@@ -87,6 +98,19 @@
 @layer utilities {
   .text-accent-blue {
     @apply text-primary;
+  }
+
+  .font-metrics {
+    font-family: var(--font-numbers);
+    font-weight: 700;
+  }
+
+  .overline-label {
+    font-family: var(--font-body);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-size: 0.75rem;
   }
 
   .bg-surface-elevated {
