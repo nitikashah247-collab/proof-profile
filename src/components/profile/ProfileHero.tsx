@@ -24,6 +24,8 @@ interface ProfileHeroProps {
   linkedinUrl?: string;
 }
 
+const ease = [0.22, 1, 0.36, 1] as [number, number, number, number];
+
 export const ProfileHero = ({
   name,
   title,
@@ -46,7 +48,6 @@ export const ProfileHero = ({
     ? `mailto:${contactEmail}?subject=${encodeURIComponent("Schedule a call")}`
     : null);
 
-  // Build visible stats
   const statItems = [
     stats.yearsExperience > 0 && {
       icon: Briefcase,
@@ -86,7 +87,7 @@ export const ProfileHero = ({
         <motion.div
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.4 }}
+          transition={{ duration: 0.5, ease }}
           className="relative -mt-12 mb-4"
         >
           {photoUrl ? (
@@ -104,9 +105,9 @@ export const ProfileHero = ({
 
         {/* Name */}
         <motion.h1
-          initial={{ opacity: 0, y: 10 }}
+          initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4, delay: 0.1 }}
+          transition={{ duration: 0.5, ease, delay: 0.1 }}
           className="text-3xl md:text-4xl font-semibold text-foreground tracking-tight"
         >
           {name}
@@ -114,9 +115,9 @@ export const ProfileHero = ({
 
         {/* Headline */}
         <motion.p
-          initial={{ opacity: 0, y: 10 }}
+          initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4, delay: 0.15 }}
+          transition={{ duration: 0.5, ease, delay: 0.15 }}
           className="text-base md:text-lg text-muted-foreground mt-1"
         >
           {title}
@@ -124,9 +125,9 @@ export const ProfileHero = ({
 
         {/* Location + Company */}
         <motion.div
-          initial={{ opacity: 0, y: 10 }}
+          initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4, delay: 0.2 }}
+          transition={{ duration: 0.5, ease, delay: 0.2 }}
           className="flex items-center gap-3 text-sm text-muted-foreground mt-2"
         >
           {location && (
@@ -149,9 +150,9 @@ export const ProfileHero = ({
         {/* Bio — truncated 2 lines */}
         {tagline && (
           <motion.p
-            initial={{ opacity: 0, y: 10 }}
+            initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4, delay: 0.25 }}
+            transition={{ duration: 0.5, ease, delay: 0.25 }}
             className="text-sm text-muted-foreground mt-3 line-clamp-2 max-w-2xl"
           >
             {tagline}
@@ -160,9 +161,9 @@ export const ProfileHero = ({
 
         {/* CTA Buttons */}
         <motion.div
-          initial={{ opacity: 0, y: 10 }}
+          initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4, delay: 0.3 }}
+          transition={{ duration: 0.5, ease, delay: 0.3 }}
           className="flex flex-wrap items-center gap-3 mt-4"
         >
           {mailtoGetInTouch && (
@@ -191,9 +192,9 @@ export const ProfileHero = ({
         {/* Stats Bar */}
         {statItems.length > 0 && (
           <motion.div
-            initial={{ opacity: 0, y: 10 }}
+            initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4, delay: 0.35 }}
+            transition={{ duration: 0.5, ease, delay: 0.4 }}
             className="flex items-center gap-8 mt-6 pt-6 border-t border-border"
           >
             {statItems.map((stat, i) => (

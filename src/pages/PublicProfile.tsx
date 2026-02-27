@@ -713,6 +713,7 @@ const PublicProfile = () => {
 
       {/* Impact Charts */}
       {(visualizations.length > 0 || (isOwner && impactSection)) && (
+        <div className="border-t border-border/50">
         <InlineEditWrapper
           isOwner={isOwner}
           sectionId={impactSection?.id || "impact"}
@@ -737,6 +738,7 @@ const PublicProfile = () => {
         >
           <DynamicImpactCharts visualizations={visualizations} />
         </InlineEditWrapper>
+        </div>
       )}
 
       {/* Case Studies */}
@@ -768,7 +770,7 @@ const PublicProfile = () => {
               />
             }
           >
-            <section className="py-12 bg-muted/30">
+            <section className="py-12 bg-muted/30 border-t border-border/50">
               <div className="container mx-auto px-6">
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
@@ -811,39 +813,44 @@ const PublicProfile = () => {
 
       {/* Proof Gallery */}
       {proofGallery.length > 0 && (
-        <ProofGallerySection items={proofGallery} />
+        <div className="border-t border-border/50">
+          <ProofGallerySection items={proofGallery} />
+        </div>
       )}
 
       {/* Career Timeline */}
       {(timelineEntries.length > 0 || (isOwner && timelineSection)) && (
-        <InlineEditWrapper
-          isOwner={isOwner}
-          sectionId={timelineSection?.id || "timeline"}
-          sectionType="career_timeline"
-          sectionLabel="Career Journey"
-          isEditing={editingSection === "career_timeline"}
-          onEditStart={() => setEditingSection("career_timeline")}
-          onEditEnd={() => setEditingSection(null)}
-          onRemove={timelineSection ? () => handleRemoveSection(timelineSection.id) : undefined}
-          isEmpty={timelineEntries.length === 0}
-          onMoveUp={timelineSection ? () => handleMoveSection(timelineSection.id, "up") : undefined}
-          onMoveDown={timelineSection ? () => handleMoveSection(timelineSection.id, "down") : undefined}
-          isFirst={getSectionPosition("career_timeline").isFirst}
-          isLast={getSectionPosition("career_timeline").isLast}
-          editForm={
-            <TimelineInlineEdit
-              sectionData={timelineSection?.section_data || {}}
-              onSave={(data) => handleSectionSave(timelineSection!.id, data)}
-              onCancel={() => setEditingSection(null)}
-            />
-          }
-        >
-          <CareerTimeline entries={timelineEntries.slice(0, 6)} />
-        </InlineEditWrapper>
+        <div className="border-t border-border/50 bg-muted/30">
+          <InlineEditWrapper
+            isOwner={isOwner}
+            sectionId={timelineSection?.id || "timeline"}
+            sectionType="career_timeline"
+            sectionLabel="Career Journey"
+            isEditing={editingSection === "career_timeline"}
+            onEditStart={() => setEditingSection("career_timeline")}
+            onEditEnd={() => setEditingSection(null)}
+            onRemove={timelineSection ? () => handleRemoveSection(timelineSection.id) : undefined}
+            isEmpty={timelineEntries.length === 0}
+            onMoveUp={timelineSection ? () => handleMoveSection(timelineSection.id, "up") : undefined}
+            onMoveDown={timelineSection ? () => handleMoveSection(timelineSection.id, "down") : undefined}
+            isFirst={getSectionPosition("career_timeline").isFirst}
+            isLast={getSectionPosition("career_timeline").isLast}
+            editForm={
+              <TimelineInlineEdit
+                sectionData={timelineSection?.section_data || {}}
+                onSave={(data) => handleSectionSave(timelineSection!.id, data)}
+                onCancel={() => setEditingSection(null)}
+              />
+            }
+          >
+            <CareerTimeline entries={timelineEntries.slice(0, 6)} />
+          </InlineEditWrapper>
+        </div>
       )}
 
       {/* Skills Matrix */}
       {(skillsData.length > 0 || (isOwner && skillsSection)) && (
+        <div className="border-t border-border/50">
         <InlineEditWrapper
           isOwner={isOwner}
           sectionId={skillsSection?.id || "skills"}
@@ -874,10 +881,12 @@ const PublicProfile = () => {
             onSkillClick={setActiveSkill}
           />
         </InlineEditWrapper>
+        </div>
       )}
 
       {/* Testimonials */}
       {(testimonialCards.length > 0 || (isOwner && testimonialsSection)) && (
+        <div className="border-t border-border/50 bg-muted/30">
         <InlineEditWrapper
           isOwner={isOwner}
           sectionId={testimonialsSection?.id || "testimonials"}
@@ -902,6 +911,7 @@ const PublicProfile = () => {
         >
           <TestimonialsCarousel testimonials={testimonialCards} />
         </InlineEditWrapper>
+        </div>
       )}
 
       {/* Languages */}
@@ -928,14 +938,15 @@ const PublicProfile = () => {
             />
           }
         >
-          <section className="py-12">
+          <motion.section
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] as [number, number, number, number] }}
+            className={`${(languagesSection!.section_data.languages || []).length <= 2 ? "py-8" : "py-12"} bg-muted/30 border-t border-border/50`}
+          >
             <div className="container mx-auto px-6">
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                className="max-w-5xl"
-              >
+              <div className="max-w-5xl">
                 <div className="mb-6">
                   <p className="text-xs font-medium uppercase tracking-widest text-primary/60 mb-1">Communication</p>
                   <h2 className="text-2xl font-semibold text-foreground">Languages</h2>
@@ -951,9 +962,9 @@ const PublicProfile = () => {
                     </div>
                   ))}
                 </div>
-              </motion.div>
+              </div>
             </div>
-          </section>
+          </motion.section>
         </InlineEditWrapper>
       )}
 
@@ -981,14 +992,15 @@ const PublicProfile = () => {
             />
           }
         >
-          <section className="py-12 bg-muted/30">
+          <motion.section
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] as [number, number, number, number] }}
+            className={`${(publicationsSection!.section_data.publications || []).length <= 1 ? "py-8" : "py-12"} border-t border-border/50`}
+          >
             <div className="container mx-auto px-6">
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                className="max-w-5xl"
-              >
+              <div className="max-w-5xl">
                 <div className="mb-6">
                   <p className="text-xs font-medium uppercase tracking-widest text-primary/60 mb-1">Publications</p>
                   <h2 className="text-2xl font-semibold text-foreground">Published Work</h2>
@@ -1013,14 +1025,15 @@ const PublicProfile = () => {
                     </div>
                   ))}
                 </div>
-              </motion.div>
+              </div>
             </div>
-          </section>
+          </motion.section>
         </InlineEditWrapper>
       )}
 
       {/* Work Style */}
       {(workStyleDimensions.length > 0 || (isOwner && workStyleSection)) && (
+        <div className="border-t border-border/50 bg-muted/30">
         <InlineEditWrapper
           isOwner={isOwner}
           sectionId={workStyleSection?.id || "workstyle"}
@@ -1048,6 +1061,7 @@ const PublicProfile = () => {
             traits={workStyleData?.traits || []}
           />
         </InlineEditWrapper>
+        </div>
       )}
 
       {/* Dynamic generic sections — render ALL other section types */}
@@ -1061,8 +1075,8 @@ const PublicProfile = () => {
         const globalIdx = sortedAll.findIndex((s) => s.id === section.id);
 
         return (
+          <div key={section.id} className="border-t border-border/50">
           <InlineEditWrapper
-            key={section.id}
             isOwner={isOwner}
             sectionId={section.id}
             sectionType={section.section_type}
@@ -1095,6 +1109,7 @@ const PublicProfile = () => {
               />
             ) : null}
           </InlineEditWrapper>
+          </div>
         );
       })}
 
