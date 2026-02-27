@@ -22,6 +22,7 @@ import { ProfileOwnerBar } from "@/components/profile/ProfileOwnerBar";
 import { AnalyticsPreview } from "@/components/profile/AnalyticsPreview";
 import { AddSectionModal } from "@/components/profile/AddSectionModal";
 import { GenericSectionRenderer } from "@/components/profile/GenericSectionRenderer";
+import { ThemeCustomizeModal } from "@/components/profile/ThemeCustomizeModal";
 import { CareerCoachDrawer } from "@/components/editor/CareerCoachDrawer";
 import { ProofGallerySection } from "@/components/profile/ProofGallerySection";
 import { InlineEditWrapper } from "@/components/profile/InlineEditWrapper";
@@ -75,6 +76,7 @@ const PublicProfile = () => {
   const [isOwner, setIsOwner] = useState(false);
   const [editingSection, setEditingSection] = useState<string | null>(null);
   const [showAddSection, setShowAddSection] = useState(false);
+  const [showThemeCustomize, setShowThemeCustomize] = useState(false);
   const [analyticsData, setAnalyticsData] = useState({ totalViews: 0, avgTimeOnPage: "0s", topSection: "—", viewsThisWeek: 0 });
   const { data: sectionTemplates = [] } = useSectionTemplates();
 
@@ -631,7 +633,20 @@ const PublicProfile = () => {
     <div className="min-h-screen bg-background text-foreground" style={themeStyle}>
       {/* Owner controls */}
       {isOwner && (
-        <ProfileOwnerBar onAddSection={() => setShowAddSection(true)} />
+        <ProfileOwnerBar
+          onAddSection={() => setShowAddSection(true)}
+          onCustomize={() => setShowThemeCustomize(true)}
+        />
+      )}
+
+      {/* Theme Customize Modal */}
+      {showThemeCustomize && profile && (
+        <ThemeCustomizeModal
+          open={showThemeCustomize}
+          onClose={() => setShowThemeCustomize(false)}
+          profile={profile}
+          onSave={(updates) => setProfile((prev: any) => ({ ...prev, ...updates }))}
+        />
       )}
 
       {/* Add Section Modal */}
