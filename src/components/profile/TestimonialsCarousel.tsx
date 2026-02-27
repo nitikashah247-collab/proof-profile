@@ -1,6 +1,6 @@
-import { useState, useEffect, useRef } from "react";
-import { motion, AnimatePresence, useInView } from "framer-motion";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Quote, ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 interface Testimonial {
@@ -17,8 +17,6 @@ interface TestimonialsCarouselProps {
   rotateInterval?: number;
 }
 
-const EASE = [0.22, 1, 0.36, 1];
-
 export const TestimonialsCarousel = ({
   testimonials,
   autoRotate = true,
@@ -26,76 +24,83 @@ export const TestimonialsCarousel = ({
 }: TestimonialsCarouselProps) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
-  const ref = useRef<HTMLDivElement>(null);
-  const isInView = useInView(ref, { once: true, margin: "-80px" });
 
   useEffect(() => {
     if (!autoRotate || isPaused) return;
+
     const interval = setInterval(() => {
       setCurrentIndex((prev) => (prev + 1) % testimonials.length);
     }, rotateInterval);
+
     return () => clearInterval(interval);
   }, [autoRotate, isPaused, rotateInterval, testimonials.length]);
 
-  const goTo = (index: number) => setCurrentIndex(index);
-  const goToPrev = () => setCurrentIndex((prev) => (prev - 1 + testimonials.length) % testimonials.length);
-  const goToNext = () => setCurrentIndex((prev) => (prev + 1) % testimonials.length);
+  const goTo = (index: number) => {
+    setCurrentIndex(index);
+  };
+
+  const goToPrev = () => {
+    setCurrentIndex((prev) => (prev - 1 + testimonials.length) % testimonials.length);
+  };
+
+  const goToNext = () => {
+    setCurrentIndex((prev) => (prev + 1) % testimonials.length);
+  };
 
   const current = testimonials[currentIndex];
 
   return (
-    <section ref={ref} className="py-16 lg:py-20">
-      <div className="container mx-auto px-6 lg:px-8">
+    <section className="py-16">
+      <div className="container mx-auto px-6">
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
-          transition={{ duration: 0.7, ease: EASE as any }}
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
           className="max-w-4xl mx-auto"
         >
-          <p className="section-overline mb-2 text-center">Testimonials</p>
-          <h2 className="section-heading text-4xl mb-10 text-center text-foreground">What People Say</h2>
+          <h2 className="text-3xl font-bold mb-2 text-center">What People Say</h2>
+          <p className="text-muted-foreground mb-10 text-center">
+            Testimonials from colleagues and leaders
+          </p>
 
           <div
             className="relative"
             onMouseEnter={() => setIsPaused(true)}
             onMouseLeave={() => setIsPaused(false)}
           >
-            {/* Main Testimonial Card — glassmorphism */}
-            <div className="relative glass-card p-10 md:p-14 rounded-3xl overflow-hidden">
-              {/* Decorative quote mark */}
-              <span className="absolute -top-2 left-8 text-8xl font-display text-primary/10 select-none leading-none">
-                "
-              </span>
-
+            {/* Main Testimonial Card */}
+            <div className="relative p-8 md:p-12 rounded-2xl border border-border bg-card overflow-hidden">
+              <Quote className="absolute top-8 right-8 w-20 h-20 text-primary/10" />
+              
               <AnimatePresence mode="wait">
                 <motion.div
                   key={currentIndex}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -20 }}
-                  transition={{ duration: 0.4, ease: EASE as any }}
+                  transition={{ duration: 0.3 }}
                   className="relative z-10"
                 >
-                  <p className="text-2xl md:text-3xl font-display font-normal italic leading-relaxed text-foreground/90 mb-10">
+                  <p className="text-xl md:text-2xl text-foreground/90 leading-relaxed mb-8">
                     "{current.quote}"
                   </p>
-
+                  
                   <div className="flex items-center gap-4">
                     {current.photoUrl ? (
                       <img
                         src={current.photoUrl}
                         alt={current.author}
-                        className="w-12 h-12 rounded-full object-cover"
+                        className="w-14 h-14 rounded-full object-cover"
                       />
                     ) : (
-                      <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-sm">
+                      <div className="w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-lg">
                         {current.author.split(" ").map(n => n[0]).join("")}
                       </div>
                     )}
                     <div>
-                      <p className="font-medium text-foreground">{current.author}</p>
-                      <p className="text-sm text-muted-foreground">
-                        {current.role}{current.company ? ` at ${current.company}` : ""}
+                      <p className="font-semibold text-lg">{current.author}</p>
+                      <p className="text-muted-foreground">
+                        {current.role} at {current.company}
                       </p>
                     </div>
                   </div>
@@ -109,7 +114,7 @@ export const TestimonialsCarousel = ({
                     variant="ghost"
                     size="icon"
                     onClick={goToPrev}
-                    className="absolute left-4 top-1/2 -translate-y-1/2 rounded-full opacity-40 hover:opacity-100 transition-opacity"
+                    className="absolute left-4 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 hover:opacity-100 transition-opacity"
                   >
                     <ChevronLeft className="w-5 h-5" />
                   </Button>
@@ -117,7 +122,7 @@ export const TestimonialsCarousel = ({
                     variant="ghost"
                     size="icon"
                     onClick={goToNext}
-                    className="absolute right-4 top-1/2 -translate-y-1/2 rounded-full opacity-40 hover:opacity-100 transition-opacity"
+                    className="absolute right-4 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 hover:opacity-100 transition-opacity"
                   >
                     <ChevronRight className="w-5 h-5" />
                   </Button>
@@ -132,10 +137,10 @@ export const TestimonialsCarousel = ({
                   <button
                     key={index}
                     onClick={() => goTo(index)}
-                    className={`h-2 rounded-full transition-all duration-300 ${
+                    className={`w-2 h-2 rounded-full transition-all duration-300 ${
                       index === currentIndex
                         ? "w-8 bg-primary"
-                        : "w-2 bg-border hover:bg-primary/50"
+                        : "bg-border hover:bg-primary/50"
                     }`}
                     aria-label={`Go to testimonial ${index + 1}`}
                   />

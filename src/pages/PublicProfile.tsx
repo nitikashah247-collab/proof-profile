@@ -62,7 +62,6 @@ const DEDICATED_SECTION_TYPES = [
 
 const PublicProfile = () => {
   const { slug } = useParams<{ slug: string }>();
-
   const { user } = useAuth();
   const [profile, setProfile] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -408,7 +407,7 @@ const PublicProfile = () => {
     setEditingSection(null);
   };
 
-  // Theme style — apply user's dark/light theme choice from Step 4
+  // Apply custom theme from profile settings
   const themeStyle = useMemo(() => {
     if (!profile) return {};
     const isDark = profile.theme_base === "dark";
@@ -629,7 +628,7 @@ const PublicProfile = () => {
     .sort((a, b) => a.section_order - b.section_order);
 
   return (
-    <div className="min-h-screen profile-page text-foreground" style={themeStyle}>
+    <div className="min-h-screen bg-background text-foreground" style={themeStyle}>
       {/* Owner controls */}
       {isOwner && (
         <ProfileOwnerBar onAddSection={() => setShowAddSection(true)} />
@@ -687,9 +686,9 @@ const PublicProfile = () => {
           company={profile.industry || ""}
           tagline={profile.bio || ""}
           photoUrl={profile.avatar_url || undefined}
-          skills={[]}
-          activeSkill={null}
-          onSkillClick={() => {}}
+          skills={skillNames.slice(0, 7)}
+          activeSkill={activeSkill}
+          onSkillClick={setActiveSkill}
           stats={normalizedHeroStats}
           email={heroSection?.section_data?.email || ""}
           calendlyUrl={heroSection?.section_data?.calendly_url || ""}
@@ -697,8 +696,8 @@ const PublicProfile = () => {
         />
       </InlineEditWrapper>
 
-      {/* Impact Charts — FIX 4: hide empty for non-owners */}
-      {(visualizations.length > 0 || (isOwner && impactSection)) && (isOwner || visualizations.length > 0) && (
+      {/* Impact Charts */}
+      {(visualizations.length > 0 || (isOwner && impactSection)) && (
         <InlineEditWrapper
           isOwner={isOwner}
           sectionId={impactSection?.id || "impact"}
@@ -725,8 +724,8 @@ const PublicProfile = () => {
         </InlineEditWrapper>
       )}
 
-      {/* Case Studies — FIX 4: hide empty for non-owners */}
-      {(finalCaseStudyCards.length > 0 || (isOwner && caseStudiesSection)) && (isOwner || finalCaseStudyCards.length > 0) && (() => {
+      {/* Case Studies */}
+      {(finalCaseStudyCards.length > 0 || (isOwner && caseStudiesSection)) && (() => {
         const limitedCaseStudies = finalCaseStudyCards.slice(0, 5);
         const limitedFiltered = activeSkill
           ? limitedCaseStudies.filter((cs: any) => cs.skills.includes(activeSkill))
@@ -754,22 +753,21 @@ const PublicProfile = () => {
               />
             }
           >
-            <section className="py-16 lg:py-20">
-              <div className="container mx-auto px-6 lg:px-8">
+            <section className="py-16 bg-muted/30">
+              <div className="container mx-auto px-6">
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   className="max-w-5xl"
                 >
-                  <div className="flex items-center justify-between mb-10">
+                  <div className="flex items-center justify-between mb-8">
                     <div>
-                      <p className="section-overline mb-2">Case Studies</p>
-                      <h2 className="section-heading text-4xl text-foreground">Impact Stories</h2>
-                      <p className="text-muted-foreground mt-2">
+                      <h2 className="text-3xl font-bold mb-2 text-foreground">Impact Stories</h2>
+                      <p className="text-muted-foreground">
                         {activeSkill
                           ? `Showing ${filteredCaseStudies.length} stories related to "${activeSkill}"`
-                          : "Real results from real challenges"}
+                          : "Click a skill above to filter by expertise"}
                       </p>
                     </div>
                     {activeSkill && (
@@ -800,8 +798,8 @@ const PublicProfile = () => {
         <ProofGallerySection items={proofGallery} />
       )}
 
-      {/* Career Timeline — FIX 4: hide empty for non-owners */}
-      {(timelineEntries.length > 0 || (isOwner && timelineSection)) && (isOwner || timelineEntries.length > 0) && (
+      {/* Career Timeline */}
+      {(timelineEntries.length > 0 || (isOwner && timelineSection)) && (
         <InlineEditWrapper
           isOwner={isOwner}
           sectionId={timelineSection?.id || "timeline"}
@@ -828,8 +826,8 @@ const PublicProfile = () => {
         </InlineEditWrapper>
       )}
 
-      {/* Skills Matrix — FIX 4: hide empty for non-owners */}
-      {(skillsData.length > 0 || (isOwner && skillsSection)) && (isOwner || skillsData.length > 0) && (
+      {/* Skills Matrix */}
+      {(skillsData.length > 0 || (isOwner && skillsSection)) && (
         <InlineEditWrapper
           isOwner={isOwner}
           sectionId={skillsSection?.id || "skills"}
@@ -862,8 +860,8 @@ const PublicProfile = () => {
         </InlineEditWrapper>
       )}
 
-      {/* Testimonials — FIX 4: hide empty for non-owners */}
-      {(testimonialCards.length > 0 || (isOwner && testimonialsSection)) && (isOwner || testimonialCards.length > 0) && (
+      {/* Testimonials */}
+      {(testimonialCards.length > 0 || (isOwner && testimonialsSection)) && (
         <InlineEditWrapper
           isOwner={isOwner}
           sectionId={testimonialsSection?.id || "testimonials"}
@@ -890,8 +888,8 @@ const PublicProfile = () => {
         </InlineEditWrapper>
       )}
 
-      {/* Languages — FIX 4: hide empty for non-owners */}
-      {((languagesSection?.section_data?.languages?.length > 0) || (isOwner && languagesSection)) && (isOwner || languagesSection?.section_data?.languages?.length > 0) && (
+      {/* Languages */}
+      {((languagesSection?.section_data?.languages?.length > 0) || (isOwner && languagesSection)) && (
         <InlineEditWrapper
           isOwner={isOwner}
           sectionId={languagesSection!.id}
@@ -914,16 +912,15 @@ const PublicProfile = () => {
             />
           }
         >
-          <section className="py-16 lg:py-20">
-            <div className="container mx-auto px-6 lg:px-8">
+          <section className="py-16 bg-muted/30">
+            <div className="container mx-auto px-6">
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 className="max-w-5xl"
               >
-                <p className="section-overline mb-2">Communication</p>
-                <h2 className="section-heading text-4xl mb-10 text-foreground">Languages</h2>
+                <h2 className="text-3xl font-bold mb-8 text-foreground">Languages</h2>
                 <div className="flex flex-wrap gap-4">
                   {(languagesSection!.section_data.languages || []).map((lang: any, i: number) => (
                     <div key={i} className="px-5 py-3 rounded-xl border border-border bg-card flex items-center gap-3">
@@ -941,8 +938,8 @@ const PublicProfile = () => {
         </InlineEditWrapper>
       )}
 
-      {/* Publications — FIX 4: hide empty for non-owners */}
-      {((publicationsSection?.section_data?.publications?.length > 0) || (isOwner && publicationsSection)) && (isOwner || publicationsSection?.section_data?.publications?.length > 0) && (
+      {/* Publications */}
+      {((publicationsSection?.section_data?.publications?.length > 0) || (isOwner && publicationsSection)) && (
         <InlineEditWrapper
           isOwner={isOwner}
           sectionId={publicationsSection!.id}
@@ -965,25 +962,24 @@ const PublicProfile = () => {
             />
           }
         >
-          <section className="py-16 lg:py-20">
-            <div className="container mx-auto px-6 lg:px-8">
+          <section className="py-16">
+            <div className="container mx-auto px-6">
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 className="max-w-5xl"
               >
-                <p className="section-overline mb-2">Writing & Research</p>
-                <h2 className="section-heading text-4xl mb-10 text-foreground">Publications</h2>
+                <h2 className="text-3xl font-bold mb-8 text-foreground">Publications</h2>
                 <div className="space-y-4">
                   {(publicationsSection!.section_data.publications || []).map((pub: any, i: number) => (
-                    <div key={i} className="p-5 rounded-xl border border-border bg-card flex items-start gap-4 hover:border-primary/30 transition-colors">
+                    <div key={i} className="p-4 rounded-xl border border-border bg-card flex items-start gap-4">
                       <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary shrink-0 mt-0.5">
                         📄
                       </div>
                       <div className="flex-1 min-w-0">
                         <p className="font-semibold text-sm text-foreground">{pub.title}</p>
-                        <p className="text-xs text-muted-foreground mt-1">
+                        <p className="text-xs text-muted-foreground">
                           {[pub.outlet, pub.year].filter(Boolean).join(" · ")}
                         </p>
                       </div>
@@ -1001,8 +997,8 @@ const PublicProfile = () => {
         </InlineEditWrapper>
       )}
 
-      {/* Work Style — FIX 4: hide empty for non-owners */}
-      {(workStyleDimensions.length > 0 || (isOwner && workStyleSection)) && (isOwner || workStyleDimensions.length > 0) && (
+      {/* Work Style */}
+      {(workStyleDimensions.length > 0 || (isOwner && workStyleSection)) && (
         <InlineEditWrapper
           isOwner={isOwner}
           sectionId={workStyleSection?.id || "workstyle"}
@@ -1100,22 +1096,20 @@ const PublicProfile = () => {
         </section>
       )}
 
-      {/* Footer */}
-      <div className="profile-footer">
-        <div className="container mx-auto px-6 lg:px-8 flex justify-center">
-          {!isOwner && (
-            <Link
-              to="/"
-              className="flex items-center gap-2 px-4 py-2 rounded-full glass-card hover:shadow-lg transition-shadow"
-            >
-              <div className="w-5 h-5 rounded icon-gradient-bg flex items-center justify-center">
-                <span className="text-white font-bold text-[10px]">P</span>
-              </div>
-              <span className="text-xs text-muted-foreground">Built with Proof</span>
-            </Link>
-          )}
+      {/* Proof Badge */}
+      {!isOwner && (
+        <div className="fixed bottom-6 right-6 z-50">
+          <Link
+            to="/"
+            className="flex items-center gap-2 px-4 py-2 rounded-full bg-card border border-border shadow-lg hover:shadow-xl transition-shadow"
+          >
+            <div className="w-5 h-5 rounded icon-gradient-bg flex items-center justify-center">
+              <span className="text-white font-bold text-[10px]">P</span>
+            </div>
+            <span className="text-sm font-medium text-foreground">Made with Proof</span>
+          </Link>
         </div>
-      </div>
+      )}
 
       {/* AI Career Coach - only for profile owner */}
       {isOwner && (

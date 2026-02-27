@@ -34,8 +34,6 @@ interface CaseStudyCardProps {
   isHighlighted: boolean;
 }
 
-const EASE = [0.22, 1, 0.36, 1];
-
 export const CaseStudyCard = ({ study, index, isHighlighted }: CaseStudyCardProps) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [lightboxUrl, setLightboxUrl] = useState<string | null>(null);
@@ -49,49 +47,45 @@ export const CaseStudyCard = ({ study, index, isHighlighted }: CaseStudyCardProp
   return (
     <>
       <motion.div
-        initial={{ opacity: 0, y: 25 }}
+        initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, margin: "-80px" }}
-        transition={{ delay: index * 0.12, duration: 0.6, ease: EASE as any }}
-        className={`rounded-3xl border overflow-hidden transition-all duration-300 glass-card ${
-          isHighlighted
-            ? "border-primary/30 shadow-lg shadow-primary/10"
-            : "border-border/50 hover:border-primary/20"
+        viewport={{ once: true }}
+        transition={{ delay: index * 0.1 }}
+        className={`rounded-2xl border bg-card overflow-hidden transition-all duration-300 ${
+          isHighlighted 
+            ? "border-primary shadow-lg shadow-primary/10" 
+            : "border-border hover:border-primary/30"
         } ${!isHighlighted && isHighlighted !== undefined ? "opacity-50" : ""}`}
       >
-        {/* Accent bar */}
-        <div className="h-1 w-full bg-gradient-to-r from-primary to-primary/50" />
-
         {/* Collapsed View */}
         <button
           onClick={() => setIsExpanded(!isExpanded)}
-          className="w-full p-6 md:p-8 text-left flex items-start justify-between gap-4 hover:bg-muted/20 transition-colors"
+          className="w-full p-6 text-left flex items-start justify-between gap-4 hover:bg-muted/30 transition-colors"
         >
           <div className="flex-1">
-            {/* Key metric as pull-quote */}
-            <p className="text-3xl md:text-4xl font-display text-foreground mb-3 tracking-tight">
-              {study.keyMetric}
-            </p>
             <div className="flex items-center gap-3 mb-2">
-              <span className="px-3 py-1 rounded-full bg-primary/8 border border-primary/15 text-primary text-xs font-medium">
+              <span className="px-2 py-1 rounded-full bg-primary/10 text-primary text-xs font-medium">
                 {study.company}
+              </span>
+              <span className="text-2xl font-bold text-primary font-mono">
+                {study.keyMetric}
               </span>
             </div>
             <h3 className="text-lg font-semibold text-foreground mb-1">{study.title}</h3>
-            <p className="text-sm text-muted-foreground line-clamp-2 leading-relaxed">{study.summary}</p>
-
+            <p className="text-sm text-muted-foreground line-clamp-2">{study.summary}</p>
+            
             {/* Skills Tags */}
-            <div className="flex flex-wrap gap-1.5 mt-4">
+            <div className="flex flex-wrap gap-1 mt-3">
               {study.skills.slice(0, 3).map((skill) => (
                 <span
                   key={skill}
-                  className="px-2.5 py-1 rounded-full text-xs bg-muted text-muted-foreground"
+                  className="px-2 py-0.5 rounded text-xs bg-muted text-muted-foreground"
                 >
                   {skill}
                 </span>
               ))}
               {study.skills.length > 3 && (
-                <span className="px-2.5 py-1 rounded-full text-xs text-muted-foreground">
+                <span className="px-2 py-0.5 rounded text-xs text-muted-foreground">
                   +{study.skills.length - 3} more
                 </span>
               )}
@@ -100,7 +94,7 @@ export const CaseStudyCard = ({ study, index, isHighlighted }: CaseStudyCardProp
           <motion.div
             animate={{ rotate: isExpanded ? 180 : 0 }}
             transition={{ duration: 0.2 }}
-            className="flex-shrink-0 mt-2"
+            className="flex-shrink-0 mt-1"
           >
             <ChevronDown className="w-5 h-5 text-muted-foreground" />
           </motion.div>
@@ -116,7 +110,7 @@ export const CaseStudyCard = ({ study, index, isHighlighted }: CaseStudyCardProp
               transition={{ duration: 0.3, ease: "easeInOut" }}
               className="overflow-hidden"
             >
-              <div className="px-6 md:px-8 pb-8 space-y-6 border-t border-border/50 pt-6">
+              <div className="px-6 pb-6 space-y-6 border-t border-border pt-6">
                 {/* Challenge, Approach, Outcome Grid */}
                 <div className="grid md:grid-cols-3 gap-6">
                   <div className="space-y-2">
@@ -124,27 +118,35 @@ export const CaseStudyCard = ({ study, index, isHighlighted }: CaseStudyCardProp
                       <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
                         <Target className="w-4 h-4" />
                       </div>
-                      <span className="text-xs font-semibold uppercase tracking-wider">Challenge</span>
+                      <span className="text-sm font-semibold uppercase tracking-wide">Challenge</span>
                     </div>
-                    <p className="text-sm text-muted-foreground leading-relaxed">{study.challenge}</p>
+                    <p className="text-sm text-muted-foreground leading-relaxed">
+                      {study.challenge}
+                    </p>
                   </div>
+                  
                   <div className="space-y-2">
                     <div className="flex items-center gap-2 text-primary">
                       <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
                         <Lightbulb className="w-4 h-4" />
                       </div>
-                      <span className="text-xs font-semibold uppercase tracking-wider">Approach</span>
+                      <span className="text-sm font-semibold uppercase tracking-wide">Approach</span>
                     </div>
-                    <p className="text-sm text-muted-foreground leading-relaxed">{study.approach}</p>
+                    <p className="text-sm text-muted-foreground leading-relaxed">
+                      {study.approach}
+                    </p>
                   </div>
+                  
                   <div className="space-y-2">
-                    <div className="flex items-center gap-2 text-primary">
-                      <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
+                    <div className="flex items-center gap-2 text-green-600 dark:text-green-400">
+                      <div className="w-8 h-8 rounded-lg bg-green-500/10 flex items-center justify-center">
                         <TrendingUp className="w-4 h-4" />
                       </div>
-                      <span className="text-xs font-semibold uppercase tracking-wider">Outcome</span>
+                      <span className="text-sm font-semibold uppercase tracking-wide">Outcome</span>
                     </div>
-                    <p className="text-sm text-foreground font-medium leading-relaxed">{study.outcome}</p>
+                    <p className="text-sm text-foreground font-medium leading-relaxed">
+                      {study.outcome}
+                    </p>
                   </div>
                 </div>
 
@@ -159,7 +161,7 @@ export const CaseStudyCard = ({ study, index, isHighlighted }: CaseStudyCardProp
                       {study.artifacts.map((artifact, i) => (
                         <div
                           key={i}
-                          className="rounded-xl border border-border/50 overflow-hidden bg-muted/30 cursor-pointer hover:border-primary/30 transition-colors"
+                          className="rounded-lg border border-border overflow-hidden bg-muted/30 cursor-pointer hover:border-primary/30 transition-colors"
                           onClick={() => {
                             if (artifact.type === "pdf" || artifact.type === "document") {
                               window.open(artifact.url, "_blank");
@@ -170,21 +172,28 @@ export const CaseStudyCard = ({ study, index, isHighlighted }: CaseStudyCardProp
                           }}
                         >
                           {isImageType(artifact.type) ? (
-                            <img src={artifact.url} alt={artifact.caption} className="w-full h-48 object-cover" loading="lazy" />
+                            <img
+                              src={artifact.url}
+                              alt={artifact.caption}
+                              className="w-full h-48 object-cover"
+                              loading="lazy"
+                            />
                           ) : (
                             <div className="flex items-center gap-3 p-4">
                               <FileText className="w-8 h-8 text-muted-foreground" />
-                              <span className="text-sm text-primary hover:underline">{artifact.caption}</span>
+                              <span className="text-sm text-primary hover:underline">
+                                {artifact.caption}
+                              </span>
                             </div>
                           )}
-                          <p className="text-xs text-muted-foreground p-3">{artifact.caption}</p>
+                          <p className="text-xs text-muted-foreground p-2">{artifact.caption}</p>
                         </div>
                       ))}
                     </div>
                   </div>
                 )}
 
-                {/* Legacy Images */}
+                {/* Legacy Images/Screenshots */}
                 {study.images && study.images.length > 0 && (!study.artifacts || study.artifacts.length === 0) && (
                   <div className="space-y-2">
                     <div className="flex items-center gap-2 text-muted-foreground">
@@ -193,7 +202,10 @@ export const CaseStudyCard = ({ study, index, isHighlighted }: CaseStudyCardProp
                     </div>
                     <div className="grid grid-cols-3 gap-3">
                       {study.images.map((img, i) => (
-                        <div key={i} className="aspect-video rounded-xl bg-muted border border-border/50 flex items-center justify-center text-muted-foreground text-xs">
+                        <div
+                          key={i}
+                          className="aspect-video rounded-lg bg-muted border border-border flex items-center justify-center text-muted-foreground text-xs"
+                        >
                           Screenshot {i + 1}
                         </div>
                       ))}
@@ -203,8 +215,8 @@ export const CaseStudyCard = ({ study, index, isHighlighted }: CaseStudyCardProp
 
                 {/* Testimonial Quote */}
                 {study.testimonial && (
-                  <div className="p-5 rounded-2xl bg-primary/5 border border-primary/10">
-                    <p className="text-sm italic text-foreground/80 mb-3 font-display text-lg leading-relaxed">
+                  <div className="p-4 rounded-xl bg-primary/5 border border-primary/10">
+                    <p className="text-sm italic text-foreground/80 mb-3">
                       "{study.testimonial.quote}"
                     </p>
                     <div className="flex items-center gap-2">
@@ -219,7 +231,8 @@ export const CaseStudyCard = ({ study, index, isHighlighted }: CaseStudyCardProp
                   </div>
                 )}
 
-                <Button variant="outline" size="sm" className="gap-2 rounded-full">
+                {/* View Full Case Study Button */}
+                <Button variant="outline" size="sm" className="gap-2">
                   <ExternalLink className="w-4 h-4" />
                   View Full Case Study
                 </Button>
