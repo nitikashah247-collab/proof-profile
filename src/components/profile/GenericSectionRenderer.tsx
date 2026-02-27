@@ -16,6 +16,9 @@ export const GenericSectionRenderer = ({
     sectionData?.[sectionType] ||
     (Array.isArray(sectionData) ? sectionData : null);
 
+  // Derive overline from section type
+  const overline = sectionType.replace(/_/g, " ").toUpperCase();
+
   // If no items array, try key-value rendering
   if (!items || !Array.isArray(items) || items.length === 0) {
     const meaningfulEntries = Object.entries(sectionData || {}).filter(
@@ -24,7 +27,7 @@ export const GenericSectionRenderer = ({
     if (meaningfulEntries.length === 0) return null;
 
     return (
-      <section className="py-16">
+      <section className="py-12">
         <div className="container mx-auto px-6">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -32,10 +35,13 @@ export const GenericSectionRenderer = ({
             viewport={{ once: true }}
             className="max-w-5xl"
           >
-            <h2 className="text-3xl font-bold mb-8 text-foreground">{displayName}</h2>
+            <div className="mb-6">
+              <p className="text-xs font-medium uppercase tracking-widest text-primary/60 mb-1">{overline}</p>
+              <h2 className="text-2xl font-semibold text-foreground">{displayName}</h2>
+            </div>
             <div className="space-y-3">
               {meaningfulEntries.map(([key, val], i) => (
-                <div key={i} className="p-4 rounded-xl border border-border bg-card">
+                <div key={i} className="p-4 rounded-2xl border border-border bg-card hover:shadow-md transition-shadow">
                   <p className="text-xs text-muted-foreground capitalize mb-1">
                     {key.replace(/_/g, " ")}
                   </p>
@@ -50,7 +56,7 @@ export const GenericSectionRenderer = ({
   }
 
   return (
-    <section className="py-16">
+    <section className="py-12">
       <div className="container mx-auto px-6">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -58,10 +64,13 @@ export const GenericSectionRenderer = ({
           viewport={{ once: true }}
           className="max-w-5xl"
         >
-          <h2 className="text-3xl font-bold mb-8 text-foreground">{displayName}</h2>
+          <div className="mb-6">
+            <p className="text-xs font-medium uppercase tracking-widest text-primary/60 mb-1">{overline}</p>
+            <h2 className="text-2xl font-semibold text-foreground">{displayName}</h2>
+          </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {items.map((item: any, i: number) => (
-              <div key={i} className="p-5 rounded-xl border border-border bg-card space-y-2">
+              <div key={i} className="p-5 rounded-2xl border border-border bg-card space-y-2 hover:shadow-md transition-shadow">
                 <h3 className="font-semibold text-foreground">
                   {item.title || item.name || item.role || item.company || item.project || `Item ${i + 1}`}
                 </h3>
@@ -100,10 +109,7 @@ export const GenericSectionRenderer = ({
                 {item.skills && Array.isArray(item.skills) && (
                   <div className="flex flex-wrap gap-1.5 pt-1">
                     {item.skills.slice(0, 5).map((skill: string, j: number) => (
-                      <span
-                        key={j}
-                        className="text-[10px] px-2 py-0.5 rounded-full bg-primary/10 text-primary"
-                      >
+                      <span key={j} className="text-[10px] px-2 py-0.5 rounded-full bg-muted text-muted-foreground">
                         {skill}
                       </span>
                     ))}
