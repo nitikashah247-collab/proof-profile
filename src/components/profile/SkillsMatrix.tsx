@@ -2,39 +2,30 @@ import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
 
 interface Skill {
-  name: string;
-  level: number; // 1-5
-  yearsOfExperience: number;
-  relatedCaseStudies: number[];
-  category?: string;
+  name: string; level: number; yearsOfExperience: number;
+  relatedCaseStudies: number[]; category?: string;
+}
+interface SkillsMatrixProps {
+  skills: Skill[]; activeSkill: string | null; onSkillClick: (skill: string | null) => void;
 }
 
-interface SkillsMatrixProps {
-  skills: Skill[];
-  activeSkill: string | null;
-  onSkillClick: (skill: string | null) => void;
-}
+const ease = [0.22, 1, 0.36, 1] as [number, number, number, number];
 
 export const SkillsMatrix = ({ skills, activeSkill, onSkillClick }: SkillsMatrixProps) => {
   const ref = useRef<HTMLDivElement>(null);
-  const isInView = useInView(ref, { once: true, margin: "-100px" });
+  const isInView = useInView(ref, { once: true, margin: "-80px" });
 
   const getLevelLabel = (level: number) => {
     const labels = ["Beginner", "Intermediate", "Advanced", "Expert", "Master"];
     return labels[level - 1] || "Unknown";
   };
 
-  // Deduplicate
   const deduped = (() => {
     const seen = new Map<string, Skill>();
     for (const skill of skills) {
       const key = skill.name.toLowerCase().trim();
-      if (seen.has(key)) {
-        const existing = seen.get(key)!;
-        if (skill.level > existing.level) seen.set(key, skill);
-      } else {
-        seen.set(key, skill);
-      }
+      if (seen.has(key)) { const ex = seen.get(key)!; if (skill.level > ex.level) seen.set(key, skill); }
+      else seen.set(key, skill);
     }
     return Array.from(seen.values());
   })();
@@ -48,8 +39,8 @@ export const SkillsMatrix = ({ skills, activeSkill, onSkillClick }: SkillsMatrix
     <motion.button
       key={skill.name}
       initial={{ opacity: 0, scale: 0.9 }}
-      animate={isInView ? { opacity: 1, scale: 1 } : {}}
-      transition={{ duration: 0.3, delay: index * 0.03 }}
+      animate={isInView ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.9 }}
+      transition={{ duration: 0.4, ease, delay: index * 0.04 }}
       onClick={() => onSkillClick(activeSkill === skill.name ? null : skill.name)}
       className={`flex items-center gap-2 bg-card border rounded-full px-4 py-2 text-sm transition-all ${
         activeSkill === skill.name
@@ -73,14 +64,15 @@ export const SkillsMatrix = ({ skills, activeSkill, onSkillClick }: SkillsMatrix
   );
 
   return (
-    <section ref={ref} className="py-12">
+    <motion.section
+      ref={ref}
+      initial={{ opacity: 0, y: 30 }}
+      animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
+      transition={{ duration: 0.6, ease }}
+      className="py-12"
+    >
       <div className="container mx-auto px-6">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.6 }}
-          className="max-w-5xl"
-        >
+        <div className="max-w-5xl">
           <div className="mb-6">
             <p className="text-xs font-medium uppercase tracking-widest text-primary/60 mb-1">Expertise</p>
             <h2 className="text-2xl font-semibold text-foreground">Skills & Expertise</h2>
@@ -102,8 +94,8 @@ export const SkillsMatrix = ({ skills, activeSkill, onSkillClick }: SkillsMatrix
               {deduped.map((skill, i) => renderSkillPill(skill, i))}
             </div>
           )}
-        </motion.div>
+        </div>
       </div>
-    </section>
+    </motion.section>
   );
 };
