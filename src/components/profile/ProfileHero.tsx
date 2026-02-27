@@ -31,9 +31,6 @@ export const ProfileHero = ({
   company,
   tagline,
   photoUrl,
-  skills,
-  activeSkill,
-  onSkillClick,
   stats,
   email,
   calendlyUrl,
@@ -49,216 +46,166 @@ export const ProfileHero = ({
     ? `mailto:${contactEmail}?subject=${encodeURIComponent("Schedule a call")}`
     : null);
 
+  // Build visible stats
+  const statItems = [
+    stats.yearsExperience > 0 && {
+      icon: Briefcase,
+      value: stats.yearsExperience,
+      suffix: "+",
+      label: "Years Experience",
+    },
+    stats.projectsLed > 0 && {
+      icon: Award,
+      value: stats.projectsLed,
+      suffix: "+",
+      label: "Projects Led",
+    },
+    stats.teamsManaged > 0 && {
+      icon: Users,
+      value: stats.teamsManaged,
+      suffix: "+",
+      label: "People Managed",
+    },
+    stats.keyMetric.value > 0 && {
+      icon: null as React.ElementType | null,
+      value: stats.keyMetric.value,
+      suffix: stats.keyMetric.suffix,
+      label: stats.keyMetric.label,
+    },
+  ].filter(Boolean) as Array<{
+    icon: React.ElementType | null;
+    value: number;
+    suffix: string;
+    label: string;
+  }>;
+
   return (
-    <section className="pt-32 pb-16 relative overflow-hidden">
-      <div className="absolute inset-0 bg-grid-pattern bg-[size:60px_60px] opacity-[0.02]" />
-      <div className="absolute top-0 right-0 w-1/2 h-full bg-gradient-to-l from-primary/5 to-transparent" />
-
-      <div className="container mx-auto px-6 relative z-10">
-        <div className="max-w-5xl">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className="flex flex-col md:flex-row items-start gap-8"
-          >
-            {/* Photo/Avatar */}
-            <motion.div
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.5, delay: 0.1 }}
-              className="relative group"
-            >
-              {photoUrl ? (
-                <img
-                  src={photoUrl}
-                  alt={name}
-                  className="w-36 h-36 rounded-2xl object-cover shadow-2xl shadow-primary/20 border-4 border-background"
-                />
-              ) : (
-                <div className="w-36 h-36 rounded-2xl icon-gradient-bg flex items-center justify-center text-5xl font-bold text-white shadow-2xl shadow-primary/20">
-                  {initials}
-                </div>
-              )}
-              <div className="absolute -bottom-2 -right-2 w-8 h-8 rounded-full bg-green-500 border-4 border-background flex items-center justify-center">
-                <span className="text-white text-xs">✓</span>
-              </div>
-            </motion.div>
-
-            {/* Info */}
-            <div className="flex-1">
-              <motion.h1
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.15 }}
-                className="text-4xl md:text-5xl font-bold mb-2"
-              >
-                {name}
-              </motion.h1>
-              <motion.p
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.2 }}
-                className="text-xl md:text-2xl text-muted-foreground mb-4"
-              >
-                {title}
-              </motion.p>
-              <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.25 }}
-                className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground mb-6"
-              >
-                <span className="flex items-center gap-1.5">
-                  <MapPin className="w-4 h-4" />
-                  {location}
-                </span>
-                <span className="flex items-center gap-1.5">
-                  <Building2 className="w-4 h-4" />
-                  {company}
-                </span>
-              </motion.div>
-              <motion.p
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.3 }}
-                className="text-lg text-foreground/80 mb-8 max-w-2xl"
-              >
-                {tagline}
-              </motion.p>
-
-              {/* CTA Buttons */}
-              <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.35 }}
-                className="flex flex-wrap items-center gap-3"
-              >
-                {mailtoGetInTouch && (
-                  <Button size="lg" asChild>
-                    <a href={mailtoGetInTouch}>
-                      <Mail className="w-5 h-5 mr-2" />
-                      Get in touch
-                    </a>
-                  </Button>
-                )}
-                {scheduleLink && (
-                  <Button variant="outline" size="lg" asChild>
-                    <a href={scheduleLink} target={calendlyUrl ? "_blank" : undefined} rel={calendlyUrl ? "noopener noreferrer" : undefined}>
-                      <Calendar className="w-5 h-5 mr-2" />
-                      Schedule a call
-                    </a>
-                  </Button>
-                )}
-                {linkedinUrl && (
-                  <Button variant="ghost" size="icon" className="ml-2" asChild>
-                    <a href={linkedinUrl} target="_blank" rel="noopener noreferrer">
-                      <Linkedin className="w-5 h-5" />
-                    </a>
-                  </Button>
-                )}
-              </motion.div>
+    <section className="pb-8">
+      <div className="max-w-5xl mx-auto px-6">
+        {/* Photo overlapping banner */}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.4 }}
+          className="relative -mt-12 mb-4"
+        >
+          {photoUrl ? (
+            <img
+              src={photoUrl}
+              alt={name}
+              className="w-24 h-24 rounded-full border-4 border-background object-cover shadow-md"
+            />
+          ) : (
+            <div className="w-24 h-24 rounded-full border-4 border-background icon-gradient-bg flex items-center justify-center text-3xl font-bold text-white shadow-md">
+              {initials}
             </div>
-          </motion.div>
+          )}
+        </motion.div>
 
-          {/* Skills - Clickable Tags */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
+        {/* Name */}
+        <motion.h1
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, delay: 0.1 }}
+          className="text-3xl md:text-4xl font-semibold text-foreground tracking-tight"
+        >
+          {name}
+        </motion.h1>
+
+        {/* Headline */}
+        <motion.p
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, delay: 0.15 }}
+          className="text-base md:text-lg text-muted-foreground mt-1"
+        >
+          {title}
+        </motion.p>
+
+        {/* Location + Company */}
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, delay: 0.2 }}
+          className="flex items-center gap-3 text-sm text-muted-foreground mt-2"
+        >
+          {location && (
+            <span className="flex items-center gap-1">
+              <MapPin className="w-3.5 h-3.5" />
+              {location}
+            </span>
+          )}
+          {location && company && (
+            <span className="w-1 h-1 rounded-full bg-muted-foreground/40" />
+          )}
+          {company && (
+            <span className="flex items-center gap-1">
+              <Building2 className="w-3.5 h-3.5" />
+              {company}
+            </span>
+          )}
+        </motion.div>
+
+        {/* Bio — truncated 2 lines */}
+        {tagline && (
+          <motion.p
+            initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.4 }}
-            className="flex flex-wrap gap-2 mt-8"
+            transition={{ duration: 0.4, delay: 0.25 }}
+            className="text-sm text-muted-foreground mt-3 line-clamp-2 max-w-2xl"
           >
-            {skills.map((skill) => (
-              <button
-                key={skill}
-                onClick={() => onSkillClick(activeSkill === skill ? null : skill)}
-                className={`px-4 py-2 rounded-full text-sm font-medium border transition-all duration-300 ${
-                  activeSkill === skill
-                    ? "bg-primary text-primary-foreground border-primary shadow-lg shadow-primary/25"
-                    : activeSkill === null
-                    ? "bg-primary/10 text-primary border-primary/20 hover:bg-primary/20"
-                    : "bg-muted text-muted-foreground border-border opacity-50 hover:opacity-75"
-                }`}
-              >
-                {skill}
-              </button>
+            {tagline}
+          </motion.p>
+        )}
+
+        {/* CTA Buttons */}
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, delay: 0.3 }}
+          className="flex flex-wrap items-center gap-3 mt-4"
+        >
+          {mailtoGetInTouch && (
+            <Button className="rounded-full" asChild>
+              <a href={mailtoGetInTouch}>
+                <Mail className="w-4 h-4 mr-2" />
+                Get in touch
+              </a>
+            </Button>
+          )}
+          {scheduleLink && (
+            <Button variant="outline" className="rounded-full" asChild>
+              <a href={scheduleLink} target={calendlyUrl ? "_blank" : undefined} rel={calendlyUrl ? "noopener noreferrer" : undefined}>
+                <Calendar className="w-4 h-4 mr-2" />
+                Schedule a call
+              </a>
+            </Button>
+          )}
+          {linkedinUrl && (
+            <a href={linkedinUrl} target="_blank" rel="noopener noreferrer" className="ml-1">
+              <Linkedin className="w-5 h-5 text-muted-foreground hover:text-foreground transition-colors" />
+            </a>
+          )}
+        </motion.div>
+
+        {/* Stats Bar */}
+        {statItems.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: 0.35 }}
+            className="flex items-center gap-8 mt-6 pt-6 border-t border-border"
+          >
+            {statItems.map((stat, i) => (
+              <div key={i}>
+                <p className="text-2xl font-metrics font-bold text-foreground">
+                  <AnimatedCounter value={stat.value} suffix={stat.suffix} />
+                </p>
+                <p className="text-xs text-muted-foreground uppercase tracking-wider mt-0.5">{stat.label}</p>
+              </div>
             ))}
-            {activeSkill && (
-              <button
-                onClick={() => onSkillClick(null)}
-                className="px-4 py-2 rounded-full text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
-              >
-                Clear filter ×
-              </button>
-            )}
           </motion.div>
-
-          {/* Quick Stats Bar — only show stats with actual values */}
-          {(() => {
-            const statItems = [
-              stats.yearsExperience > 0 && {
-                icon: Briefcase,
-                value: stats.yearsExperience,
-                suffix: "+",
-                label: "Years Experience",
-              },
-              stats.projectsLed > 0 && {
-                icon: Award,
-                value: stats.projectsLed,
-                suffix: "+",
-                label: "Projects Led",
-              },
-              stats.teamsManaged > 0 && {
-                icon: Users,
-                value: stats.teamsManaged,
-                suffix: "+",
-                label: "People Managed",
-              },
-              stats.keyMetric.value > 0 && {
-                icon: null as React.ElementType | null,
-                value: stats.keyMetric.value,
-                suffix: stats.keyMetric.suffix,
-                label: stats.keyMetric.label,
-                isPrimary: true,
-              },
-            ].filter(Boolean) as Array<{
-              icon: React.ElementType | null;
-              value: number;
-              suffix: string;
-              label: string;
-              isPrimary?: boolean;
-            }>;
-
-            if (statItems.length === 0) return null;
-
-            return (
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.45 }}
-                className="grid gap-4 mt-10 p-6 rounded-2xl border border-border bg-card"
-                style={{ gridTemplateColumns: `repeat(${Math.min(statItems.length, 4)}, 1fr)` }}
-              >
-                {statItems.map((stat, i) => (
-                  <div
-                    key={i}
-                    className={`text-center md:text-left ${
-                      i < statItems.length - 1 ? "md:border-r border-border" : ""
-                    }`}
-                  >
-                    <div className="flex items-center justify-center md:justify-start gap-2 mb-1">
-                      {stat.icon && <stat.icon className="w-4 h-4 text-primary" />}
-                <span className="text-2xl font-bold font-metrics text-foreground">
-                        <AnimatedCounter value={stat.value} suffix={stat.suffix} />
-                      </span>
-                    </div>
-                    <p className="text-xs text-muted-foreground">{stat.label}</p>
-                  </div>
-                ))}
-              </motion.div>
-            );
-          })()}
-        </div>
+        )}
       </div>
     </section>
   );

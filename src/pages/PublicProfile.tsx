@@ -701,9 +701,9 @@ const PublicProfile = () => {
           company={profile.industry || ""}
           tagline={profile.bio || ""}
           photoUrl={profile.avatar_url || undefined}
-          skills={skillNames.slice(0, 7)}
-          activeSkill={activeSkill}
-          onSkillClick={setActiveSkill}
+          skills={[]}
+          activeSkill={null}
+          onSkillClick={() => {}}
           stats={normalizedHeroStats}
           email={heroSection?.section_data?.email || ""}
           calendlyUrl={heroSection?.section_data?.calendly_url || ""}

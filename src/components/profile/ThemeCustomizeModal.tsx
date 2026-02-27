@@ -1,7 +1,7 @@
 import { useState, useRef, useCallback } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Sun, Moon, Upload, Check, Loader2 } from "lucide-react";
+import { Sun, Moon, Upload, Check, Loader2, Pencil } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
@@ -122,19 +122,27 @@ export const ThemeCustomizeModal = ({ open, onClose, profile, onSave }: ThemeCus
           {/* Color picker */}
           <div>
             <label className="text-sm font-semibold mb-2 block">Accent Color</label>
-            <div className="flex items-center gap-4">
-              <input
-                type="color"
-                value={primaryColor}
-                onChange={(e) => handlePrimaryChange(e.target.value)}
-                className="w-12 h-12 rounded-lg border border-border cursor-pointer bg-transparent"
-                style={{ padding: 0 }}
-              />
+            <label className="flex items-center gap-4 cursor-pointer group">
+              <div className="relative">
+                <input
+                  type="color"
+                  value={primaryColor}
+                  onChange={(e) => handlePrimaryChange(e.target.value)}
+                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                />
+                <div
+                  className="w-14 h-14 rounded-xl border-2 border-border group-hover:border-primary/50 transition-all shadow-sm group-hover:shadow-md"
+                  style={{ backgroundColor: primaryColor }}
+                />
+                <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-background border border-border rounded-full flex items-center justify-center shadow-sm">
+                  <Pencil className="w-2.5 h-2.5 text-muted-foreground" />
+                </div>
+              </div>
               <div>
-                <p className="text-sm font-medium">Primary</p>
+                <p className="text-sm font-medium">Click to change</p>
                 <p className="text-xs text-muted-foreground font-mono">{primaryColor}</p>
               </div>
-            </div>
+            </label>
           </div>
 
           {/* Banner */}
