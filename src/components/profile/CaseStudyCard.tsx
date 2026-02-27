@@ -67,7 +67,7 @@ export const CaseStudyCard = ({ study, index, isHighlighted }: CaseStudyCardProp
               <span className="px-2 py-1 rounded-full bg-primary/10 text-primary text-xs font-medium">
                 {study.company}
               </span>
-              <span className="text-2xl font-bold text-primary font-mono">
+              <span className="text-2xl font-bold text-foreground font-metrics">
                 {study.keyMetric}
               </span>
             </div>
@@ -181,7 +181,7 @@ export const CaseStudyCard = ({ study, index, isHighlighted }: CaseStudyCardProp
                           ) : (
                             <div className="flex items-center gap-3 p-4">
                               <FileText className="w-8 h-8 text-muted-foreground" />
-                              <span className="text-sm text-primary hover:underline">
+                              <span className="text-sm text-foreground hover:underline">
                                 {artifact.caption}
                               </span>
                             </div>

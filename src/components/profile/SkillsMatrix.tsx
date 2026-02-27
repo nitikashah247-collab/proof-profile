@@ -62,7 +62,7 @@ export const SkillsMatrix = ({ skills, activeSkill, onSkillClick }: SkillsMatrix
     >
       <div className="flex items-center justify-between mb-3">
         <span className={`font-semibold transition-colors ${
-          activeSkill === skill.name ? "text-primary" : "text-foreground"
+          activeSkill === skill.name ? "text-foreground" : "text-foreground"
         }`}>
           {skill.name}
         </span>
@@ -86,7 +86,7 @@ export const SkillsMatrix = ({ skills, activeSkill, onSkillClick }: SkillsMatrix
         </span>
         {skill.relatedCaseStudies.length > 0 && (
           <span className={`text-xs transition-colors ${
-            activeSkill === skill.name ? "text-primary" : "text-muted-foreground"
+            activeSkill === skill.name ? "text-muted-foreground" : "text-muted-foreground"
           }`}>
             {skill.relatedCaseStudies.length} case {skill.relatedCaseStudies.length === 1 ? "study" : "studies"}
           </span>

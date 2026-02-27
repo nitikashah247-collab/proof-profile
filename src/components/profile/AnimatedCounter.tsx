@@ -54,7 +54,7 @@ export const AnimatedCounter = ({
       initial={{ opacity: 0, scale: 0.5 }}
       animate={isInView ? { opacity: 1, scale: 1 } : {}}
       transition={{ duration: 0.5 }}
-      className="font-mono"
+      className="font-metrics"
     >
       {prefix}
       {decimals > 0 ? count.toFixed(decimals) : Math.floor(count)}

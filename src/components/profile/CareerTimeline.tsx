@@ -86,7 +86,7 @@ export const CareerTimeline = ({ entries }: CareerTimelineProps) => {
                   
                   {/* Year Label */}
                   <span className={`mt-1 text-[10px] font-medium transition-colors ${
-                    activeIndex === index ? "text-primary" : "text-muted-foreground/60"
+                    activeIndex === index ? "text-muted-foreground" : "text-muted-foreground/60"
                   }`}>
                     {entry.startYear}{entry.endYear && entry.endYear !== entry.startYear ? `–${entry.endYear}` : ""}
                   </span>

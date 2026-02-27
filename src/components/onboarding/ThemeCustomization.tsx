@@ -29,13 +29,17 @@ interface ThemeCustomizationProps {
 }
 
 const accentPresets = [
-  { name: "Tech Blue", primary: "#3B82F6", secondary: "#8B5CF6" },
-  { name: "Growth Green", primary: "#10B981", secondary: "#14B8A6" },
-  { name: "Bold Red", primary: "#EF4444", secondary: "#F97316" },
-  { name: "Premium Gold", primary: "#F59E0B", secondary: "#D97706" },
-  { name: "Creative Purple", primary: "#8B5CF6", secondary: "#EC4899" },
-  { name: "Navy", primary: "#1E40AF", secondary: "#3B82F6" },
-  { name: "Orange", primary: "#F97316", secondary: "#EF4444" },
+  { name: "Electric Blue", primary: "#3B5EF5", secondary: "#5B7BF7" },
+  { name: "Navy", primary: "#1B2A4A", secondary: "#2C3E6B" },
+  { name: "Bright Teal", primary: "#0D9488", secondary: "#14B8A6" },
+  { name: "Dark Berry", primary: "#7C2D4F", secondary: "#9D3C6A" },
+  { name: "Taupe", primary: "#8B7D6B", secondary: "#A69882" },
+  { name: "Dark Slate", primary: "#3D4F5F", secondary: "#546E7A" },
+  { name: "Dark Purple", primary: "#4A2D6B", secondary: "#6B3FA0" },
+  { name: "Burnt Sienna", primary: "#A0522D", secondary: "#C06030" },
+  { name: "Light Taupe Grey", primary: "#9E9589", secondary: "#B5ADA3" },
+  { name: "Warm Charcoal", primary: "#36393F", secondary: "#4E5258" },
+  { name: "Sage", primary: "#6B7F5E", secondary: "#839B72" },
 ];
 
 const bannerPresets = [
