@@ -26,7 +26,7 @@ import { ThemeCustomizeModal } from "@/components/profile/ThemeCustomizeModal";
 import { CareerCoachDrawer } from "@/components/editor/CareerCoachDrawer";
 import { ProofGallerySection } from "@/components/profile/ProofGallerySection";
 import { InlineEditWrapper } from "@/components/profile/InlineEditWrapper";
-import { ConstellationNetwork } from "@/components/profile/ConstellationNetwork";
+import { GradientMesh } from "@/components/profile/GradientMesh";
 import { AICoachOrb } from "@/components/profile/AICoachOrb";
 import {
   HeroInlineEdit,
@@ -665,9 +665,9 @@ const PublicProfile = () => {
       {/* Analytics Preview - owner only */}
       <AnalyticsPreview data={analyticsData} isOwner={isOwner} />
 
-      {/* Hero + Impact wrapped with constellation */}
-      <div className="relative">
-        <ConstellationNetwork
+      {/* Hero + Impact wrapped with gradient mesh */}
+      <div className="relative overflow-hidden">
+        <GradientMesh
           primaryColor={profile.theme_primary_color || "#3B5EF5"}
           isDark={profile.theme_base === "dark"}
         />
