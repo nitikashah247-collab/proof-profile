@@ -1,7 +1,32 @@
+import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Mail, Linkedin, Calendar, MapPin, Building2, Briefcase, Users, Award } from "lucide-react";
-import { AnimatedCounter } from "./AnimatedCounter";
+
+const CountUp = ({ target, suffix = "" }: { target: number; suffix: string }) => {
+  const [count, setCount] = useState(0);
+  const started = useRef(false);
+
+  useEffect(() => {
+    if (started.current || target <= 0) return;
+    started.current = true;
+
+    const duration = 1800;
+    const startTime = performance.now();
+
+    const tick = (now: number) => {
+      const progress = Math.min((now - startTime) / duration, 1);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      setCount(Math.round(target * eased));
+      if (progress < 1) requestAnimationFrame(tick);
+    };
+
+    const timer = setTimeout(() => requestAnimationFrame(tick), 800);
+    return () => clearTimeout(timer);
+  }, [target]);
+
+  return <>{count}{suffix}</>;
+};
 
 interface ProfileHeroProps {
   name: string;
@@ -200,7 +225,7 @@ export const ProfileHero = ({
             {statItems.map((stat, i) => (
               <div key={i}>
                 <p className="text-2xl font-metrics font-bold text-foreground">
-                  <AnimatedCounter value={stat.value} suffix={stat.suffix} />
+                  <CountUp target={stat.value} suffix={stat.suffix} />
                 </p>
                 <p className="text-xs text-muted-foreground uppercase tracking-wider mt-0.5">{stat.label}</p>
               </div>

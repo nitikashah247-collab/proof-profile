@@ -26,7 +26,8 @@ import { ThemeCustomizeModal } from "@/components/profile/ThemeCustomizeModal";
 import { CareerCoachDrawer } from "@/components/editor/CareerCoachDrawer";
 import { ProofGallerySection } from "@/components/profile/ProofGallerySection";
 import { InlineEditWrapper } from "@/components/profile/InlineEditWrapper";
-import { AmbientGlow } from "@/components/profile/AmbientGlow";
+import { ConstellationNetwork } from "@/components/profile/ConstellationNetwork";
+import { AICoachOrb } from "@/components/profile/AICoachOrb";
 import {
   HeroInlineEdit,
   CaseStudyInlineEdit,
@@ -63,6 +64,7 @@ const DEDICATED_SECTION_TYPES = [
 ];
 
 const PublicProfile = () => {
+  const [isCoachOpen, setIsCoachOpen] = useState(false);
   const { slug } = useParams<{ slug: string }>();
   const { user } = useAuth();
   const [profile, setProfile] = useState<any>(null);
@@ -663,9 +665,12 @@ const PublicProfile = () => {
       {/* Analytics Preview - owner only */}
       <AnalyticsPreview data={analyticsData} isOwner={isOwner} />
 
-      {/* Hero + Impact wrapped with ambient glow */}
-      <div className="relative" style={{ overflow: 'visible' }}>
-        <AmbientGlow primaryColor={profile.theme_primary_color || '#3B5EF5'} />
+      {/* Hero + Impact wrapped with constellation */}
+      <div className="relative">
+        <ConstellationNetwork
+          primaryColor={profile.theme_primary_color || "#3B5EF5"}
+          isDark={profile.theme_base === "dark"}
+        />
 
         {/* Cover Banner */}
         <div className="relative z-10">
@@ -1143,7 +1148,7 @@ const PublicProfile = () => {
         </section>
       )}
 
-      {/* Proof Badge */}
+      {/* Proof Badge — non-owner */}
       {!isOwner && (
         <div className="fixed bottom-6 right-6 z-50">
           <Link
@@ -1158,14 +1163,22 @@ const PublicProfile = () => {
         </div>
       )}
 
-      {/* AI Career Coach - only for profile owner */}
+      {/* AI Career Coach — owner only */}
       {isOwner && (
-        <CareerCoachDrawer
-          profileData={profile}
-          sections={sections}
-          activeSectionTypes={sections.map((s) => s.section_type)}
-          onAddSection={() => setShowAddSection(true)}
-        />
+        <>
+          <AICoachOrb
+            primaryColor={profile.theme_primary_color || "#3B5EF5"}
+            onClick={() => setIsCoachOpen(true)}
+          />
+          <CareerCoachDrawer
+            profileData={profile}
+            sections={sections}
+            activeSectionTypes={sections.map((s) => s.section_type)}
+            onAddSection={() => setShowAddSection(true)}
+            isOpen={isCoachOpen}
+            onOpenChange={setIsCoachOpen}
+          />
+        </>
       )}
     </div>
   );
