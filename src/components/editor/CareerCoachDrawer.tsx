@@ -157,19 +157,26 @@ export const CareerCoachDrawer = ({
       <AnimatePresence>
         {!isOpen && (
           <motion.div
-            initial={{ scale: 0, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
+            initial={{ opacity: 0, y: 20, scale: 0.9 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ scale: 0, opacity: 0 }}
+            transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1], delay: 1.5 }}
             className="fixed bottom-6 right-6 z-50"
           >
-            <Button
+            <motion.button
               onClick={() => setIsOpen(true)}
-              size="lg"
-              className="rounded-full h-14 px-5 shadow-lg gap-2 bg-primary hover:bg-primary/90"
+              className="flex items-center gap-2.5 bg-primary text-primary-foreground px-5 py-3 rounded-full shadow-lg hover:shadow-xl transition-shadow text-sm font-medium"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.97 }}
             >
-              <MessageCircle className="w-5 h-5" />
+              {/* Pulsing "online" dot */}
+              <span className="relative flex h-2.5 w-2.5">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary-foreground opacity-40" />
+                <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-primary-foreground" />
+              </span>
+              <MessageCircle className="w-4 h-4" />
               <span className="hidden sm:inline">Ask your AI coach</span>
-            </Button>
+            </motion.button>
           </motion.div>
         )}
       </AnimatePresence>
