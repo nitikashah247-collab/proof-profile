@@ -25,6 +25,8 @@ interface CareerCoachDrawerProps {
   }>;
   activeSectionTypes: string[];
   onAddSection: (sectionType: string) => void;
+  isOpen?: boolean;
+  onOpenChange?: (open: boolean) => void;
 }
 
 const quickPrompts = [
@@ -38,8 +40,15 @@ export const CareerCoachDrawer = ({
   sections,
   activeSectionTypes,
   onAddSection,
+  isOpen: controlledOpen,
+  onOpenChange,
 }: CareerCoachDrawerProps) => {
-  const [isOpen, setIsOpen] = useState(false);
+  const [internalOpen, setInternalOpen] = useState(false);
+  const isOpen = controlledOpen !== undefined ? controlledOpen : internalOpen;
+  const setIsOpen = (v: boolean) => {
+    onOpenChange?.(v);
+    setInternalOpen(v);
+  };
   const [input, setInput] = useState("");
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
@@ -153,34 +162,6 @@ export const CareerCoachDrawer = ({
 
   return (
     <>
-      {/* Floating trigger button */}
-      <AnimatePresence>
-        {!isOpen && (
-          <motion.div
-            initial={{ opacity: 0, y: 20, scale: 0.9 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ scale: 0, opacity: 0 }}
-            transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1], delay: 1.5 }}
-            className="fixed bottom-6 right-6 z-50"
-          >
-            <motion.button
-              onClick={() => setIsOpen(true)}
-              className="flex items-center gap-2.5 bg-primary text-primary-foreground px-5 py-3 rounded-full shadow-lg hover:shadow-xl transition-shadow text-sm font-medium"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.97 }}
-            >
-              {/* Pulsing "online" dot */}
-              <span className="relative flex h-2.5 w-2.5">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary-foreground opacity-40" />
-                <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-primary-foreground" />
-              </span>
-              <MessageCircle className="w-4 h-4" />
-              <span className="hidden sm:inline">Ask your AI coach</span>
-            </motion.button>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
       {/* Chat drawer */}
       <AnimatePresence>
         {isOpen && (
