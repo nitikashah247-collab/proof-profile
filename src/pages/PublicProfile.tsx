@@ -26,6 +26,7 @@ import { ThemeCustomizeModal } from "@/components/profile/ThemeCustomizeModal";
 import { CareerCoachDrawer } from "@/components/editor/CareerCoachDrawer";
 import { ProofGallerySection } from "@/components/profile/ProofGallerySection";
 import { InlineEditWrapper } from "@/components/profile/InlineEditWrapper";
+import { AmbientGlow } from "@/components/profile/AmbientGlow";
 import {
   HeroInlineEdit,
   CaseStudyInlineEdit,
@@ -662,84 +663,93 @@ const PublicProfile = () => {
       {/* Analytics Preview - owner only */}
       <AnalyticsPreview data={analyticsData} isOwner={isOwner} />
 
-      {/* Cover Banner */}
-      <CoverBanner
-        bannerType={profile.banner_type}
-        bannerValue={profile.banner_value}
-        bannerUrl={profile.banner_url || undefined}
-        primaryColor={profile.theme_primary_color}
-        archetype={archetype}
-      />
+      {/* Hero + Impact wrapped with ambient glow */}
+      <div className="relative">
+        <AmbientGlow />
 
-      {/* Hero Section */}
-      <InlineEditWrapper
-        isOwner={isOwner}
-        sectionId={heroSection?.id || "hero"}
-        sectionType="hero"
-        sectionLabel="Hero"
-        isEditing={editingSection === "hero"}
-        onEditStart={() => setEditingSection("hero")}
-        onEditEnd={() => setEditingSection(null)}
-        isCoreSection={true}
-        onMoveUp={heroSection ? () => handleMoveSection(heroSection.id, "up") : undefined}
-        onMoveDown={heroSection ? () => handleMoveSection(heroSection.id, "down") : undefined}
-        isFirst={getSectionPosition("hero").isFirst}
-        isLast={getSectionPosition("hero").isLast}
-        editForm={
-          <HeroInlineEdit
-            profileData={profile}
-            sectionData={heroSection?.section_data || {}}
-            onSave={handleHeroSave}
-            onCancel={() => setEditingSection(null)}
+        {/* Cover Banner */}
+        <div className="relative z-10">
+          <CoverBanner
+            bannerType={profile.banner_type}
+            bannerValue={profile.banner_value}
+            bannerUrl={profile.banner_url || undefined}
+            primaryColor={profile.theme_primary_color}
+            archetype={archetype}
           />
-        }
-      >
-        <ProfileHero
-          name={profile.full_name || ""}
-          title={profile.headline || ""}
-          location={profile.location || ""}
-          company={profile.industry || ""}
-          tagline={profile.bio || ""}
-          photoUrl={profile.avatar_url || undefined}
-          skills={[]}
-          activeSkill={null}
-          onSkillClick={() => {}}
-          stats={normalizedHeroStats}
-          email={heroSection?.section_data?.email || ""}
-          calendlyUrl={heroSection?.section_data?.calendly_url || ""}
-          linkedinUrl={heroSection?.section_data?.linkedin_url || ""}
-        />
-      </InlineEditWrapper>
+        </div>
 
-      {/* Impact Charts */}
-      {(visualizations.length > 0 || (isOwner && impactSection)) && (
-        <div className="border-t border-border/50">
+        {/* Hero Section */}
+        <div className="relative z-10">
         <InlineEditWrapper
           isOwner={isOwner}
-          sectionId={impactSection?.id || "impact"}
-          sectionType="impact_charts"
-          sectionLabel="Impact Metrics"
-          isEditing={editingSection === "impact_charts"}
-          onEditStart={() => setEditingSection("impact_charts")}
+          sectionId={heroSection?.id || "hero"}
+          sectionType="hero"
+          sectionLabel="Hero"
+          isEditing={editingSection === "hero"}
+          onEditStart={() => setEditingSection("hero")}
           onEditEnd={() => setEditingSection(null)}
-          onRemove={impactSection ? () => handleRemoveSection(impactSection.id) : undefined}
-          isEmpty={visualizations.length === 0}
-          onMoveUp={impactSection ? () => handleMoveSection(impactSection.id, "up") : undefined}
-          onMoveDown={impactSection ? () => handleMoveSection(impactSection.id, "down") : undefined}
-          isFirst={getSectionPosition("impact_charts").isFirst}
-          isLast={getSectionPosition("impact_charts").isLast}
+          isCoreSection={true}
+          onMoveUp={heroSection ? () => handleMoveSection(heroSection.id, "up") : undefined}
+          onMoveDown={heroSection ? () => handleMoveSection(heroSection.id, "down") : undefined}
+          isFirst={getSectionPosition("hero").isFirst}
+          isLast={getSectionPosition("hero").isLast}
           editForm={
-            <ImpactChartsInlineEdit
-              sectionData={impactSection?.section_data || {}}
-              onSave={(data) => handleSectionSave(impactSection!.id, data)}
+            <HeroInlineEdit
+              profileData={profile}
+              sectionData={heroSection?.section_data || {}}
+              onSave={handleHeroSave}
               onCancel={() => setEditingSection(null)}
             />
           }
         >
-          <DynamicImpactCharts visualizations={visualizations} />
+          <ProfileHero
+            name={profile.full_name || ""}
+            title={profile.headline || ""}
+            location={profile.location || ""}
+            company={profile.industry || ""}
+            tagline={profile.bio || ""}
+            photoUrl={profile.avatar_url || undefined}
+            skills={[]}
+            activeSkill={null}
+            onSkillClick={() => {}}
+            stats={normalizedHeroStats}
+            email={heroSection?.section_data?.email || ""}
+            calendlyUrl={heroSection?.section_data?.calendly_url || ""}
+            linkedinUrl={heroSection?.section_data?.linkedin_url || ""}
+          />
         </InlineEditWrapper>
         </div>
-      )}
+
+        {/* Impact Charts */}
+        {(visualizations.length > 0 || (isOwner && impactSection)) && (
+          <div className="relative z-10 border-t border-border/50">
+          <InlineEditWrapper
+            isOwner={isOwner}
+            sectionId={impactSection?.id || "impact"}
+            sectionType="impact_charts"
+            sectionLabel="Impact Metrics"
+            isEditing={editingSection === "impact_charts"}
+            onEditStart={() => setEditingSection("impact_charts")}
+            onEditEnd={() => setEditingSection(null)}
+            onRemove={impactSection ? () => handleRemoveSection(impactSection.id) : undefined}
+            isEmpty={visualizations.length === 0}
+            onMoveUp={impactSection ? () => handleMoveSection(impactSection.id, "up") : undefined}
+            onMoveDown={impactSection ? () => handleMoveSection(impactSection.id, "down") : undefined}
+            isFirst={getSectionPosition("impact_charts").isFirst}
+            isLast={getSectionPosition("impact_charts").isLast}
+            editForm={
+              <ImpactChartsInlineEdit
+                sectionData={impactSection?.section_data || {}}
+                onSave={(data) => handleSectionSave(impactSection!.id, data)}
+                onCancel={() => setEditingSection(null)}
+              />
+            }
+          >
+            <DynamicImpactCharts visualizations={visualizations} />
+          </InlineEditWrapper>
+          </div>
+        )}
+      </div>
 
       {/* Case Studies */}
       {(finalCaseStudyCards.length > 0 || (isOwner && caseStudiesSection)) && (() => {
