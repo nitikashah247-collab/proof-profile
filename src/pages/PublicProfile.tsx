@@ -664,8 +664,8 @@ const PublicProfile = () => {
       <AnalyticsPreview data={analyticsData} isOwner={isOwner} />
 
       {/* Hero + Impact wrapped with ambient glow */}
-      <div className="relative">
-        <AmbientGlow />
+      <div className="relative" style={{ overflow: 'visible' }}>
+        <AmbientGlow primaryColor={profile.theme_primary_color || '#3B5EF5'} />
 
         {/* Cover Banner */}
         <div className="relative z-10">
