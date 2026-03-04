@@ -29,7 +29,10 @@ interface Blob {
   vx: number;
   vy: number;
   radius: number;
-  color: string;
+  hue: number;
+  sat: number;
+  light: number;
+  alpha: number;
 }
 
 export const GradientMesh = ({
@@ -48,18 +51,7 @@ export const GradientMesh = ({
     if (!ctx) return;
 
     let w = 0, h = 0;
-
-    const [hue] = hexToHSL(primaryColor);
-
-    const baseL = isDark ? 20 : 92;
-    const baseSat = isDark ? 40 : 30;
-
-    const colors = [
-      `hsla(${hue}, ${baseSat}%, ${baseL}%, 0.8)`,
-      `hsla(${(hue + 30) % 360}, ${baseSat + 5}%, ${baseL - 3}%, 0.6)`,
-      `hsla(${(hue + 330) % 360}, ${baseSat - 5}%, ${baseL + 2}%, 0.7)`,
-      `hsla(${(hue + 15) % 360}, ${baseSat + 10}%, ${baseL - 5}%, 0.5)`,
-    ];
+    const [hue, sat] = hexToHSL(primaryColor);
 
     const resize = () => {
       const parent = canvas.parentElement;
@@ -70,30 +62,43 @@ export const GradientMesh = ({
       canvas.height = h;
 
       if (blobsRef.current.length === 0) {
-        blobsRef.current = colors.map((color, i) => ({
-          x: w * (0.2 + (i * 0.25)),
-          y: h * (0.3 + (i % 2) * 0.3),
-          vx: (0.15 + Math.random() * 0.2) * (i % 2 === 0 ? 1 : -1),
-          vy: (0.1 + Math.random() * 0.15) * (i < 2 ? 1 : -1),
-          radius: Math.max(w, h) * (0.35 + Math.random() * 0.15),
-          color,
+        const blobConfigs = isDark
+          ? [
+              { hOff: 0, s: Math.max(sat, 40), l: 30, a: 0.35 },
+              { hOff: 8, s: Math.max(sat - 5, 35), l: 25, a: 0.3 },
+              { hOff: -8, s: Math.max(sat + 5, 45), l: 35, a: 0.25 },
+              { hOff: 4, s: Math.max(sat - 10, 30), l: 20, a: 0.3 },
+            ]
+          : [
+              { hOff: 0, s: Math.max(sat, 45), l: 80, a: 0.25 },
+              { hOff: 8, s: Math.max(sat - 5, 40), l: 75, a: 0.2 },
+              { hOff: -8, s: Math.max(sat + 5, 50), l: 82, a: 0.18 },
+              { hOff: 4, s: Math.max(sat - 10, 35), l: 78, a: 0.22 },
+            ];
+
+        blobsRef.current = blobConfigs.map((cfg, i) => ({
+          x: w * (0.15 + i * 0.25),
+          y: h * (0.25 + (i % 2) * 0.35),
+          vx: (0.5 + Math.random() * 0.6) * (i % 2 === 0 ? 1 : -1),
+          vy: (0.35 + Math.random() * 0.45) * (i < 2 ? 1 : -1),
+          radius: Math.min(w, h) * (0.3 + Math.random() * 0.1),
+          hue: (hue + cfg.hOff + 360) % 360,
+          sat: cfg.s,
+          light: cfg.l,
+          alpha: cfg.a,
         }));
       }
     };
 
     const draw = () => {
-      ctx.fillStyle = isDark
-        ? `hsl(${hue}, 15%, 8%)`
-        : `hsl(${hue}, 20%, 97%)`;
-      ctx.fillRect(0, 0, w, h);
-
-      ctx.globalCompositeOperation = isDark ? "screen" : "multiply";
+      ctx.clearRect(0, 0, w, h);
+      ctx.globalCompositeOperation = "source-over";
 
       for (const blob of blobsRef.current) {
         blob.x += blob.vx;
         blob.y += blob.vy;
 
-        const pad = blob.radius * 0.3;
+        const pad = blob.radius * 0.2;
         if (blob.x < -pad || blob.x > w + pad) blob.vx *= -1;
         if (blob.y < -pad || blob.y > h + pad) blob.vy *= -1;
 
@@ -101,8 +106,9 @@ export const GradientMesh = ({
           blob.x, blob.y, 0,
           blob.x, blob.y, blob.radius
         );
-        gradient.addColorStop(0, blob.color);
-        gradient.addColorStop(1, "transparent");
+        gradient.addColorStop(0, `hsla(${blob.hue}, ${blob.sat}%, ${blob.light}%, ${blob.alpha})`);
+        gradient.addColorStop(0.6, `hsla(${blob.hue}, ${blob.sat}%, ${blob.light}%, ${blob.alpha * 0.4})`);
+        gradient.addColorStop(1, `hsla(${blob.hue}, ${blob.sat}%, ${blob.light}%, 0)`);
 
         ctx.beginPath();
         ctx.arc(blob.x, blob.y, blob.radius, 0, Math.PI * 2);
@@ -110,7 +116,6 @@ export const GradientMesh = ({
         ctx.fill();
       }
 
-      ctx.globalCompositeOperation = "source-over";
       frameRef.current = requestAnimationFrame(draw);
     };
 
