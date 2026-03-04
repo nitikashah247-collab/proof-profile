@@ -26,7 +26,7 @@ import { ThemeCustomizeModal } from "@/components/profile/ThemeCustomizeModal";
 import { CareerCoachDrawer } from "@/components/editor/CareerCoachDrawer";
 import { ProofGallerySection } from "@/components/profile/ProofGallerySection";
 import { InlineEditWrapper } from "@/components/profile/InlineEditWrapper";
-import { GradientMesh } from "@/components/profile/GradientMesh";
+
 import { AICoachOrb } from "@/components/profile/AICoachOrb";
 import {
   HeroInlineEdit,
@@ -665,37 +665,17 @@ const PublicProfile = () => {
       {/* Analytics Preview - owner only */}
       <AnalyticsPreview data={analyticsData} isOwner={isOwner} />
 
-      {/* Hero + Impact wrapped with gradient mesh */}
-      <div className="relative overflow-hidden">
-        <GradientMesh
-          primaryColor={profile.theme_primary_color || "#3B5EF5"}
-          isDark={profile.theme_base === "dark"}
-        />
+      {/* Cover Banner */}
+      <CoverBanner
+        bannerType={profile.banner_type}
+        bannerValue={profile.banner_value}
+        bannerUrl={profile.banner_url || undefined}
+        primaryColor={profile.theme_primary_color}
+        archetype={archetype}
+      />
 
-        {/* Semi-transparent overlay for text readability */}
-        <div
-          className="absolute inset-0 pointer-events-none"
-          style={{
-            background: profile.theme_base === "dark"
-              ? 'rgba(0,0,0,0.15)'
-              : 'rgba(255,255,255,0.25)',
-            zIndex: 1,
-          }}
-        />
-
-        {/* Cover Banner */}
-        <div className="relative z-10">
-          <CoverBanner
-            bannerType={profile.banner_type}
-            bannerValue={profile.banner_value}
-            bannerUrl={profile.banner_url || undefined}
-            primaryColor={profile.theme_primary_color}
-            archetype={archetype}
-          />
-        </div>
-
-        {/* Hero Section */}
-        <div className="relative z-10">
+      {/* Hero Section */}
+      <div>
         <InlineEditWrapper
           isOwner={isOwner}
           sectionId={heroSection?.id || "hero"}
@@ -732,13 +712,14 @@ const PublicProfile = () => {
             email={heroSection?.section_data?.email || ""}
             calendlyUrl={heroSection?.section_data?.calendly_url || ""}
             linkedinUrl={heroSection?.section_data?.linkedin_url || ""}
+            primaryColor={profile.theme_primary_color || undefined}
           />
         </InlineEditWrapper>
         </div>
 
-        {/* Impact Charts */}
-        {(visualizations.length > 0 || (isOwner && impactSection)) && (
-          <div className="relative z-10 border-t border-border/50">
+      {/* Impact Charts */}
+      {(visualizations.length > 0 || (isOwner && impactSection)) && (
+        <div className="border-t border-border/50">
           <InlineEditWrapper
             isOwner={isOwner}
             sectionId={impactSection?.id || "impact"}
@@ -763,9 +744,8 @@ const PublicProfile = () => {
           >
             <DynamicImpactCharts visualizations={visualizations} />
           </InlineEditWrapper>
-          </div>
-        )}
-      </div>
+        </div>
+      )}
 
       {/* Case Studies */}
       {(finalCaseStudyCards.length > 0 || (isOwner && caseStudiesSection)) && (() => {
