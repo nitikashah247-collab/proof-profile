@@ -6,12 +6,30 @@ interface AICoachOrbProps {
   onClick: () => void;
 }
 
-const SparkIcon = () => (
-  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+const LoveKnotIcon = () => (
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
     <path
-      d="M12 2L13.5 8.5L20 7L15 12L20 17L13.5 15.5L12 22L10.5 15.5L4 17L9 12L4 7L10.5 8.5L12 2Z"
-      fill="currentColor"
+      d="M12 3C9.5 3 7.5 4.5 7.5 7C7.5 8.5 8.2 9.5 9 10.2C7.2 10.8 5.5 12.5 5.5 15C5.5 18 8 20.5 12 21C16 20.5 18.5 18 18.5 15C18.5 12.5 16.8 10.8 15 10.2C15.8 9.5 16.5 8.5 16.5 7C16.5 4.5 14.5 3 12 3Z"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      fill="none"
     />
+    <path
+      d="M9.5 10C8 11 7 12.5 7 14.5C7 16.5 8.5 18.5 12 19C15.5 18.5 17 16.5 17 14.5C17 12.5 16 11 14.5 10"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      fill="none"
+    />
+    <path
+      d="M10 7C10 5.5 10.8 4.5 12 4.5C13.2 4.5 14 5.5 14 7C14 8.5 13 9.5 12 10C11 9.5 10 8.5 10 7Z"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      fill="none"
+    />
+    <circle cx="12" cy="12.5" r="1.5" fill="currentColor" opacity="0.6" />
   </svg>
 );
 
@@ -75,17 +93,17 @@ export const AICoachOrb = ({ primaryColor = "#3B5EF5", onClick }: AICoachOrbProp
         }}
         whileTap={{ scale: 0.95 }}
       >
-        {/* Rotating spark icon */}
+        {/* Rotating love knot icon */}
         <motion.div
           className="flex-shrink-0"
           animate={{ rotate: 360 }}
-          transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
+          transition={{ duration: 12, repeat: Infinity, ease: "linear" }}
         >
           <motion.div
-            animate={{ scale: [1, 1.15, 1] }}
-            transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+            animate={{ scale: [1, 1.1, 1] }}
+            transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
           >
-            <SparkIcon />
+            <LoveKnotIcon />
           </motion.div>
         </motion.div>
 
