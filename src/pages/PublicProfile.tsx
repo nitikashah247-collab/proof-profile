@@ -672,6 +672,17 @@ const PublicProfile = () => {
           isDark={profile.theme_base === "dark"}
         />
 
+        {/* Semi-transparent overlay for text readability */}
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            background: profile.theme_base === "dark"
+              ? 'rgba(0,0,0,0.15)'
+              : 'rgba(255,255,255,0.25)',
+            zIndex: 1,
+          }}
+        />
+
         {/* Cover Banner */}
         <div className="relative z-10">
           <CoverBanner

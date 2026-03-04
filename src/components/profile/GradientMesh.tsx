@@ -64,24 +64,24 @@ export const GradientMesh = ({
       if (blobsRef.current.length === 0) {
         const blobConfigs = isDark
           ? [
-              { hOff: 0, s: Math.max(sat, 40), l: 30, a: 0.35 },
-              { hOff: 8, s: Math.max(sat - 5, 35), l: 25, a: 0.3 },
-              { hOff: -8, s: Math.max(sat + 5, 45), l: 35, a: 0.25 },
-              { hOff: 4, s: Math.max(sat - 10, 30), l: 20, a: 0.3 },
+              { hOff: 0,   s: 70, l: 40, a: 0.7 },
+              { hOff: 15,  s: 65, l: 35, a: 0.6 },
+              { hOff: -12, s: 75, l: 45, a: 0.55 },
+              { hOff: 8,   s: 60, l: 30, a: 0.65 },
             ]
           : [
-              { hOff: 0, s: Math.max(sat, 45), l: 80, a: 0.25 },
-              { hOff: 8, s: Math.max(sat - 5, 40), l: 75, a: 0.2 },
-              { hOff: -8, s: Math.max(sat + 5, 50), l: 82, a: 0.18 },
-              { hOff: 4, s: Math.max(sat - 10, 35), l: 78, a: 0.22 },
+              { hOff: 0,   s: 65, l: 70, a: 0.6 },
+              { hOff: 15,  s: 60, l: 65, a: 0.5 },
+              { hOff: -12, s: 70, l: 72, a: 0.45 },
+              { hOff: 8,   s: 55, l: 68, a: 0.55 },
             ];
 
         blobsRef.current = blobConfigs.map((cfg, i) => ({
-          x: w * (0.15 + i * 0.25),
-          y: h * (0.25 + (i % 2) * 0.35),
-          vx: (0.5 + Math.random() * 0.6) * (i % 2 === 0 ? 1 : -1),
-          vy: (0.35 + Math.random() * 0.45) * (i < 2 ? 1 : -1),
-          radius: Math.min(w, h) * (0.3 + Math.random() * 0.1),
+          x: w * (0.1 + i * 0.28),
+          y: h * (0.2 + (i % 2) * 0.4),
+          vx: (0.6 + Math.random() * 0.7) * (i % 2 === 0 ? 1 : -1),
+          vy: (0.4 + Math.random() * 0.5) * (i < 2 ? 1 : -1),
+          radius: Math.min(w, h) * (0.4 + Math.random() * 0.15),
           hue: (hue + cfg.hOff + 360) % 360,
           sat: cfg.s,
           light: cfg.l,
@@ -91,23 +91,29 @@ export const GradientMesh = ({
     };
 
     const draw = () => {
-      ctx.clearRect(0, 0, w, h);
+      if (isDark) {
+        ctx.fillStyle = `hsl(${hue}, 30%, 8%)`;
+      } else {
+        ctx.fillStyle = `hsl(${hue}, 25%, 92%)`;
+      }
+      ctx.fillRect(0, 0, w, h);
+
       ctx.globalCompositeOperation = "source-over";
 
       for (const blob of blobsRef.current) {
         blob.x += blob.vx;
         blob.y += blob.vy;
 
-        const pad = blob.radius * 0.2;
-        if (blob.x < -pad || blob.x > w + pad) blob.vx *= -1;
-        if (blob.y < -pad || blob.y > h + pad) blob.vy *= -1;
+        if (blob.x < -blob.radius * 0.5 || blob.x > w + blob.radius * 0.5) blob.vx *= -1;
+        if (blob.y < -blob.radius * 0.5 || blob.y > h + blob.radius * 0.5) blob.vy *= -1;
 
         const gradient = ctx.createRadialGradient(
           blob.x, blob.y, 0,
           blob.x, blob.y, blob.radius
         );
         gradient.addColorStop(0, `hsla(${blob.hue}, ${blob.sat}%, ${blob.light}%, ${blob.alpha})`);
-        gradient.addColorStop(0.6, `hsla(${blob.hue}, ${blob.sat}%, ${blob.light}%, ${blob.alpha * 0.4})`);
+        gradient.addColorStop(0.4, `hsla(${blob.hue}, ${blob.sat}%, ${blob.light}%, ${blob.alpha * 0.7})`);
+        gradient.addColorStop(0.7, `hsla(${blob.hue}, ${blob.sat}%, ${blob.light}%, ${blob.alpha * 0.3})`);
         gradient.addColorStop(1, `hsla(${blob.hue}, ${blob.sat}%, ${blob.light}%, 0)`);
 
         ctx.beginPath();
