@@ -5,6 +5,7 @@ import { Mail, Linkedin, Calendar, MapPin, Building2, Briefcase, Users, Award } 
 
 const CountUp = ({ target, suffix = "" }: { target: number; suffix: string }) => {
   const [count, setCount] = useState(0);
+  const [glowing, setGlowing] = useState(false);
   const started = useRef(false);
 
   useEffect(() => {
@@ -18,14 +19,29 @@ const CountUp = ({ target, suffix = "" }: { target: number; suffix: string }) =>
       const progress = Math.min((now - startTime) / duration, 1);
       const eased = 1 - Math.pow(1 - progress, 3);
       setCount(Math.round(target * eased));
-      if (progress < 1) requestAnimationFrame(tick);
+      if (progress < 1) {
+        requestAnimationFrame(tick);
+      } else {
+        setGlowing(true);
+        setTimeout(() => setGlowing(false), 800);
+      }
     };
 
     const timer = setTimeout(() => requestAnimationFrame(tick), 800);
     return () => clearTimeout(timer);
   }, [target]);
 
-  return <>{count}{suffix}</>;
+  return (
+    <span
+      style={{
+        color: glowing ? 'hsl(var(--primary))' : undefined,
+        textShadow: glowing ? '0 0 20px hsl(var(--primary) / 0.5)' : 'none',
+        transition: 'color 0.3s ease, text-shadow 0.3s ease',
+      }}
+    >
+      {count}{suffix}
+    </span>
+  );
 };
 
 interface ProfileHeroProps {
@@ -47,6 +63,7 @@ interface ProfileHeroProps {
   email?: string;
   calendlyUrl?: string;
   linkedinUrl?: string;
+  primaryColor?: string;
 }
 
 const ease = [0.22, 1, 0.36, 1] as [number, number, number, number];
@@ -62,6 +79,7 @@ export const ProfileHero = ({
   email,
   calendlyUrl,
   linkedinUrl,
+  primaryColor,
 }: ProfileHeroProps) => {
   const initials = name.split(" ").map(n => n[0]).join("");
 
@@ -108,34 +126,56 @@ export const ProfileHero = ({
   return (
     <section className="pb-8">
       <div className="max-w-5xl mx-auto px-6">
-        {/* Photo overlapping banner */}
+        {/* ANIMATION 1: Photo with pulsing ring */}
         <motion.div
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.5, ease }}
-          className="relative -mt-12 mb-4"
+          className="relative -mt-12 mb-4 w-fit"
         >
+          {/* Pulsing ring 1 */}
+          <span
+            className="absolute inset-0 rounded-full border-2 border-primary animate-ping"
+            style={{ animationDuration: '3s' }}
+          />
+          {/* Pulsing ring 2 — offset */}
+          <span
+            className="absolute inset-0 rounded-full border border-primary animate-pulse"
+            style={{ animationDuration: '2.5s' }}
+          />
+
           {photoUrl ? (
             <img
               src={photoUrl}
               alt={name}
-              className="w-24 h-24 rounded-full border-4 border-background object-cover shadow-md"
+              className="relative w-24 h-24 rounded-full border-4 border-background object-cover shadow-md"
             />
           ) : (
-            <div className="w-24 h-24 rounded-full border-4 border-background icon-gradient-bg flex items-center justify-center text-3xl font-bold text-white shadow-md">
+            <div className="relative w-24 h-24 rounded-full border-4 border-background icon-gradient-bg flex items-center justify-center text-3xl font-bold text-white shadow-md">
               {initials}
             </div>
           )}
         </motion.div>
 
-        {/* Name */}
+        {/* ANIMATION 5: Name with shimmer */}
         <motion.h1
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, ease, delay: 0.1 }}
-          className="text-3xl md:text-4xl font-semibold text-foreground tracking-tight"
+          className="text-3xl md:text-4xl font-semibold tracking-tight"
         >
-          {name}
+          <span
+            className="name-shimmer"
+            style={{
+              backgroundImage: `linear-gradient(90deg, hsl(var(--foreground)) 0%, hsl(var(--foreground)) 40%, hsl(var(--primary)) 50%, hsl(var(--foreground)) 60%, hsl(var(--foreground)) 100%)`,
+              backgroundSize: '200% 100%',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              backgroundClip: 'text',
+            }}
+          >
+            {name}
+          </span>
         </motion.h1>
 
         {/* Headline */}
@@ -184,7 +224,7 @@ export const ProfileHero = ({
           </motion.p>
         )}
 
-        {/* CTA Buttons */}
+        {/* ANIMATION 4: CTA Buttons — primary has breathing glow */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -192,7 +232,7 @@ export const ProfileHero = ({
           className="flex flex-wrap items-center gap-3 mt-4"
         >
           {mailtoGetInTouch && (
-            <Button className="rounded-full" asChild>
+            <Button className="rounded-full cta-breathing-glow" asChild>
               <a href={mailtoGetInTouch}>
                 <Mail className="w-4 h-4 mr-2" />
                 Get in touch
