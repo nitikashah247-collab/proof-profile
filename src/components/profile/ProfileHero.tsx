@@ -135,12 +135,12 @@ export const ProfileHero = ({
         >
           {/* Pulsing ring 1 */}
           <span
-            className="absolute inset-0 rounded-full border-2 border-primary"
-            style={{ animation: 'photo-ring 3s ease-in-out infinite' }}
+            className="absolute rounded-full border-2 border-primary"
+            style={{ inset: '-6px', animation: 'photo-ring 3s ease-in-out infinite' }}
           />
           <span
-            className="absolute inset-0 rounded-full border border-primary"
-            style={{ animation: 'photo-ring 3s ease-in-out infinite 1.5s' }}
+            className="absolute rounded-full border border-primary"
+            style={{ inset: '-6px', animation: 'photo-ring 3s ease-in-out infinite 1.5s' }}
           />
 
           {photoUrl ? (

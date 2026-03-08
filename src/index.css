@@ -139,10 +139,10 @@
 @keyframes photo-ring {
   0%, 100% {
     transform: scale(1);
-    opacity: 0.45;
+    opacity: 0.5;
   }
   50% {
-    transform: scale(1.06);
+    transform: scale(1.12);
     opacity: 0;
   }
 }
