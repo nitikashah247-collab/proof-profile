@@ -135,10 +135,9 @@ export const ProfileHero = ({
         >
           {/* Pulsing ring 1 */}
           <span
-            className="absolute inset-0 rounded-full border-2 border-primary animate-ping"
+            className="absolute inset-0 rounded-full border-2 border-primary animate-pulse"
             style={{ animationDuration: '3s' }}
           />
-          {/* Pulsing ring 2 — offset */}
           <span
             className="absolute inset-0 rounded-full border border-primary animate-pulse"
             style={{ animationDuration: '2.5s' }}
@@ -162,20 +161,9 @@ export const ProfileHero = ({
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, ease, delay: 0.1 }}
-          className="text-3xl md:text-4xl font-semibold tracking-tight"
+          className="text-3xl md:text-4xl font-semibold text-foreground"
         >
-          <span
-            className="name-shimmer"
-            style={{
-              backgroundImage: `linear-gradient(90deg, hsl(var(--foreground)) 0%, hsl(var(--foreground)) 40%, hsl(var(--primary)) 50%, hsl(var(--foreground)) 60%, hsl(var(--foreground)) 100%)`,
-              backgroundSize: '200% 100%',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-              backgroundClip: 'text',
-            }}
-          >
-            {name}
-          </span>
+          {name}
         </motion.h1>
 
         {/* Headline */}
