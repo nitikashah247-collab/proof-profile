@@ -62,9 +62,10 @@ Return ONLY a valid JSON object (no markdown fences) with these fields:
   ],
   "proofGallery": [
     {
-      "url": "string - URL of artifact not matched to any case study",
-      "caption": "string - AI-generated description of the artifact",
-      "fileType": "string - png|jpg|pdf|pptx"
+      "url": "string - URL of artifact",
+      "caption": "string - description (for links, use the fetched page title, NOT an AI-generated description)",
+      "fileType": "string - png|jpg|pdf|pptx|link",
+      "ogImage": "string (optional) - thumbnail image URL from og:image metadata, only for link-type artifacts"
     }
   ],
   "skills_with_proof": [
@@ -167,6 +168,8 @@ ARTIFACT EMBEDDING RULES:
 - Every uploaded artifact MUST appear somewhere — either inline in a story OR in the proofGallery. Never drop an artifact.
 - ONLY use artifact URLs provided in the ARTIFACTS section — NEVER invent artifact URLs.
 - If no artifacts were uploaded, leave artifacts arrays empty and proofGallery empty.
+- For link-type artifacts, use the fetched page title and description as the caption, NOT a made-up description. If the link has an ogImage, pass it through to the proofGallery item's ogImage field.
+- DEDUPLICATION RULE: If a link artifact is used to create a publication entry in the "publications" section, do NOT also include it in the "proofGallery" array. Each link should appear in ONE place only. If the link is a published article, blog post, or media appearance → put it in "publications" only. If the link is a portfolio piece, case study on a website, or work sample → put it in "proofGallery" only. Never show the same URL in both sections.
 
 CRITICAL RULES FOR SECTION ORDERING:
 - Analyze the user's strengths from resume and interview data
@@ -199,11 +202,49 @@ async function analyzeArtifacts(artifacts: any[], apiKey: string): Promise<any[]
   for (const artifact of artifacts || []) {
     // Handle link artifacts — no Vision analysis needed
     if (artifact.type === "link") {
+      let title = artifact.name;
+      let description = `Published work: ${artifact.url}`;
+      let ogImage = "";
+
+      try {
+        const pageResponse = await fetch(artifact.url, {
+          headers: { 'User-Agent': 'Mozilla/5.0 (compatible; ProofBot/1.0)' },
+          redirect: 'follow',
+        });
+
+        if (pageResponse.ok) {
+          const html = await pageResponse.text();
+
+          const ogTitleMatch = html.match(/<meta[^>]*property=["']og:title["'][^>]*content=["']([^"']+)["']/i)
+            || html.match(/<meta[^>]*content=["']([^"']+)["'][^>]*property=["']og:title["']/i);
+          const titleTagMatch = html.match(/<title[^>]*>([^<]+)<\/title>/i);
+
+          if (ogTitleMatch) title = ogTitleMatch[1].trim();
+          else if (titleTagMatch) title = titleTagMatch[1].trim();
+
+          const ogDescMatch = html.match(/<meta[^>]*property=["']og:description["'][^>]*content=["']([^"']+)["']/i)
+            || html.match(/<meta[^>]*content=["']([^"']+)["'][^>]*property=["']og:description["']/i);
+          const metaDescMatch = html.match(/<meta[^>]*name=["']description["'][^>]*content=["']([^"']+)["']/i)
+            || html.match(/<meta[^>]*content=["']([^"']+)["'][^>]*name=["']description["']/i);
+
+          if (ogDescMatch) description = ogDescMatch[1].trim();
+          else if (metaDescMatch) description = metaDescMatch[1].trim();
+
+          const ogImageMatch = html.match(/<meta[^>]*property=["']og:image["'][^>]*content=["']([^"']+)["']/i)
+            || html.match(/<meta[^>]*content=["']([^"']+)["'][^>]*property=["']og:image["']/i);
+
+          if (ogImageMatch) ogImage = ogImageMatch[1].trim();
+        }
+      } catch (error) {
+        console.error("Failed to fetch link metadata:", error);
+      }
+
       descriptions.push({
         url: artifact.url,
-        name: artifact.name,
+        name: title,
         category: "link",
-        description: `Published work / online resource: ${artifact.name} (${artifact.url})`,
+        description: description,
+        ogImage: ogImage,
         metrics: [],
       });
       continue;
@@ -368,6 +409,9 @@ function buildContext(
     context += `IMPORTANT: Every artifact listed below MUST appear in the output — either embedded in a case study's artifacts array, or in the top-level proofGallery array. Do NOT drop any.\n`;
     for (const a of artifactDescriptions) {
       context += `- ${a.category}: ${a.description}\n  URL: ${a.url}\n  Filename: ${a.name}\n`;
+      if (a.ogImage) {
+        context += `  og:image: ${a.ogImage}\n`;
+      }
       if (a.metrics?.length > 0) {
         context += `  Visible metrics: ${a.metrics.join(", ")}\n`;
       }
