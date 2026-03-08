@@ -409,6 +409,9 @@ function buildContext(
     context += `IMPORTANT: Every artifact listed below MUST appear in the output — either embedded in a case study's artifacts array, or in the top-level proofGallery array. Do NOT drop any.\n`;
     for (const a of artifactDescriptions) {
       context += `- ${a.category}: ${a.description}\n  URL: ${a.url}\n  Filename: ${a.name}\n`;
+      if (a.ogImage) {
+        context += `  og:image: ${a.ogImage}\n`;
+      }
       if (a.metrics?.length > 0) {
         context += `  Visible metrics: ${a.metrics.join(", ")}\n`;
       }
