@@ -22,11 +22,33 @@ export const HeroInlineEdit = ({ profileData, sectionData, onSave, onCancel }: H
   const [linkedinUrl, setLinkedinUrl] = useState(sectionData?.linkedin_url || "");
   const [saving, setSaving] = useState(false);
 
+  // Stats
+  const [yearsExperience, setYearsExperience] = useState(sectionData?.hero_stats?.years_experience || 0);
+  const [projectsLed, setProjectsLed] = useState(sectionData?.hero_stats?.projects_led || 0);
+  const [peopleManaged, setPeopleManaged] = useState(sectionData?.hero_stats?.people_managed || 0);
+  const [keyMetricValue, setKeyMetricValue] = useState(sectionData?.hero_stats?.key_metric?.value || 0);
+  const [keyMetricLabel, setKeyMetricLabel] = useState(sectionData?.hero_stats?.key_metric?.label || "");
+  const [keyMetricSuffix, setKeyMetricSuffix] = useState(sectionData?.hero_stats?.key_metric?.suffix || "%");
+
   const handleSave = async () => {
     setSaving(true);
     await onSave(
       { full_name: fullName, headline, bio, location },
-      { ...sectionData, email, linkedin_url: linkedinUrl }
+      {
+        ...sectionData,
+        email,
+        linkedin_url: linkedinUrl,
+        hero_stats: {
+          years_experience: Number(yearsExperience),
+          projects_led: Number(projectsLed),
+          people_managed: Number(peopleManaged),
+          key_metric: {
+            value: Number(keyMetricValue),
+            label: keyMetricLabel,
+            suffix: keyMetricSuffix,
+          },
+        },
+      }
     );
     setSaving(false);
     toast({ title: "Changes saved", description: "Your profile has been updated." });
@@ -62,6 +84,41 @@ export const HeroInlineEdit = ({ profileData, sectionData, onSave, onCancel }: H
           <Input value={linkedinUrl} onChange={(e) => setLinkedinUrl(e.target.value)} className="mt-1" />
         </div>
       </div>
+
+      {/* Stats editing */}
+      <div>
+        <Label className="text-xs text-muted-foreground font-medium">Profile Stats</Label>
+        <p className="text-xs text-muted-foreground mb-2">Set to 0 to hide a stat</p>
+        <div className="grid grid-cols-3 gap-3 mt-1">
+          <div>
+            <Label className="text-xs text-muted-foreground">Years Experience</Label>
+            <Input type="number" value={yearsExperience} onChange={(e) => setYearsExperience(e.target.value)} className="mt-1" />
+          </div>
+          <div>
+            <Label className="text-xs text-muted-foreground">Projects Led</Label>
+            <Input type="number" value={projectsLed} onChange={(e) => setProjectsLed(e.target.value)} className="mt-1" />
+          </div>
+          <div>
+            <Label className="text-xs text-muted-foreground">People Managed</Label>
+            <Input type="number" value={peopleManaged} onChange={(e) => setPeopleManaged(e.target.value)} className="mt-1" />
+          </div>
+        </div>
+        <div className="grid grid-cols-3 gap-3 mt-2">
+          <div>
+            <Label className="text-xs text-muted-foreground">Key Metric Value</Label>
+            <Input type="number" value={keyMetricValue} onChange={(e) => setKeyMetricValue(e.target.value)} className="mt-1" />
+          </div>
+          <div>
+            <Label className="text-xs text-muted-foreground">Key Metric Label</Label>
+            <Input value={keyMetricLabel} onChange={(e) => setKeyMetricLabel(e.target.value)} className="mt-1" placeholder="e.g. YoY Growth" />
+          </div>
+          <div>
+            <Label className="text-xs text-muted-foreground">Suffix</Label>
+            <Input value={keyMetricSuffix} onChange={(e) => setKeyMetricSuffix(e.target.value)} className="mt-1" placeholder="e.g. %, +, x" />
+          </div>
+        </div>
+      </div>
+
       <div className="flex justify-end gap-2 pt-2">
         <Button type="button" variant="ghost" size="sm" onClick={onCancel}>Cancel</Button>
         <Button type="button" size="sm" onClick={handleSave} disabled={saving} className="gap-1.5">

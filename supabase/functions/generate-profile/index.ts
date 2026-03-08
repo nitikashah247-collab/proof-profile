@@ -17,8 +17,8 @@ Return ONLY a valid JSON object (no markdown fences) with these fields:
   "positioning_statement": "string - A 1-2 sentence statement of what makes this person uniquely valuable",
   "hero_stats": {
     "years_experience": "number",
-    "projects_led": "number - estimate from resume roles/achievements",
-    "people_managed": "number - estimate from resume",
+    "projects_led": "number - ONLY use if the resume or interview explicitly mentions a number of projects. Set to 0 if no explicit number is stated.",
+    "people_managed": "number - ONLY use if the resume or interview explicitly states team size or number of direct reports. Set to 0 if no explicit number is stated.",
     "key_metric": {
       "value": "number - the most impressive single metric",
       "label": "string - what it measures",
@@ -131,12 +131,16 @@ STRICT DATA ACCURACY RULES — THESE ARE CRITICAL AND MUST NEVER BE VIOLATED:
    - For hero_stats: set projects_led, people_managed to 0 if no explicit number is found in the resume/interview. Only use numbers the user actually stated.
 
 2. CHARTS (visualizations): Only generate a chart when you have 2 or more EXPLICIT data points from the resume or interview. Rules:
-   - 1 data point (e.g., "62% growth") → Display as a metric card via impact_metrics, NEVER a chart
-   - 2 data points (e.g., "grew from $2M to $5M") → Simple comparison bar chart with exactly those 2 values
-   - 3+ data points (e.g., "2019: $2M, 2020: $5M, 2021: $12M") → Line or bar chart with exactly those values
-   - NEVER invent intermediate data points, quarterly breakdowns, or trend lines
-   - NEVER generate a multi-point chart from a single percentage or number
-   - If no chart-worthy data exists, return an EMPTY visualizations array
+    - 1 data point (e.g., "62% growth") → Display as a metric card via impact_metrics, NEVER a chart
+    - 2 data points (e.g., "grew from $2M to $5M") → Simple comparison bar chart with exactly those 2 values
+    - 3+ data points (e.g., "2019: $2M, 2020: $5M, 2021: $12M") → Line or bar chart with exactly those values
+    - NEVER invent intermediate data points, quarterly breakdowns, or trend lines
+    - NEVER generate a multi-point chart from a single percentage or number
+    - If no chart-worthy data exists, return an EMPTY visualizations array
+    - ACTIVELY MINE the resume for ALL quantifiable metrics. Look for: revenue numbers, growth percentages, conversion rates, team sizes, budget figures, time savings, customer counts, NPS scores, campaign results.
+    - Generate a SEPARATE visualization for each distinct metric category found. Examples: revenue growth → line/bar chart, conversion improvement → metric card or comparison bar, team growth → bar chart, satisfaction scores → metric card.
+    - Aim for 3-5 visualizations if the resume contains enough data. Don't stop at 1.
+    - Single numbers without comparison data should be metric cards (no chart), but STILL include them in the visualizations array with an empty data array — they'll render as standalone metric cards.
 
 3. IMPACT STORIES (case_studies): Never state specific numbers, team sizes, budgets, or percentages that the user did not explicitly provide. Use qualitative language instead:
    - ✅ "Led a cross-functional team to deliver a major product launch"
@@ -170,6 +174,14 @@ ARTIFACT EMBEDDING RULES:
 - If no artifacts were uploaded, leave artifacts arrays empty and proofGallery empty.
 - For link-type artifacts, use the fetched page title and description as the caption, NOT a made-up description. If the link has an ogImage, pass it through to the proofGallery item's ogImage field.
 - DEDUPLICATION RULE: If a link artifact is used to create a publication entry in the "publications" section, do NOT also include it in the "proofGallery" array. Each link should appear in ONE place only. If the link is a published article, blog post, or media appearance → put it in "publications" only. If the link is a portfolio piece, case study on a website, or work sample → put it in "proofGallery" only. Never show the same URL in both sections.
+
+PUBLICATIONS vs PROOF GALLERY — STRICT SEPARATION:
+- "publications" section is ONLY for formally published articles, research papers, blog posts, or media appearances where the user is a credited author or interviewee. Each must have: title, outlet/publication name, year, and optionally a URL.
+- "proofGallery" is for work samples, screenshots, dashboards, presentations, certificates — things that DEMONSTRATE work but aren't "publications" in the traditional sense.
+- A link to a blog post the user wrote → publications
+- A link to a portfolio/case study page → proofGallery
+- NEVER put the same URL in both sections
+- If unsure, default to proofGallery
 
 CRITICAL RULES FOR SECTION ORDERING:
 - Analyze the user's strengths from resume and interview data

@@ -206,7 +206,7 @@ export const ProfileHero = ({
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, ease, delay: 0.25 }}
-            className="text-sm text-muted-foreground mt-3 line-clamp-2 max-w-2xl"
+            className="text-sm text-muted-foreground mt-3 line-clamp-3 max-w-2xl"
           >
             {tagline}
           </motion.p>
