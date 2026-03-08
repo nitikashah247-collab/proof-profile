@@ -949,7 +949,7 @@ const PublicProfile = () => {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] as [number, number, number, number] }}
-            className={`${(languagesSection!.section_data.languages || []).length <= 2 ? "py-8" : "py-12"} bg-muted/30 border-t border-border/50`}
+            className={`${(languagesSection!.section_data.languages || []).length <= 2 ? "py-8" : "py-12"} border-t border-border/50`}
           >
             <div className="container mx-auto px-6">
               <div className="max-w-5xl">
@@ -1080,8 +1080,11 @@ const PublicProfile = () => {
         const sortedAll = [...sections].sort((a, b) => a.section_order - b.section_order);
         const globalIdx = sortedAll.findIndex((s) => s.id === section.id);
 
+        const genericIdx = genericSections.indexOf(section);
+        const genericBg = genericIdx % 2 === 0 ? "bg-muted/30" : "";
+
         return (
-          <div key={section.id} className="border-t border-border/50">
+          <div key={section.id} className={`border-t border-border/50 ${genericBg}`}>
           <InlineEditWrapper
             isOwner={isOwner}
             sectionId={section.id}
