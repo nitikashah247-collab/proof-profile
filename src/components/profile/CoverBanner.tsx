@@ -30,15 +30,6 @@ export const CoverBanner = ({
     <div
       className="w-full h-32 relative overflow-hidden"
       style={{ backgroundColor: primaryColor || "#3B5EF5" }}
-    >
-      {/* Shimmer sweep overlay */}
-      <div
-        className="absolute inset-0 banner-shimmer"
-        style={{
-          background: 'linear-gradient(120deg, transparent 30%, rgba(255,255,255,0.15) 50%, transparent 70%)',
-          backgroundSize: '200% 100%',
-        }}
-      />
-    </div>
+    />
   );
 };

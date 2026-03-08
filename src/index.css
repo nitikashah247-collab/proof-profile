@@ -135,16 +135,6 @@
    HERO ANIMATIONS
    ═══════════════════════════════════════════ */
 
-/* ANIMATION 2: Banner shimmer sweep */
-@keyframes shimmer-sweep {
-  0% { background-position: 200% 0; }
-  100% { background-position: -200% 0; }
-}
-
-.banner-shimmer {
-  animation: shimmer-sweep 4s ease-in-out infinite;
-}
-
 /* ANIMATION 4: CTA button breathing glow */
 @keyframes breathing-glow {
   0%, 100% {
@@ -159,19 +149,6 @@
   animation: breathing-glow 3s ease-in-out infinite;
 }
 
-/* ANIMATION 5: Name text shimmer */
-@keyframes name-shimmer {
-  0%, 90%, 100% {
-    background-position: 200% 0;
-  }
-  45% {
-    background-position: -200% 0;
-  }
-}
-
-.name-shimmer {
-  animation: name-shimmer 6s ease-in-out infinite;
-}
 
 /* Marquee ticker */
 .marquee-container {
