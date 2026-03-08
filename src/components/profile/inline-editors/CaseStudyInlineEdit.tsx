@@ -3,13 +3,19 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { Check, Loader2, Plus, Trash2 } from "lucide-react";
+import { Check, Loader2, Plus, Trash2, Link as LinkIcon } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 
 interface CaseStudyInlineEditProps {
   sectionData: Record<string, any>;
   onSave: (data: Record<string, any>) => Promise<void>;
   onCancel: () => void;
+}
+
+interface ArtifactItem {
+  url: string;
+  caption: string;
+  type: string;
 }
 
 interface CaseStudyItem {
@@ -21,7 +27,7 @@ interface CaseStudyItem {
   approach: string;
   results: string;
   skills_used: string[];
-  artifacts: any[];
+  artifacts: ArtifactItem[];
 }
 
 export const CaseStudyInlineEdit = ({ sectionData, onSave, onCancel }: CaseStudyInlineEditProps) => {
@@ -35,10 +41,15 @@ export const CaseStudyInlineEdit = ({ sectionData, onSave, onCancel }: CaseStudy
       approach: cs.approach || "",
       results: cs.results || "",
       skills_used: cs.skills_used || cs.skills || [],
-      artifacts: cs.artifacts || [],
+      artifacts: (cs.artifacts || []).map((a: any) => ({
+        url: a.url || "",
+        caption: a.caption || "",
+        type: a.type || "link",
+      })),
     }))
   );
   const [saving, setSaving] = useState(false);
+  const [newArtifactUrls, setNewArtifactUrls] = useState<Record<number, string>>({});
 
   const updateStudy = (index: number, field: string, value: any) => {
     setStudies((prev) => prev.map((s, i) => (i === index ? { ...s, [field]: value } : s)));
@@ -50,6 +61,29 @@ export const CaseStudyInlineEdit = ({ sectionData, onSave, onCancel }: CaseStudy
 
   const removeStudy = (index: number) => {
     setStudies((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  const addArtifact = (storyIndex: number) => {
+    const url = newArtifactUrls[storyIndex]?.trim();
+    if (!url) return;
+    setStudies((prev) =>
+      prev.map((s, i) =>
+        i === storyIndex
+          ? { ...s, artifacts: [...s.artifacts, { url, caption: url, type: "link" }] }
+          : s
+      )
+    );
+    setNewArtifactUrls((prev) => ({ ...prev, [storyIndex]: "" }));
+  };
+
+  const removeArtifact = (storyIndex: number, artifactIndex: number) => {
+    setStudies((prev) =>
+      prev.map((s, i) =>
+        i === storyIndex
+          ? { ...s, artifacts: s.artifacts.filter((_, ai) => ai !== artifactIndex) }
+          : s
+      )
+    );
   };
 
   const handleSave = async () => {
@@ -102,6 +136,33 @@ export const CaseStudyInlineEdit = ({ sectionData, onSave, onCancel }: CaseStudy
             <div>
               <Label className="text-xs text-muted-foreground">Results</Label>
               <Textarea value={study.results} onChange={(e) => updateStudy(i, "results", e.target.value)} rows={2} className="mt-1" />
+            </div>
+          </div>
+
+          {/* Evidence & Artifacts */}
+          <div>
+            <Label className="text-xs text-muted-foreground font-medium">Evidence & Artifacts</Label>
+            <p className="text-xs text-muted-foreground mb-2">Add links or images that support this story</p>
+            {study.artifacts.map((artifact, ai) => (
+              <div key={ai} className="flex items-center gap-2 mb-2 p-2 rounded-lg bg-muted">
+                <LinkIcon className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
+                <span className="text-sm truncate flex-1">{artifact.caption || artifact.url}</span>
+                <button onClick={() => removeArtifact(i, ai)} className="text-destructive text-xs hover:underline shrink-0">
+                  Remove
+                </button>
+              </div>
+            ))}
+            <div className="flex gap-2 mt-2">
+              <Input
+                value={newArtifactUrls[i] || ""}
+                onChange={(e) => setNewArtifactUrls((prev) => ({ ...prev, [i]: e.target.value }))}
+                placeholder="https://example.com/evidence"
+                className="flex-1"
+                onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); addArtifact(i); } }}
+              />
+              <Button size="sm" variant="outline" onClick={() => addArtifact(i)} className="shrink-0">
+                Add
+              </Button>
             </div>
           </div>
         </div>
