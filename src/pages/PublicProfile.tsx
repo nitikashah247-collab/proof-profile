@@ -869,7 +869,7 @@ const PublicProfile = () => {
 
       {/* Career Timeline */}
       {(timelineEntries.length > 0 || (isOwner && timelineSection)) && (
-        <div className="border-t border-border/50 bg-muted/30">
+        <div className="border-t border-border/50 bg-muted/30" data-section-type="career_timeline">
           <InlineEditWrapper
             isOwner={isOwner}
             sectionId={timelineSection?.id || "timeline"}
