@@ -1084,7 +1084,7 @@ const PublicProfile = () => {
 
       {/* Work Style */}
       {(workStyleDimensions.length > 0 || (isOwner && workStyleSection)) && (
-        <div className="border-t border-border/50 bg-muted/30">
+        <div className="border-t border-border/50 bg-muted/30" data-section-type="work_style">
         <InlineEditWrapper
           isOwner={isOwner}
           sectionId={workStyleSection?.id || "workstyle"}
