@@ -935,7 +935,7 @@ const PublicProfile = () => {
 
       {/* Testimonials */}
       {(testimonialCards.length > 0 || (isOwner && testimonialsSection)) && (
-        <div className="border-t border-border/50 bg-muted/30">
+        <div className="border-t border-border/50 bg-muted/30" data-section-type="testimonials">
         <InlineEditWrapper
           isOwner={isOwner}
           sectionId={testimonialsSection?.id || "testimonials"}
