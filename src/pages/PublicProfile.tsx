@@ -718,7 +718,7 @@ const PublicProfile = () => {
       />
 
       {/* Hero Section */}
-      <div>
+      <div data-section-type="hero">
         <InlineEditWrapper
           isOwner={isOwner}
           sectionId={heroSection?.id || "hero"}
