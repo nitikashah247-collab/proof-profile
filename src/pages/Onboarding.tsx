@@ -454,6 +454,7 @@ const Onboarding = () => {
             email: user.email || "",
             linkedin_url: linkedinUrl || "",
             themeBase: themeSettings?.themeBase || "light",
+            visitor_insights: generated?.visitor_insights || [],
           },
           condition: true,
         },
