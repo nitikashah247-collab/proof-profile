@@ -862,7 +862,7 @@ const PublicProfile = () => {
 
       {/* Proof Gallery */}
       {proofGallery.length > 0 && (
-        <div className="border-t border-border/50">
+        <div className="border-t border-border/50" data-section-type="proof_gallery">
           <ProofGallerySection items={proofGallery} />
         </div>
       )}
