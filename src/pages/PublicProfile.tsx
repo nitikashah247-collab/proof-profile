@@ -1020,6 +1020,7 @@ const PublicProfile = () => {
 
       {/* Publications */}
       {((publicationsSection?.section_data?.publications?.length > 0) || (isOwner && publicationsSection)) && (
+        <div data-section-type="publications">
         <InlineEditWrapper
           isOwner={isOwner}
           sectionId={publicationsSection!.id}
