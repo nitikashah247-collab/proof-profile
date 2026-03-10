@@ -28,6 +28,9 @@ import { ProofGallerySection } from "@/components/profile/ProofGallerySection";
 import { InlineEditWrapper } from "@/components/profile/InlineEditWrapper";
 
 import { AICoachOrb } from "@/components/profile/AICoachOrb";
+import { VisitorCoachOrb } from "@/components/profile/VisitorCoachOrb";
+import { VisitorCoachDrawer } from "@/components/profile/VisitorCoachDrawer";
+import { useVisitorCoach } from "@/hooks/useVisitorCoach";
 import {
   HeroInlineEdit,
   CaseStudyInlineEdit,
@@ -519,6 +522,15 @@ const PublicProfile = () => {
   const languagesSection = getSection("languages");
   const publicationsSection = getSection("publications");
 
+  // Visitor insights for AI advocate
+  const visitorInsights = heroSection?.section_data?.visitor_insights || [];
+  const {
+    currentInsight,
+    isDrawerOpen: isVisitorDrawerOpen,
+    setIsDrawerOpen: setIsVisitorDrawerOpen,
+    dismissInsight,
+  } = useVisitorCoach({ insights: visitorInsights, isOwner });
+
   // Helper to get section position info
   const getSectionPosition = (sectionType: string) => {
     const section = getSection(sectionType);
@@ -706,7 +718,7 @@ const PublicProfile = () => {
       />
 
       {/* Hero Section */}
-      <div>
+      <div data-section-type="hero">
         <InlineEditWrapper
           isOwner={isOwner}
           sectionId={heroSection?.id || "hero"}
@@ -750,7 +762,7 @@ const PublicProfile = () => {
 
       {/* Impact Charts */}
       {(visualizations.length > 0 || (isOwner && impactSection)) && (
-        <div className="border-t border-border/50">
+        <div className="border-t border-border/50" data-section-type="impact_charts">
           <InlineEditWrapper
             isOwner={isOwner}
             sectionId={impactSection?.id || "impact"}
@@ -807,7 +819,7 @@ const PublicProfile = () => {
               />
             }
           >
-            <section className="py-12 bg-muted/30 border-t border-border/50">
+            <section className="py-12 bg-muted/30 border-t border-border/50" data-section-type="case_studies">
               <div className="container mx-auto px-6">
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
@@ -850,14 +862,14 @@ const PublicProfile = () => {
 
       {/* Proof Gallery */}
       {proofGallery.length > 0 && (
-        <div className="border-t border-border/50">
+        <div className="border-t border-border/50" data-section-type="proof_gallery">
           <ProofGallerySection items={proofGallery} />
         </div>
       )}
 
       {/* Career Timeline */}
       {(timelineEntries.length > 0 || (isOwner && timelineSection)) && (
-        <div className="border-t border-border/50 bg-muted/30">
+        <div className="border-t border-border/50 bg-muted/30" data-section-type="career_timeline">
           <InlineEditWrapper
             isOwner={isOwner}
             sectionId={timelineSection?.id || "timeline"}
@@ -887,7 +899,7 @@ const PublicProfile = () => {
 
       {/* Skills Matrix */}
       {(skillsData.length > 0 || (isOwner && skillsSection)) && (
-        <div className="border-t border-border/50">
+        <div className="border-t border-border/50" data-section-type="skills_matrix">
         <InlineEditWrapper
           isOwner={isOwner}
           sectionId={skillsSection?.id || "skills"}
@@ -923,7 +935,7 @@ const PublicProfile = () => {
 
       {/* Testimonials */}
       {(testimonialCards.length > 0 || (isOwner && testimonialsSection)) && (
-        <div className="border-t border-border/50 bg-muted/30">
+        <div className="border-t border-border/50 bg-muted/30" data-section-type="testimonials">
         <InlineEditWrapper
           isOwner={isOwner}
           sectionId={testimonialsSection?.id || "testimonials"}
@@ -953,6 +965,7 @@ const PublicProfile = () => {
 
       {/* Languages */}
       {((languagesSection?.section_data?.languages?.length > 0) || (isOwner && languagesSection)) && (
+        <div data-section-type="languages">
         <InlineEditWrapper
           isOwner={isOwner}
           sectionId={languagesSection!.id}
@@ -1003,10 +1016,12 @@ const PublicProfile = () => {
             </div>
           </motion.section>
         </InlineEditWrapper>
+        </div>
       )}
 
       {/* Publications */}
       {((publicationsSection?.section_data?.publications?.length > 0) || (isOwner && publicationsSection)) && (
+        <div data-section-type="publications">
         <InlineEditWrapper
           isOwner={isOwner}
           sectionId={publicationsSection!.id}
@@ -1066,11 +1081,12 @@ const PublicProfile = () => {
             </div>
           </motion.section>
         </InlineEditWrapper>
+        </div>
       )}
 
       {/* Work Style */}
       {(workStyleDimensions.length > 0 || (isOwner && workStyleSection)) && (
-        <div className="border-t border-border/50 bg-muted/30">
+        <div className="border-t border-border/50 bg-muted/30" data-section-type="work_style">
         <InlineEditWrapper
           isOwner={isOwner}
           sectionId={workStyleSection?.id || "workstyle"}
@@ -1173,19 +1189,24 @@ const PublicProfile = () => {
         </section>
       )}
 
-      {/* Proof Badge — non-owner */}
+      {/* Visitor AI Advocate — only for visitors */}
       {!isOwner && (
-        <div className="fixed bottom-6 right-6 z-50">
-          <Link
-            to="/"
-            className="flex items-center gap-2 px-4 py-2 rounded-full bg-card border border-border shadow-lg hover:shadow-xl transition-shadow"
-          >
-            <div className="w-5 h-5 rounded icon-gradient-bg flex items-center justify-center">
-              <span className="text-white font-bold text-[10px]">P</span>
-            </div>
-            <span className="text-sm font-medium text-foreground">Made with Proof</span>
-          </Link>
-        </div>
+        <>
+          <VisitorCoachOrb
+            primaryColor={profile.theme_primary_color || "#3B5EF5"}
+            currentInsight={currentInsight}
+            onDismissInsight={dismissInsight}
+            onOpenDrawer={() => setIsVisitorDrawerOpen(true)}
+            profileName={profile?.full_name || ""}
+          />
+          <VisitorCoachDrawer
+            isOpen={isVisitorDrawerOpen}
+            onClose={() => setIsVisitorDrawerOpen(false)}
+            profileData={profile}
+            sections={sections}
+            primaryColor={profile?.theme_primary_color || "#3B5EF5"}
+          />
+        </>
       )}
 
       {/* AI Career Coach — owner only */}

@@ -118,7 +118,15 @@ Return ONLY a valid JSON object (no markdown fences) with these fields:
       "achievements": ["string - 3-4 key achievements at this role"]
     }
   ],
-  "section_order": ["string - ordered list of section types based on user's strengths. Choose from: hero, impact_charts, case_studies, career_timeline, skills_matrix, work_style, languages, publications"]
+  "section_order": ["string - ordered list of section types based on user's strengths. Choose from: hero, impact_charts, case_studies, career_timeline, skills_matrix, work_style, languages, publications"],
+  "visitor_insights": [
+    {
+      "section": "string - which section this insight relates to: hero, impact_charts, case_studies, career_timeline, skills_matrix, work_style, publications, proof_gallery",
+      "trigger": "string - what visitor behaviour triggers this: 'scroll_to' | 'linger' | 'first_visit'",
+      "message": "string - A compelling, conversational insight about the profile owner. Written in third person as if you're their biggest advocate. 1-2 sentences max. Should make a hiring manager stop and think.",
+      "priority": "number - 1 (show first) to 10 (show later)"
+    }
+  ]
 }
 
 STRICT DATA ACCURACY RULES — THESE ARE CRITICAL AND MUST NEVER BE VIOLATED:
@@ -204,6 +212,16 @@ CRITICAL RULES FOR CAREER TIMELINE:
 CRITICAL RULES FOR WORK STYLE:
 - Infer 4 work style dimensions from interview responses
 - Extract 6 traits/values from how they describe their work
+
+VISITOR INSIGHTS — THESE ARE CRITICAL:
+Generate 8-12 visitor_insights. These are short, compelling talking points that an AI advocate would share with someone browsing this profile. They should:
+- Be written as if a brilliant colleague is whispering in a hiring manager's ear: "seriously, look at this"
+- Reference SPECIFIC achievements, numbers, and stories from the profile — not generic praise
+- Cover different sections of the profile so there's always something relevant to surface
+- Have a confident, warm, authoritative tone — not salesy, not sycophantic
+- Make connections the visitor might not see
+- Include at least 2 insights with trigger "first_visit" (shown immediately when someone lands on the profile)
+- Include at least 1 insight per major section (hero, case_studies, career_timeline, skills_matrix)
 
 Use specific details from BOTH the resume AND interview responses. Don't be generic.`;
 }
