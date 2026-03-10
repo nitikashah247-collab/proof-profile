@@ -28,6 +28,9 @@ import { ProofGallerySection } from "@/components/profile/ProofGallerySection";
 import { InlineEditWrapper } from "@/components/profile/InlineEditWrapper";
 
 import { AICoachOrb } from "@/components/profile/AICoachOrb";
+import { VisitorCoachOrb } from "@/components/profile/VisitorCoachOrb";
+import { VisitorCoachDrawer } from "@/components/profile/VisitorCoachDrawer";
+import { useVisitorCoach } from "@/hooks/useVisitorCoach";
 import {
   HeroInlineEdit,
   CaseStudyInlineEdit,
