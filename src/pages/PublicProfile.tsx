@@ -522,6 +522,15 @@ const PublicProfile = () => {
   const languagesSection = getSection("languages");
   const publicationsSection = getSection("publications");
 
+  // Visitor insights for AI advocate
+  const visitorInsights = heroSection?.section_data?.visitor_insights || [];
+  const {
+    currentInsight,
+    isDrawerOpen: isVisitorDrawerOpen,
+    setIsDrawerOpen: setIsVisitorDrawerOpen,
+    dismissInsight,
+  } = useVisitorCoach({ insights: visitorInsights, isOwner });
+
   // Helper to get section position info
   const getSectionPosition = (sectionType: string) => {
     const section = getSection(sectionType);
