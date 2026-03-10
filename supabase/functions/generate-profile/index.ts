@@ -213,6 +213,16 @@ CRITICAL RULES FOR WORK STYLE:
 - Infer 4 work style dimensions from interview responses
 - Extract 6 traits/values from how they describe their work
 
+VISITOR INSIGHTS — THESE ARE CRITICAL:
+Generate 8-12 visitor_insights. These are short, compelling talking points that an AI advocate would share with someone browsing this profile. They should:
+- Be written as if a brilliant colleague is whispering in a hiring manager's ear: "seriously, look at this"
+- Reference SPECIFIC achievements, numbers, and stories from the profile — not generic praise
+- Cover different sections of the profile so there's always something relevant to surface
+- Have a confident, warm, authoritative tone — not salesy, not sycophantic
+- Make connections the visitor might not see
+- Include at least 2 insights with trigger "first_visit" (shown immediately when someone lands on the profile)
+- Include at least 1 insight per major section (hero, case_studies, career_timeline, skills_matrix)
+
 Use specific details from BOTH the resume AND interview responses. Don't be generic.`;
 }
 
