@@ -762,7 +762,7 @@ const PublicProfile = () => {
 
       {/* Impact Charts */}
       {(visualizations.length > 0 || (isOwner && impactSection)) && (
-        <div className="border-t border-border/50">
+        <div className="border-t border-border/50" data-section-type="impact_charts">
           <InlineEditWrapper
             isOwner={isOwner}
             sectionId={impactSection?.id || "impact"}
