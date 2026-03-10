@@ -589,6 +589,7 @@ serve(async (req) => {
         work_style: { dimensions: [], traits: [] },
         career_timeline: [],
         section_order: ["hero", "impact_charts", "case_studies", "career_timeline", "skills_matrix"],
+        visitor_insights: [],
       };
     }
 
