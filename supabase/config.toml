@@ -23,3 +23,6 @@ verify_jwt = false
 
 [functions.interview-respond]
 verify_jwt = false
+
+[functions.visitor-coach]
+verify_jwt = false

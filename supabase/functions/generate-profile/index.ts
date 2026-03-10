@@ -118,7 +118,15 @@ Return ONLY a valid JSON object (no markdown fences) with these fields:
       "achievements": ["string - 3-4 key achievements at this role"]
     }
   ],
-  "section_order": ["string - ordered list of section types based on user's strengths. Choose from: hero, impact_charts, case_studies, career_timeline, skills_matrix, work_style, languages, publications"]
+  "section_order": ["string - ordered list of section types based on user's strengths. Choose from: hero, impact_charts, case_studies, career_timeline, skills_matrix, work_style, languages, publications"],
+  "visitor_insights": [
+    {
+      "section": "string - which section this insight relates to: hero, impact_charts, case_studies, career_timeline, skills_matrix, work_style, publications, proof_gallery",
+      "trigger": "string - what visitor behaviour triggers this: 'scroll_to' | 'linger' | 'first_visit'",
+      "message": "string - A compelling, conversational insight about the profile owner. Written in third person as if you're their biggest advocate. 1-2 sentences max. Should make a hiring manager stop and think.",
+      "priority": "number - 1 (show first) to 10 (show later)"
+    }
+  ]
 }
 
 STRICT DATA ACCURACY RULES — THESE ARE CRITICAL AND MUST NEVER BE VIOLATED:
