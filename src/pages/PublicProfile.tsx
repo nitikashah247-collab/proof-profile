@@ -1016,6 +1016,7 @@ const PublicProfile = () => {
             </div>
           </motion.section>
         </InlineEditWrapper>
+        </div>
       )}
 
       {/* Publications */}
