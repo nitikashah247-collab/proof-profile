@@ -526,7 +526,7 @@ serve(async (req) => {
       },
       body: JSON.stringify({
         model: "claude-sonnet-4-20250514",
-        max_tokens: 8192,
+        max_tokens: 16384,
         messages: [
           {
             role: "user",
@@ -589,7 +589,13 @@ serve(async (req) => {
         work_style: { dimensions: [], traits: [] },
         career_timeline: [],
         section_order: ["hero", "impact_charts", "case_studies", "career_timeline", "skills_matrix"],
+        visitor_insights: [],
       };
+    }
+
+    // Post-process: ensure visitor_insights is a valid array
+    if (!Array.isArray(generatedProfile.visitor_insights)) {
+      generatedProfile.visitor_insights = [];
     }
 
     // Post-process: force testimonials to empty (never hallucinate)
