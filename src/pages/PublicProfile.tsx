@@ -1081,6 +1081,7 @@ const PublicProfile = () => {
             </div>
           </motion.section>
         </InlineEditWrapper>
+        </div>
       )}
 
       {/* Work Style */}
