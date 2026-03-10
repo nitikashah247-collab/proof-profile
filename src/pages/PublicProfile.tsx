@@ -1189,19 +1189,24 @@ const PublicProfile = () => {
         </section>
       )}
 
-      {/* Proof Badge — non-owner */}
+      {/* Visitor AI Advocate — only for visitors */}
       {!isOwner && (
-        <div className="fixed bottom-6 right-6 z-50">
-          <Link
-            to="/"
-            className="flex items-center gap-2 px-4 py-2 rounded-full bg-card border border-border shadow-lg hover:shadow-xl transition-shadow"
-          >
-            <div className="w-5 h-5 rounded icon-gradient-bg flex items-center justify-center">
-              <span className="text-white font-bold text-[10px]">P</span>
-            </div>
-            <span className="text-sm font-medium text-foreground">Made with Proof</span>
-          </Link>
-        </div>
+        <>
+          <VisitorCoachOrb
+            primaryColor={profile.theme_primary_color || "#3B5EF5"}
+            currentInsight={currentInsight}
+            onDismissInsight={dismissInsight}
+            onOpenDrawer={() => setIsVisitorDrawerOpen(true)}
+            profileName={profile?.full_name || ""}
+          />
+          <VisitorCoachDrawer
+            isOpen={isVisitorDrawerOpen}
+            onClose={() => setIsVisitorDrawerOpen(false)}
+            profileData={profile}
+            sections={sections}
+            primaryColor={profile?.theme_primary_color || "#3B5EF5"}
+          />
+        </>
       )}
 
       {/* AI Career Coach — owner only */}
