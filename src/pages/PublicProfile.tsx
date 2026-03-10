@@ -965,6 +965,7 @@ const PublicProfile = () => {
 
       {/* Languages */}
       {((languagesSection?.section_data?.languages?.length > 0) || (isOwner && languagesSection)) && (
+        <div data-section-type="languages">
         <InlineEditWrapper
           isOwner={isOwner}
           sectionId={languagesSection!.id}
