@@ -899,7 +899,7 @@ const PublicProfile = () => {
 
       {/* Skills Matrix */}
       {(skillsData.length > 0 || (isOwner && skillsSection)) && (
-        <div className="border-t border-border/50">
+        <div className="border-t border-border/50" data-section-type="skills_matrix">
         <InlineEditWrapper
           isOwner={isOwner}
           sectionId={skillsSection?.id || "skills"}
