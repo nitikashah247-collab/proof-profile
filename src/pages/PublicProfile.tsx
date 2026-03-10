@@ -473,6 +473,16 @@ const PublicProfile = () => {
     } as React.CSSProperties;
   }, [profile]);
 
+  // Visitor insights — must be called before any early returns (React hooks rule)
+  const earlyHeroSection = sections.find((s) => s.section_type === "hero");
+  const earlyVisitorInsights = (!loading && !notFound && earlyHeroSection?.section_data?.visitor_insights) || [];
+  const {
+    currentInsight,
+    isDrawerOpen: isVisitorDrawerOpen,
+    setIsDrawerOpen: setIsVisitorDrawerOpen,
+    dismissInsight,
+  } = useVisitorCoach({ insights: earlyVisitorInsights, isOwner });
+
   if (loading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
@@ -521,15 +531,6 @@ const PublicProfile = () => {
   const workStyleSection = getSection("work_style");
   const languagesSection = getSection("languages");
   const publicationsSection = getSection("publications");
-
-  // Visitor insights for AI advocate
-  const visitorInsights = heroSection?.section_data?.visitor_insights || [];
-  const {
-    currentInsight,
-    isDrawerOpen: isVisitorDrawerOpen,
-    setIsDrawerOpen: setIsVisitorDrawerOpen,
-    dismissInsight,
-  } = useVisitorCoach({ insights: visitorInsights, isOwner });
 
   // Helper to get section position info
   const getSectionPosition = (sectionType: string) => {
