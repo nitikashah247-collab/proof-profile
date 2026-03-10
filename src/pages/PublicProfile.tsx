@@ -523,6 +523,14 @@ const PublicProfile = () => {
   // Extract section data
   const getSection = (type: string) => sections.find((s) => s.section_type === type);
   const heroSection = getSection("hero");
+  const impactSection = getSection("impact_charts");
+  const caseStudiesSection = getSection("case_studies");
+  const timelineSection = getSection("career_timeline");
+  const skillsSection = getSection("skills_matrix");
+  const testimonialsSection = getSection("testimonials");
+  const workStyleSection = getSection("work_style");
+  const languagesSection = getSection("languages");
+  const publicationsSection = getSection("publications");
 
   // Helper to get section position info
   const getSectionPosition = (sectionType: string) => {
