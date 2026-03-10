@@ -593,6 +593,11 @@ serve(async (req) => {
       };
     }
 
+    // Post-process: ensure visitor_insights is a valid array
+    if (!Array.isArray(generatedProfile.visitor_insights)) {
+      generatedProfile.visitor_insights = [];
+    }
+
     // Post-process: force testimonials to empty (never hallucinate)
     generatedProfile.testimonials = [];
 
