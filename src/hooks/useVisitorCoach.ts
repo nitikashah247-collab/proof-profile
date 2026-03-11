@@ -28,8 +28,6 @@ export const useVisitorCoach = ({ insights, isOwner }: UseVisitorCoachProps) => 
       const sectionElements = document.querySelectorAll("[data-section-type]");
       
       if (sectionElements.length === 0) return;
-      
-      console.log("[VisitorCoach] Found sections:", Array.from(sectionElements).map(el => (el as HTMLElement).dataset.sectionType));
 
       // Clean up old observer
       if (intersectionObserver) intersectionObserver.disconnect();
@@ -47,12 +45,7 @@ export const useVisitorCoach = ({ insights, isOwner }: UseVisitorCoachProps) => 
           if (bestEntry) {
             const sectionType = (bestEntry.target as HTMLElement).dataset.sectionType;
             if (sectionType) {
-              setVisibleSection(prev => {
-                if (prev !== sectionType) {
-                  console.log("[VisitorCoach] Section changed:", prev, "→", sectionType);
-                }
-                return sectionType;
-              });
+              setVisibleSection(sectionType);
             }
           }
         },
@@ -96,7 +89,7 @@ export const useVisitorCoach = ({ insights, isOwner }: UseVisitorCoachProps) => 
 
   // Show first_visit insights after a delay
   useEffect(() => {
-    if (insights.length === 0) return; // TEMP: removed isOwner check for testing
+    if (isOwner || insights.length === 0) return;
 
     const firstVisitInsights = insights
       .filter((i) => i.trigger === "first_visit")
@@ -112,11 +105,7 @@ export const useVisitorCoach = ({ insights, isOwner }: UseVisitorCoachProps) => 
 
   // When visible section changes, find a relevant insight
   useEffect(() => {
-    if (insights.length === 0 || isDrawerOpen) return; // TEMP: removed isOwner check for testing
-
-    console.log("[VisitorCoach] Section in view:", visibleSection, "| Available insights:", 
-      insights.filter(i => i.section === visibleSection && i.trigger === "scroll_to").length
-    );
+    if (isOwner || insights.length === 0 || isDrawerOpen) return;
 
     if (lingerTimeoutRef.current) clearTimeout(lingerTimeoutRef.current);
 
@@ -126,7 +115,7 @@ export const useVisitorCoach = ({ insights, isOwner }: UseVisitorCoachProps) => 
           (i) =>
             i.section === visibleSection &&
             i.trigger === "scroll_to" &&
-            true // TEMP: allow re-showing insights for testing
+            !shownInsights.has(i.message)
         )
         .sort((a, b) => a.priority - b.priority);
 
@@ -145,16 +134,15 @@ export const useVisitorCoach = ({ insights, isOwner }: UseVisitorCoachProps) => 
     if (insightTimeoutRef.current) clearTimeout(insightTimeoutRef.current);
   }, []);
 
-  // TEMP: disabled owner check for testing
-  // if (isOwner) {
-  //   return {
-  //     currentInsight: null,
-  //     visibleSection: "hero",
-  //     isDrawerOpen: false,
-  //     setIsDrawerOpen: (() => {}) as (v: boolean) => void,
-  //     dismissInsight: () => {},
-  //   };
-  // }
+  if (isOwner) {
+    return {
+      currentInsight: null,
+      visibleSection: "hero",
+      isDrawerOpen: false,
+      setIsDrawerOpen: (() => {}) as (v: boolean) => void,
+      dismissInsight: () => {},
+    };
+  }
 
   return {
     currentInsight,
