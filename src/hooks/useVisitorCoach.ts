@@ -22,27 +22,46 @@ export const useVisitorCoach = ({ insights, isOwner }: UseVisitorCoachProps) => 
 
   // Track which section is in view
   useEffect(() => {
-    // if (isOwner) return; // TEMP: disabled for testing
-    const sectionElements = document.querySelectorAll("[data-section-type]");
-    if (sectionElements.length === 0) return;
+    // Small delay to ensure DOM sections are rendered
+    const timer = setTimeout(() => {
+      const sectionElements = document.querySelectorAll("[data-section-type]");
+      console.log("[VisitorCoach] Found sections:", Array.from(sectionElements).map(el => (el as HTMLElement).dataset.sectionType));
+      
+      if (sectionElements.length === 0) return;
 
-    const observer = new IntersectionObserver(
-      (entries) => {
-        for (const entry of entries) {
-          if (entry.isIntersecting) {
-            const sectionType = (entry.target as HTMLElement).dataset.sectionType;
-            if (sectionType) {
-              setVisibleSection(sectionType);
+      const observer = new IntersectionObserver(
+        (entries) => {
+          let bestEntry: IntersectionObserverEntry | null = null;
+          for (const entry of entries) {
+            if (entry.isIntersecting) {
+              if (!bestEntry || entry.intersectionRatio > bestEntry.intersectionRatio) {
+                bestEntry = entry;
+              }
             }
           }
+          if (bestEntry) {
+            const sectionType = (bestEntry.target as HTMLElement).dataset.sectionType;
+            if (sectionType) {
+              setVisibleSection(prev => {
+                if (prev !== sectionType) {
+                  console.log("[VisitorCoach] Section changed:", prev, "→", sectionType);
+                }
+                return sectionType;
+              });
+            }
+          }
+        },
+        { 
+          threshold: [0, 0.1, 0.2, 0.3, 0.5],
+          rootMargin: "-10% 0px -10% 0px"
         }
-      },
-      { threshold: 0.3 }
-    );
+      );
 
-    sectionElements.forEach((el) => observer.observe(el));
-    return () => observer.disconnect();
-  }, [isOwner]);
+      sectionElements.forEach((el) => observer.observe(el));
+    }, 1000);
+
+    return () => clearTimeout(timer);
+  }, []);
 
   const showInsight = useCallback((insight: VisitorInsight) => {
     setCurrentInsight(insight);
