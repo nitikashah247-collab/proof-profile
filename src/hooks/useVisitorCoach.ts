@@ -20,16 +20,21 @@ export const useVisitorCoach = ({ insights, isOwner }: UseVisitorCoachProps) => 
   const insightTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const lingerTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // Track which section is in view
+  // Track which section is in view — re-initializes when DOM changes
   useEffect(() => {
-    // Small delay to ensure DOM sections are rendered
-    const timer = setTimeout(() => {
+    let intersectionObserver: IntersectionObserver | null = null;
+
+    const setupObserver = () => {
       const sectionElements = document.querySelectorAll("[data-section-type]");
-      console.log("[VisitorCoach] Found sections:", Array.from(sectionElements).map(el => (el as HTMLElement).dataset.sectionType));
       
       if (sectionElements.length === 0) return;
+      
+      console.log("[VisitorCoach] Found sections:", Array.from(sectionElements).map(el => (el as HTMLElement).dataset.sectionType));
 
-      const observer = new IntersectionObserver(
+      // Clean up old observer
+      if (intersectionObserver) intersectionObserver.disconnect();
+
+      intersectionObserver = new IntersectionObserver(
         (entries) => {
           let bestEntry: IntersectionObserverEntry | null = null;
           for (const entry of entries) {
@@ -51,16 +56,32 @@ export const useVisitorCoach = ({ insights, isOwner }: UseVisitorCoachProps) => 
             }
           }
         },
-        { 
+        {
           threshold: [0, 0.1, 0.2, 0.3, 0.5],
-          rootMargin: "-10% 0px -10% 0px"
+          rootMargin: "-10% 0px -10% 0px",
         }
       );
 
-      sectionElements.forEach((el) => observer.observe(el));
-    }, 1000);
+      sectionElements.forEach((el) => intersectionObserver!.observe(el));
+    };
 
-    return () => clearTimeout(timer);
+    // Try immediately
+    setupObserver();
+
+    // Also watch for DOM changes (sections rendering after data loads)
+    const mutationObserver = new MutationObserver(() => {
+      setupObserver();
+    });
+
+    mutationObserver.observe(document.body, {
+      childList: true,
+      subtree: true,
+    });
+
+    return () => {
+      if (intersectionObserver) intersectionObserver.disconnect();
+      mutationObserver.disconnect();
+    };
   }, []);
 
   const showInsight = useCallback((insight: VisitorInsight) => {
