@@ -18,6 +18,48 @@ interface Message {
 
 const VISITOR_COACH_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/visitor-coach`;
 
+const FormattedResponse = ({ content, primaryColor }: { content: string; primaryColor: string }) => {
+  const lines = content.split("\n").filter(l => l.trim() !== "");
+
+  const renderBold = (text: string) => {
+    const parts = text.split(/\*\*(.*?)\*\*/g);
+    return parts.map((part, i) =>
+      i % 2 === 1 ? (
+        <strong key={i} className="font-semibold" style={{ color: primaryColor }}>
+          {part}
+        </strong>
+      ) : (
+        <span key={i}>{part}</span>
+      )
+    );
+  };
+
+  return (
+    <div className="space-y-3">
+      {lines.map((line, i) => {
+        const trimmed = line.trim();
+        if (trimmed.match(/^[-•*]\s/)) {
+          const bulletText = trimmed.replace(/^[-•*]\s*/, "");
+          return (
+            <div
+              key={i}
+              className="border-l-2 pl-3 py-1 text-sm leading-relaxed"
+              style={{ borderColor: primaryColor }}
+            >
+              {renderBold(bulletText)}
+            </div>
+          );
+        }
+        return (
+          <p key={i} className="text-sm leading-relaxed">
+            {renderBold(trimmed)}
+          </p>
+        );
+      })}
+    </div>
+  );
+};
+
 export const VisitorCoachDrawer = ({
   isOpen,
   onClose,
@@ -135,7 +177,8 @@ export const VisitorCoachDrawer = ({
           animate={{ opacity: 1, y: 0, scale: 1 }}
           exit={{ opacity: 0, y: 20, scale: 0.95 }}
           transition={{ duration: 0.3 }}
-          className="fixed bottom-20 right-6 z-50 w-[360px] max-w-[calc(100vw-2rem)] h-[500px] max-h-[70vh] rounded-2xl border border-border bg-card shadow-2xl flex flex-col overflow-hidden"
+          className="fixed right-6 z-50 w-[360px] max-w-[calc(100vw-2rem)] rounded-2xl border border-border bg-card shadow-2xl flex flex-col overflow-hidden"
+          style={{ top: "15%", maxHeight: "70vh" }}
         >
           {/* Header */}
           <div className="flex items-center justify-between px-4 py-3 border-b border-border bg-muted/30">
@@ -160,19 +203,7 @@ export const VisitorCoachDrawer = ({
                   }`}
                 >
                   {msg.role === "assistant" ? (
-                    <div className="space-y-3">
-                      {msg.content.split("\n\n").map((paragraph, pi) => {
-                        const isHighlight = paragraph.trim().startsWith("-") || paragraph.trim().startsWith("•");
-                        if (isHighlight) {
-                          return (
-                            <div key={pi} className="border-l-2 border-primary pl-3 py-0.5 text-sm">
-                              {paragraph.trim().replace(/^[-•]\s*/, "")}
-                            </div>
-                          );
-                        }
-                        return paragraph.trim() ? <p key={pi}>{paragraph}</p> : null;
-                      })}
-                    </div>
+                    <FormattedResponse content={msg.content} primaryColor={primaryColor} />
                   ) : (
                     msg.content
                   )}
