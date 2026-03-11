@@ -1190,8 +1190,8 @@ const PublicProfile = () => {
         </section>
       )}
 
-      {/* Visitor AI Advocate — only for visitors */}
-      {!isOwner && (
+      {/* Visitor AI Advocate — TEMP: showing for all users for testing */}
+      {(
         <>
           <VisitorCoachOrb
             primaryColor={profile.theme_primary_color || "#3B5EF5"}
