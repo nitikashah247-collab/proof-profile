@@ -456,7 +456,7 @@ const Demo = () => {
       />
 
       {/* Analytics Preview (Owner Only) */}
-      <AnalyticsPreview data={profileData.analytics} isOwner={true} />
+      <AnalyticsPreview data={profileData.analytics} isOwner={true} isOpen={false} onClose={() => {}} />
 
       {/* Proof Badge */}
       <div className="fixed bottom-6 right-6 z-50">
