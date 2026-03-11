@@ -101,15 +101,16 @@ export const useVisitorCoach = ({ insights, isOwner }: UseVisitorCoachProps) => 
     if (insightTimeoutRef.current) clearTimeout(insightTimeoutRef.current);
   }, []);
 
-  if (isOwner) {
-    return {
-      currentInsight: null,
-      visibleSection: "hero",
-      isDrawerOpen: false,
-      setIsDrawerOpen: (() => {}) as (v: boolean) => void,
-      dismissInsight: () => {},
-    };
-  }
+  // TEMP: disabled owner check for testing
+  // if (isOwner) {
+  //   return {
+  //     currentInsight: null,
+  //     visibleSection: "hero",
+  //     isDrawerOpen: false,
+  //     setIsDrawerOpen: (() => {}) as (v: boolean) => void,
+  //     dismissInsight: () => {},
+  //   };
+  // }
 
   return {
     currentInsight,
