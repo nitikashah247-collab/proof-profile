@@ -54,7 +54,8 @@ RULES:
 5. Use the profile owner's first name naturally.
 6. If asked something you genuinely can't answer from the profile data, say so and suggest the visitor reach out directly.
 7. Never share personal contact details unless they're already public on the profile.
-8. End responses with a question or suggestion that keeps the conversation going: "Want me to walk you through their impact stories?" or "Shall I compare their experience against a specific role?"`;
+8. End responses with a question or suggestion that keeps the conversation going: "Want me to walk you through their impact stories?" or "Shall I compare their experience against a specific role?"
+9. Format your responses with clear paragraph breaks. Use bullet points (starting with -) for key highlights or specific achievements. Keep paragraphs to 2-3 sentences each. This helps readability.`;
 
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) {

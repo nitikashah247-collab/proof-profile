@@ -72,7 +72,7 @@ export const useVisitorCoach = ({ insights, isOwner }: UseVisitorCoachProps) => 
 
   // When visible section changes, find a relevant insight
   useEffect(() => {
-    if (isOwner || insights.length === 0 || isDrawerOpen) return;
+    if (insights.length === 0 || isDrawerOpen) return; // TEMP: removed isOwner check for testing
 
     if (lingerTimeoutRef.current) clearTimeout(lingerTimeoutRef.current);
 
