@@ -45,11 +45,19 @@ export const VisitorCoachOrb = ({
   const [hovered, setHovered] = useState(false);
   const firstName = profileName?.split(" ")[0] || "this person";
 
+  // Calculate orb vertical position — sits at ~40% down viewport
+  const viewportHeight = typeof window !== "undefined" ? window.innerHeight : 800;
+  const orbY = Math.min(
+    Math.max(200, viewportHeight * 0.4),
+    viewportHeight - 100
+  );
+
   return (
     <motion.div
-      className="fixed bottom-6 right-6 z-50"
-      initial={{ opacity: 0, scale: 0, y: 30 }}
-      animate={{ opacity: 1, scale: 1, y: 0 }}
+      className="fixed right-6 z-50 flex flex-col items-end gap-3"
+      style={{ top: `${orbY}px` }}
+      initial={{ opacity: 0, scale: 0, x: 30 }}
+      animate={{ opacity: 1, scale: 1, x: 0 }}
       transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1], delay: 1.5 }}
     >
       {/* Insight tooltip */}
