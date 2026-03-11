@@ -709,7 +709,7 @@ const PublicProfile = () => {
       )}
 
       {/* Analytics Preview - owner only */}
-      <AnalyticsPreview data={analyticsData} isOwner={isOwner} />
+      <AnalyticsPreview data={analyticsData} isOwner={isOwner} isOpen={showAnalytics} onClose={() => setShowAnalytics(false)} />
 
       {/* Cover Banner */}
       <CoverBanner
