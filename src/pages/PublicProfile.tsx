@@ -1190,8 +1190,8 @@ const PublicProfile = () => {
         </section>
       )}
 
-      {/* Visitor AI Advocate — TEMP: showing for all users for testing */}
-      {(
+      {/* Visitor AI Advocate — only for visitors */}
+      {!isOwner && (
         <>
           <VisitorCoachOrb
             primaryColor={profile.theme_primary_color || "#3B5EF5"}
@@ -1210,7 +1210,23 @@ const PublicProfile = () => {
         </>
       )}
 
-      {/* AI Career Coach — TEMPORARILY HIDDEN FOR TESTING */}
+      {/* AI Career Coach — owner only */}
+      {isOwner && (
+        <>
+          <AICoachOrb
+            primaryColor={profile.theme_primary_color || "#3B5EF5"}
+            onClick={() => setIsCoachOpen(true)}
+          />
+          <CareerCoachDrawer
+            profileData={profile}
+            sections={sections}
+            activeSectionTypes={sections.map((s) => s.section_type)}
+            onAddSection={() => setShowAddSection(true)}
+            isOpen={isCoachOpen}
+            onOpenChange={setIsCoachOpen}
+          />
+        </>
+      )}
     </div>
   );
 };
