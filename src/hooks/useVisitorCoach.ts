@@ -74,6 +74,10 @@ export const useVisitorCoach = ({ insights, isOwner }: UseVisitorCoachProps) => 
   useEffect(() => {
     if (insights.length === 0 || isDrawerOpen) return; // TEMP: removed isOwner check for testing
 
+    console.log("[VisitorCoach] Section in view:", visibleSection, "| Available insights:", 
+      insights.filter(i => i.section === visibleSection && i.trigger === "scroll_to").length
+    );
+
     if (lingerTimeoutRef.current) clearTimeout(lingerTimeoutRef.current);
 
     lingerTimeoutRef.current = setTimeout(() => {
@@ -82,14 +86,14 @@ export const useVisitorCoach = ({ insights, isOwner }: UseVisitorCoachProps) => 
           (i) =>
             i.section === visibleSection &&
             i.trigger === "scroll_to" &&
-            !shownInsights.has(i.message)
+            true // TEMP: allow re-showing insights for testing
         )
         .sort((a, b) => a.priority - b.priority);
 
       if (sectionInsights.length > 0) {
         showInsight(sectionInsights[0]);
       }
-    }, 2000);
+    }, 1500);
 
     return () => {
       if (lingerTimeoutRef.current) clearTimeout(lingerTimeoutRef.current);
