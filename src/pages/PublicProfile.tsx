@@ -1210,23 +1210,7 @@ const PublicProfile = () => {
         </>
       )}
 
-      {/* AI Career Coach — owner only */}
-      {isOwner && (
-        <>
-          <AICoachOrb
-            primaryColor={profile.theme_primary_color || "#3B5EF5"}
-            onClick={() => setIsCoachOpen(true)}
-          />
-          <CareerCoachDrawer
-            profileData={profile}
-            sections={sections}
-            activeSectionTypes={sections.map((s) => s.section_type)}
-            onAddSection={() => setShowAddSection(true)}
-            isOpen={isCoachOpen}
-            onOpenChange={setIsCoachOpen}
-          />
-        </>
-      )}
+      {/* AI Career Coach — TEMPORARILY HIDDEN FOR TESTING */}
     </div>
   );
 };
