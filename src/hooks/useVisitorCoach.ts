@@ -56,7 +56,7 @@ export const useVisitorCoach = ({ insights, isOwner }: UseVisitorCoachProps) => 
 
   // Show first_visit insights after a delay
   useEffect(() => {
-    if (isOwner || insights.length === 0) return;
+    if (insights.length === 0) return; // TEMP: removed isOwner check for testing
 
     const firstVisitInsights = insights
       .filter((i) => i.trigger === "first_visit")
