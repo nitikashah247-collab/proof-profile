@@ -108,6 +108,7 @@ const PublicProfile = () => {
   const [editingSection, setEditingSection] = useState<string | null>(null);
   const [showAddSection, setShowAddSection] = useState(false);
   const [showThemeCustomize, setShowThemeCustomize] = useState(false);
+  const [showAnalytics, setShowAnalytics] = useState(false);
   const [analyticsData, setAnalyticsData] = useState({ totalViews: 0, avgTimeOnPage: "0s", topSection: "—", viewsThisWeek: 0 });
   const { data: sectionTemplates = [] } = useSectionTemplates();
 
@@ -683,6 +684,7 @@ const PublicProfile = () => {
         <ProfileOwnerBar
           onAddSection={() => setShowAddSection(true)}
           onCustomize={() => setShowThemeCustomize(true)}
+          onViewAnalytics={() => setShowAnalytics(prev => !prev)}
         />
       )}
 
@@ -707,7 +709,7 @@ const PublicProfile = () => {
       )}
 
       {/* Analytics Preview - owner only */}
-      <AnalyticsPreview data={analyticsData} isOwner={isOwner} />
+      <AnalyticsPreview data={analyticsData} isOwner={isOwner} isOpen={showAnalytics} onClose={() => setShowAnalytics(false)} />
 
       {/* Cover Banner */}
       <CoverBanner
