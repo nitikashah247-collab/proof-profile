@@ -684,6 +684,7 @@ const PublicProfile = () => {
         <ProfileOwnerBar
           onAddSection={() => setShowAddSection(true)}
           onCustomize={() => setShowThemeCustomize(true)}
+          onViewAnalytics={() => setShowAnalytics(prev => !prev)}
         />
       )}
 
