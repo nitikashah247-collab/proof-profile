@@ -159,7 +159,23 @@ export const VisitorCoachDrawer = ({
                       : "bg-muted text-foreground rounded-bl-md"
                   }`}
                 >
-                  {msg.content}
+                  {msg.role === "assistant" ? (
+                    <div className="space-y-3">
+                      {msg.content.split("\n\n").map((paragraph, pi) => {
+                        const isHighlight = paragraph.trim().startsWith("-") || paragraph.trim().startsWith("•");
+                        if (isHighlight) {
+                          return (
+                            <div key={pi} className="border-l-2 border-primary pl-3 py-0.5 text-sm">
+                              {paragraph.trim().replace(/^[-•]\s*/, "")}
+                            </div>
+                          );
+                        }
+                        return paragraph.trim() ? <p key={pi}>{paragraph}</p> : null;
+                      })}
+                    </div>
+                  ) : (
+                    msg.content
+                  )}
                 </div>
               </div>
             ))}

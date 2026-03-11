@@ -22,7 +22,7 @@ export const useVisitorCoach = ({ insights, isOwner }: UseVisitorCoachProps) => 
 
   // Track which section is in view
   useEffect(() => {
-    if (isOwner) return;
+    // if (isOwner) return; // TEMP: disabled for testing
     const sectionElements = document.querySelectorAll("[data-section-type]");
     if (sectionElements.length === 0) return;
 
@@ -56,7 +56,7 @@ export const useVisitorCoach = ({ insights, isOwner }: UseVisitorCoachProps) => 
 
   // Show first_visit insights after a delay
   useEffect(() => {
-    if (isOwner || insights.length === 0) return;
+    if (insights.length === 0) return; // TEMP: removed isOwner check for testing
 
     const firstVisitInsights = insights
       .filter((i) => i.trigger === "first_visit")
@@ -72,7 +72,7 @@ export const useVisitorCoach = ({ insights, isOwner }: UseVisitorCoachProps) => 
 
   // When visible section changes, find a relevant insight
   useEffect(() => {
-    if (isOwner || insights.length === 0 || isDrawerOpen) return;
+    if (insights.length === 0 || isDrawerOpen) return; // TEMP: removed isOwner check for testing
 
     if (lingerTimeoutRef.current) clearTimeout(lingerTimeoutRef.current);
 
