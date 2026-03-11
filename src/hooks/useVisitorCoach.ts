@@ -22,7 +22,7 @@ export const useVisitorCoach = ({ insights, isOwner }: UseVisitorCoachProps) => 
 
   // Track which section is in view
   useEffect(() => {
-    if (isOwner) return;
+    // if (isOwner) return; // TEMP: disabled for testing
     const sectionElements = document.querySelectorAll("[data-section-type]");
     if (sectionElements.length === 0) return;
 
