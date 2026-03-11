@@ -18,6 +18,48 @@ interface Message {
 
 const VISITOR_COACH_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/visitor-coach`;
 
+const FormattedResponse = ({ content, primaryColor }: { content: string; primaryColor: string }) => {
+  const lines = content.split("\n").filter(l => l.trim() !== "");
+
+  const renderBold = (text: string) => {
+    const parts = text.split(/\*\*(.*?)\*\*/g);
+    return parts.map((part, i) =>
+      i % 2 === 1 ? (
+        <strong key={i} className="font-semibold" style={{ color: primaryColor }}>
+          {part}
+        </strong>
+      ) : (
+        <span key={i}>{part}</span>
+      )
+    );
+  };
+
+  return (
+    <div className="space-y-3">
+      {lines.map((line, i) => {
+        const trimmed = line.trim();
+        if (trimmed.match(/^[-•*]\s/)) {
+          const bulletText = trimmed.replace(/^[-•*]\s*/, "");
+          return (
+            <div
+              key={i}
+              className="border-l-2 pl-3 py-1 text-sm leading-relaxed"
+              style={{ borderColor: primaryColor }}
+            >
+              {renderBold(bulletText)}
+            </div>
+          );
+        }
+        return (
+          <p key={i} className="text-sm leading-relaxed">
+            {renderBold(trimmed)}
+          </p>
+        );
+      })}
+    </div>
+  );
+};
+
 export const VisitorCoachDrawer = ({
   isOpen,
   onClose,
