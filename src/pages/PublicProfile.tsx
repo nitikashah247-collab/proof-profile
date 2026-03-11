@@ -108,6 +108,7 @@ const PublicProfile = () => {
   const [editingSection, setEditingSection] = useState<string | null>(null);
   const [showAddSection, setShowAddSection] = useState(false);
   const [showThemeCustomize, setShowThemeCustomize] = useState(false);
+  const [showAnalytics, setShowAnalytics] = useState(false);
   const [analyticsData, setAnalyticsData] = useState({ totalViews: 0, avgTimeOnPage: "0s", topSection: "—", viewsThisWeek: 0 });
   const { data: sectionTemplates = [] } = useSectionTemplates();
 
