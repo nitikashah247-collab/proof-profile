@@ -7,7 +7,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import { IndustryCarousel } from "@/components/landing/IndustryCarousel";
 
-type ProfileTab = "marketing" | "finance";
+type ProfileTab = "marketing" | "finance" | "engineering";
 
 const profilePreviews: Record<
   ProfileTab,
