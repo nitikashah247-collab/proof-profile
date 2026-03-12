@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { VisitorCoachOrb } from "@/components/profile/VisitorCoachOrb";
+import { VisitorCoachDrawer } from "@/components/profile/VisitorCoachDrawer";
 import { ProofLogo } from "@/components/brand/ProofLogo";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
