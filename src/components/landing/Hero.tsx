@@ -267,7 +267,11 @@ export const Hero = () => {
                         {profile.tags.map((tag) => (
                           <span
                             key={tag}
-                            className="px-3 py-1.5 rounded-full text-sm font-medium bg-accent text-accent-foreground"
+                            className="text-xs font-medium px-3 py-1 rounded-full"
+                            style={{
+                              backgroundColor: `${profile.accentColor}10`,
+                              color: profile.accentColor,
+                            }}
                           >
                             {tag}
                           </span>
