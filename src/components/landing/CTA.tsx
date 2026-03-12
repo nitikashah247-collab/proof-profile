@@ -16,7 +16,7 @@ export const CTA = () => {
         >
           <h2 className="text-4xl md:text-5xl font-bold tracking-tight mb-6">
             Stop rewriting resumes.{" "}
-            <span className="italic">Start standing out.</span>
+            <span className="text-[#ada5a5]">Start standing out.</span>
           </h2>
           <p className="text-xl text-muted-foreground mb-12 max-w-xl mx-auto leading-relaxed">
             Join thousands of professionals who are landing dream jobs with dynamic, AI-powered career profiles.

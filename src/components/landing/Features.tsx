@@ -76,7 +76,7 @@ export const Features = () => {
         >
           <h2 className="text-4xl md:text-5xl font-bold tracking-tight mb-6">
             Everything you need to{" "}
-            <span className="italic">stand out</span>
+            <span className="text-[#ada5a5]">stand out</span>
           </h2>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
             Stop rewriting resumes. Start building a living portfolio that adapts to every opportunity.
