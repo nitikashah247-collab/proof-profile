@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { Check } from "lucide-react";
+import { Check, Plus, X } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const freeFeatures = [
@@ -22,17 +22,77 @@ const proFeatures = [
 const faqItems = [
   {
     question: "What happens if I cancel Pro?",
-    answer: "Your profile stays live. Existing tailored versions remain active. You just can't create new versions until you re-subscribe.",
+    answer: "Your base profile stays live. Existing tailored versions remain active. You just can't create new versions until you re-subscribe.",
   },
   {
     question: "How does the AI advocate work?",
-    answer: "Every Proof profile includes an AI that knows your career story. When someone visits your profile, they can ask it questions about your experience — it's like having a personal representative available 24/7.",
+    answer: "Every Proof profile includes an AI advocate that knows your career story. When someone visits your profile, they can ask it questions about your experience — it's like having a personal representative available 24/7.",
   },
   {
     question: "Can I upgrade from Free to Pro later?",
     answer: "Absolutely. Start free, upgrade anytime. Your profile and all your data carries over seamlessly.",
   },
+  {
+    question: "How is this different from LinkedIn?",
+    answer: "LinkedIn is a social feed. Proof is a living career profile built from evidence. Your Proof profile has impact visualisations, case studies with real artifacts, and an AI advocate that actively makes your case to visitors. LinkedIn shows what you've done. Proof shows what you're capable of.",
+  },
+  {
+    question: "What if my resume is outdated or incomplete?",
+    answer: "That's exactly what the AI interview is for. It draws out stories, context, and achievements that your resume misses. Many of our best profiles come from people who thought their resume didn't do them justice.",
+  },
+  {
+    question: "Can I customise how my profile looks?",
+    answer: "Yes. You can choose your own accent colour, upload a banner image, reorder sections, add or remove sections, and edit any content the AI generates. It's your profile — the AI gives you a head start, you make it yours.",
+  },
+  {
+    question: "Who can see my profile?",
+    answer: "Your profile lives at a unique URL that you control. You choose who to share it with — send it to recruiters, include it in job applications, add it to your email signature, or keep it private until you're ready.",
+  },
+  {
+    question: "How does the job-tailoring work?",
+    answer: "Drop in a job description and Proof creates a tailored version of your profile that surfaces the experience most relevant to that specific role. Same career, different emphasis — so every application feels personal.",
+  },
+  {
+    question: "Is my data safe?",
+    answer: "Yes. Your resume data and profile content are stored securely. We don't share your information with third parties or use it to train AI models. You can delete your account and all associated data at any time.",
+  },
 ];
+
+const FAQItem = ({ question, answer }: { question: string; answer: string }) => {
+  const [isOpen, setIsOpen] = useState(false);
+  return (
+    <div className="border-b border-border">
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className="w-full flex items-center justify-between py-5 text-left"
+      >
+        <span className="font-medium text-foreground">{question}</span>
+        <span
+          className={`ml-4 flex-shrink-0 w-6 h-6 flex items-center justify-center rounded-full border border-border text-muted-foreground transition-transform duration-300 ${
+            isOpen ? "rotate-45" : ""
+          }`}
+        >
+          <Plus className="w-3.5 h-3.5" />
+        </span>
+      </button>
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.3 }}
+            className="overflow-hidden"
+          >
+            <p className="pb-5 text-muted-foreground leading-relaxed pr-10">
+              {answer}
+            </p>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+};
 
 export const Pricing = () => {
   const [isAnnual, setIsAnnual] = useState(false);
@@ -185,10 +245,10 @@ export const Pricing = () => {
           transition={{ duration: 0.5, delay: 0.3 }}
           className="text-center text-sm text-muted-foreground mb-16"
         >
-          Cancel anytime. Your profile stays live even after you cancel.
+          Cancel anytime. Your base profile stays live even after you cancel.
         </motion.p>
 
-        {/* FAQ Section */}
+        {/* FAQ Section — Accordion */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -196,13 +256,10 @@ export const Pricing = () => {
           transition={{ duration: 0.6, delay: 0.4 }}
           className="max-w-2xl mx-auto"
         >
-          <h3 className="text-2xl font-bold mb-8 text-center">Common questions</h3>
-          <div className="space-y-6">
-            {faqItems.map((item) => (
-              <div key={item.question} className="rounded-lg border border-border p-6">
-                <h4 className="font-semibold text-foreground mb-3">{item.question}</h4>
-                <p className="text-muted-foreground leading-relaxed">{item.answer}</p>
-              </div>
+          <h3 className="text-2xl font-bold mb-8 text-center">Frequently asked questions</h3>
+          <div>
+            {faqItems.map((faq, i) => (
+              <FAQItem key={i} question={faq.question} answer={faq.answer} />
             ))}
           </div>
         </motion.div>

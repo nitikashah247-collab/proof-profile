@@ -12,7 +12,7 @@ const steps = [
     number: "02",
     icon: MessageSquare,
     title: "Have a conversation",
-    description: "A short AI interview draws out the stories, context, and impact that a resume can never capture.",
+    description: "A short AI interview draws out the stories, context, and impact that a resume can never fully capture.",
   },
   {
     number: "03",
@@ -42,10 +42,10 @@ export const HowItWorks = () => {
         >
           <h2 className="text-4xl md:text-5xl font-bold tracking-tight mb-4 text-foreground">
             From resume to Proof in{" "}
-            <span className="bg-accent px-3 py-1 rounded-lg font-semibold italic">5 minutes</span>
+            <span className="bg-accent px-3 py-1 rounded-lg font-semibold italic">10 minutes</span>
           </h2>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            No design skills needed. No writer's block. Just you.
+            No design skills needed. No fuss. Just you.
           </p>
         </motion.div>
 

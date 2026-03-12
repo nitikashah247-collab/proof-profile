@@ -12,7 +12,7 @@ const features = [
   {
     icon: Sparkles,
     title: "AI-Powered Storytelling",
-    description: "Upload your resume, then have a short AI conversation. Proof extracts your best stories, metrics, and impact — no blank page, no writer's block.",
+    description: "Upload your resume, then have a short AI conversation. Proof draws out your best stories, metrics, and impact — turning your career into a compelling narrative.",
   },
   {
     icon: Layers,
@@ -22,7 +22,7 @@ const features = [
   {
     icon: MessageSquare,
     title: "An AI Advocate in Your Corner",
-    description: "Every Proof profile comes with an AI that knows your career inside out. It guides visitors, answers questions, and makes your case — even when you're not in the room.",
+    description: "Every Proof profile comes with an AI advocate that knows your career inside out. It guides visitors, answers questions, and makes your case — even when you're not in the room.",
   },
   {
     icon: BarChart3,
