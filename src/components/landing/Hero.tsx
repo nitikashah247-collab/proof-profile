@@ -21,6 +21,7 @@ const profilePreviews: Record<
     bio: string;
     tags: string[];
     stats: { value: string; label: string }[];
+    accentColor: string;
   }
 > = {
   marketing: {
@@ -38,6 +39,7 @@ const profilePreviews: Record<
       { value: "3x", label: "Product Adoption Growth" },
       { value: "35%", label: "Shorter Sales Cycles" },
     ],
+    accentColor: "#002bfe",
   },
   finance: {
     url: "mateo-tavares.showproof.app",
@@ -53,14 +55,15 @@ const profilePreviews: Record<
       { value: "$12M", label: "Annual Budget Managed" },
       { value: "15%", label: "Cost Reduction Delivered" },
     ],
+    accentColor: "#111111",
   },
   engineering: {
     url: "james-whitfield.showproof.app",
     demoPath: "/demo/engineering",
     photo: "/demo-james.png",
     name: "James Whitfield",
-    role: "VP of Engineering · Melbourne, AU",
-    location: "Melbourne",
+    role: "VP of Engineering · Boston, US",
+    location: "Boston",
     bio: "15+ years shipping reliable systems at scale and building the teams behind them. I've taken platform infrastructure from monolith to microservices, stood up SRE practices from scratch, and scaled engineering orgs from 5 to 80+ across fintech and health-tech.",
     tags: ["Platform Infrastructure", "Distributed Systems", "Engineering Operations"],
     stats: [
@@ -68,6 +71,7 @@ const profilePreviews: Record<
       { value: "80+", label: "Engineers Managed" },
       { value: "73%", label: "Faster Deploy Cycles" },
     ],
+    accentColor: "#00470d",
   },
 };
 
@@ -238,14 +242,14 @@ export const Hero = () => {
                 >
                   <div className="flex flex-col md:flex-row items-start gap-6">
                     <div className="relative w-14 h-14 flex-shrink-0">
-                      {/* Pulsing ring */}
+                      {/* Pulsing ring — uses accent color */}
                       <span
-                        className="absolute inset-0 rounded-full border-2 border-foreground/30"
-                        style={{ inset: '-4px', animation: 'photo-ring 3s ease-in-out infinite' }}
+                        className="absolute rounded-full"
+                        style={{ inset: '-4px', border: `2px solid ${profile.accentColor}30`, animation: 'photo-ring 3s ease-in-out infinite' }}
                       />
                       <span
-                        className="absolute inset-0 rounded-full border border-foreground/20"
-                        style={{ inset: '-4px', animation: 'photo-ring 3s ease-in-out infinite 1.5s' }}
+                        className="absolute rounded-full"
+                        style={{ inset: '-4px', border: `1px solid ${profile.accentColor}20`, animation: 'photo-ring 3s ease-in-out infinite 1.5s' }}
                       />
                       <img
                         src={profile.photo}
@@ -263,7 +267,11 @@ export const Hero = () => {
                         {profile.tags.map((tag) => (
                           <span
                             key={tag}
-                            className="px-3 py-1.5 rounded-full text-sm font-medium bg-accent text-accent-foreground"
+                            className="text-xs font-medium px-3 py-1 rounded-full"
+                            style={{
+                              backgroundColor: `${profile.accentColor}10`,
+                              color: profile.accentColor,
+                            }}
                           >
                             {tag}
                           </span>
@@ -275,7 +283,7 @@ export const Hero = () => {
                         <div className="flex items-center gap-6 mt-4 pt-4 border-t border-border">
                           {profile.stats.map((stat, i) => (
                             <div key={i}>
-                              <p className="text-lg font-bold text-foreground">{stat.value}</p>
+                              <p className="text-lg font-bold" style={{ color: profile.accentColor }}>{stat.value}</p>
                               <p className="text-[10px] text-muted-foreground uppercase tracking-wider">{stat.label}</p>
                             </div>
                           ))}
