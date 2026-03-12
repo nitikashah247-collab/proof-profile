@@ -26,7 +26,7 @@ const faqItems = [
   },
   {
     question: "How does the AI advocate work?",
-    answer: "Every Proof profile includes an AI that knows your career story. When someone visits your profile, they can ask it questions about your experience — it's like having a personal representative available 24/7.",
+    answer: "Every Proof profile includes an AI advocate that knows your career story. When someone visits your profile, they can ask it questions about your experience — it's like having a personal representative available 24/7.",
   },
   {
     question: "Can I upgrade from Free to Pro later?",

@@ -16,7 +16,7 @@ export const VideoPlaceholder = () => {
             See how it works
           </h2>
           <p className="text-lg text-muted-foreground max-w-xl mx-auto">
-            From resume upload to published profile in under 5 minutes
+            From resume upload to published profile in under 10 minutes
           </p>
         </motion.div>
 

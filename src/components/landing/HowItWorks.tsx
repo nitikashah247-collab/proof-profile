@@ -12,7 +12,7 @@ const steps = [
     number: "02",
     icon: MessageSquare,
     title: "Have a conversation",
-    description: "A short AI interview draws out the stories, context, and impact that a resume can never capture.",
+    description: "A short AI interview draws out the stories, context, and impact that a resume can never fully capture.",
   },
   {
     number: "03",
