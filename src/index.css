@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Poppins:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -8,7 +8,7 @@
 
 @layer base {
   :root {
-    /* Light theme - Clean, modern, energetic */
+    /* Light theme - Warm, editorial, sophisticated */
     --background: 0 0% 100%;
     --foreground: 0 0% 0%;
 
@@ -18,49 +18,49 @@
     --popover: 0 0% 100%;
     --popover-foreground: 0 0% 0%;
 
-    /* Pure Blue - vibrant, energetic */
-    --primary: 240 100% 50%;
+    /* Warm neutral - elegant, sophisticated */
+    --primary: 0 0% 10%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 220 14% 98%;
+    --secondary: 0 3% 96%;
     --secondary-foreground: 0 0% 0%;
 
-    --muted: 220 14% 98%;
-    --muted-foreground: 220 9% 46%;
+    --muted: 0 3% 96%;
+    --muted-foreground: 0 3% 45%;
 
-    --accent: 240 100% 50%;
-    --accent-foreground: 0 0% 100%;
+    --accent: 0 5% 88%;
+    --accent-foreground: 0 0% 10%;
 
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 220 13% 91%;
-    --input: 220 13% 91%;
-    --ring: 240 100% 50%;
+    --border: 0 4% 90%;
+    --input: 0 4% 90%;
+    --ring: 0 5% 68%;
 
     --radius: 0.5rem;
 
-    --font-body: 'Poppins', system-ui, sans-serif;
-    --font-numbers: 'Space Grotesk', 'Poppins', system-ui, sans-serif;
+    --font-body: 'Outfit', system-ui, sans-serif;
+    --font-numbers: 'Outfit', system-ui, sans-serif;
 
     /* Custom Proof tokens */
     --proof-success: 160 84% 39%;
     --proof-warning: 38 92% 50%;
-    --proof-surface-elevated: 220 14% 98%;
+    --proof-surface-elevated: 0 3% 96%;
 
     /* Gradient colors for icons */
-    --gradient-start: 240 100% 60%;
-    --gradient-end: 240 100% 50%;
+    --gradient-start: 0 0% 20%;
+    --gradient-end: 0 0% 7%;
 
     /* Sidebar tokens */
-    --sidebar-background: 220 14% 98%;
+    --sidebar-background: 0 3% 96%;
     --sidebar-foreground: 0 0% 0%;
-    --sidebar-primary: 240 100% 50%;
+    --sidebar-primary: 0 0% 10%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 220 14% 96%;
+    --sidebar-accent: 0 3% 94%;
     --sidebar-accent-foreground: 0 0% 0%;
-    --sidebar-border: 220 13% 91%;
-    --sidebar-ring: 240 100% 50%;
+    --sidebar-border: 0 4% 90%;
+    --sidebar-ring: 0 5% 68%;
   }
 }
 
@@ -77,21 +77,22 @@
 
   h1, h2, h3 {
     font-family: var(--font-body);
-    font-weight: 600;
+    font-weight: 700;
+    letter-spacing: -0.025em;
   }
 }
 
 @layer components {
   /* Gradient icon styles */
   .icon-gradient {
-    background: linear-gradient(180deg, hsl(240 100% 60%) 0%, hsl(240 100% 50%) 100%);
+    background: linear-gradient(180deg, #333333 0%, #111111 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
   }
 
   .icon-gradient-bg {
-    background: linear-gradient(180deg, hsl(240 100% 60%) 0%, hsl(240 100% 50%) 100%);
+    background: linear-gradient(135deg, #111111 0%, #333333 100%);
   }
 }
 
@@ -150,10 +151,10 @@
 /* ANIMATION 4: CTA button breathing glow */
 @keyframes breathing-glow {
   0%, 100% {
-    box-shadow: 0 0 0 0 hsl(var(--primary) / 0.4);
+    box-shadow: 0 0 0 0 rgba(0, 0, 0, 0.15);
   }
   50% {
-    box-shadow: 0 0 20px 4px hsl(var(--primary) / 0.25);
+    box-shadow: 0 0 20px 4px rgba(0, 0, 0, 0.08);
   }
 }
 

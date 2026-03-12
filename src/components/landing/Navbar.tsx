@@ -39,7 +39,7 @@ export const Navbar = () => {
               </Button>
             </Link>
             <Link to="/signup">
-              <Button size="sm">
+              <Button size="sm" className="rounded-full">
                 Get Started
               </Button>
             </Link>

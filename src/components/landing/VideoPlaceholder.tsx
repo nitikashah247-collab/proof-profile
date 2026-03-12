@@ -12,7 +12,7 @@ export const VideoPlaceholder = () => {
           transition={{ duration: 0.6 }}
           className="text-center mb-12"
         >
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">
+          <h2 className="text-3xl md:text-4xl font-bold tracking-tight mb-4">
             See how it works
           </h2>
           <p className="text-lg text-muted-foreground max-w-xl mx-auto">
@@ -30,7 +30,7 @@ export const VideoPlaceholder = () => {
           {/* Video container with play button overlay */}
           <div className="relative rounded-2xl border border-border bg-card overflow-hidden shadow-2xl shadow-black/5 aspect-video group cursor-pointer">
             {/* Gradient background placeholder */}
-            <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-background to-primary/10" />
+            <div className="absolute inset-0 bg-gradient-to-br from-accent/30 via-background to-accent/20" />
             
             {/* Step indicators */}
             <div className="absolute inset-0 flex items-center justify-center">
@@ -49,8 +49,8 @@ export const VideoPlaceholder = () => {
                     transition={{ delay: 0.4 + i * 0.15 }}
                     className="flex flex-col items-center gap-2"
                   >
-                    <div className="w-12 h-12 md:w-14 md:h-14 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center">
-                      <step.icon className="w-5 h-5 md:w-6 md:h-6 text-primary" />
+                    <div className="w-12 h-12 md:w-14 md:h-14 rounded-xl bg-accent border border-[#ada5a5]/30 flex items-center justify-center">
+                      <step.icon className="w-5 h-5 md:w-6 md:h-6 text-foreground" />
                     </div>
                     <span className="text-xs md:text-sm text-muted-foreground font-medium whitespace-nowrap">
                       {step.label}
@@ -69,9 +69,9 @@ export const VideoPlaceholder = () => {
               <motion.div
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.95 }}
-                className="w-20 h-20 rounded-full bg-primary/90 backdrop-blur-sm flex items-center justify-center shadow-lg shadow-primary/30 opacity-0 group-hover:opacity-100 transition-opacity"
+                className="w-20 h-20 rounded-full bg-foreground/90 backdrop-blur-sm flex items-center justify-center shadow-lg shadow-black/15 opacity-0 group-hover:opacity-100 transition-opacity"
               >
-                <Play className="w-8 h-8 text-primary-foreground ml-1" />
+                <Play className="w-8 h-8 text-background ml-1" />
               </motion.div>
             </div>
           </div>

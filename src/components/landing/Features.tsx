@@ -57,7 +57,7 @@ const itemVariants = {
 };
 
 const GradientIcon = ({ icon: Icon }: { icon: typeof Sparkles }) => (
-  <div className="w-12 h-12 rounded-xl icon-gradient-bg flex items-center justify-center shadow-lg shadow-primary/20">
+  <div className="w-12 h-12 rounded-xl icon-gradient-bg flex items-center justify-center shadow-lg shadow-black/8">
     <Icon className="w-6 h-6 text-white" />
   </div>
 );
@@ -74,9 +74,9 @@ export const Features = () => {
           transition={{ duration: 0.6 }}
           className="text-center mb-16"
         >
-          <h2 className="text-4xl md:text-5xl font-bold mb-6">
+          <h2 className="text-4xl md:text-5xl font-bold tracking-tight mb-6">
             Everything you need to{" "}
-            <span className="text-primary">stand out</span>
+            <span className="italic">stand out</span>
           </h2>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
             Stop rewriting resumes. Start building a living portfolio that adapts to every opportunity.

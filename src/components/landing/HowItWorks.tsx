@@ -40,9 +40,9 @@ export const HowItWorks = () => {
           transition={{ duration: 0.6 }}
           className="text-center mb-20"
         >
-          <h2 className="text-4xl md:text-5xl font-bold mb-4 text-foreground">
+          <h2 className="text-4xl md:text-5xl font-bold tracking-tight mb-4 text-foreground">
             From resume to Proof in{" "}
-            <span className="text-primary">5 minutes</span>
+            <span className="bg-accent px-3 py-1 rounded-lg font-semibold">5 minutes</span>
           </h2>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
             No design skills needed. Our AI does the heavy lifting.
@@ -67,10 +67,10 @@ export const HowItWorks = () => {
 
               {/* Icon */}
               <div className="relative flex-shrink-0">
-                <div className="w-12 h-12 rounded-xl bg-primary flex items-center justify-center">
-                  <step.icon className="w-6 h-6 text-primary-foreground" />
+                <div className="w-12 h-12 rounded-xl bg-foreground flex items-center justify-center">
+                  <step.icon className="w-6 h-6 text-background" />
                 </div>
-                <span className="absolute -top-2 -right-2 text-xs font-mono font-bold text-primary bg-background px-1.5 py-0.5 rounded-md border border-border">
+                <span className="absolute -top-2 -right-2 text-xs font-mono font-bold text-foreground bg-background px-1.5 py-0.5 rounded-md border border-border">
                   {step.number}
                 </span>
               </div>
