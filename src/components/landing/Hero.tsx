@@ -247,11 +247,11 @@ export const Hero = () => {
                       {/* Pulsing ring — uses accent color */}
                       <span
                         className="absolute rounded-full"
-                        style={{ inset: '-4px', border: `2px solid ${profile.accentColor}30`, animation: 'photo-ring 3s ease-in-out infinite' }}
+                        style={{ inset: '-4px', border: `2px solid ${profile.accentColor}70`, animation: 'photo-ring 3s ease-in-out infinite' }}
                       />
                       <span
                         className="absolute rounded-full"
-                        style={{ inset: '-4px', border: `1px solid ${profile.accentColor}20`, animation: 'photo-ring 3s ease-in-out infinite 1.5s' }}
+                        style={{ inset: '-4px', border: `1.5px solid ${profile.accentColor}50`, animation: 'photo-ring 3s ease-in-out infinite 1.5s' }}
                       />
                       <img
                         src={profile.photo}
