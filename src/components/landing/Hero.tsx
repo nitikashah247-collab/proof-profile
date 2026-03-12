@@ -45,6 +45,17 @@ const profilePreviews: Record<
     tags: ["Capital Raising", "FP&A", "Financial Modeling"],
     avatarBg: "bg-foreground",
   },
+  engineering: {
+    url: "priya-patel.proof.app",
+    demoPath: "/demo/engineering",
+    initials: "PP",
+    name: "Priya Patel",
+    role: "VP of Engineering · Melbourne, AU",
+    location: "Melbourne",
+    bio: "Engineering leader who scales teams and systems in equal measure. 12+ years building high-performance engineering orgs across fintech and health-tech, from Series A to IPO.",
+    tags: ["Engineering Leadership", "Platform Architecture", "Team Scaling"],
+    avatarBg: "bg-foreground",
+  },
 };
 
 export const Hero = () => {
