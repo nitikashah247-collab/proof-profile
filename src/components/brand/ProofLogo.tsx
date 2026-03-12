@@ -18,17 +18,12 @@ export const ProofLogo = ({ size = "md", variant = "light", showWordmark = true 
   return (
     <div className={`flex items-center ${s.gap}`}>
       {/* Hummingbird circle */}
-      <div
-        className="rounded-full flex items-center justify-center overflow-hidden"
-        style={{ width: s.icon, height: s.icon, backgroundColor: bgColor }}
-      >
-        <img
-          src="/hummingbird.png"
-          alt="Proof"
-          className="w-[65%] h-[65%] object-contain"
-          style={{ filter: variant === "light" ? "brightness(0) invert(1)" : "brightness(0)" }}
-        />
-      </div>
+      <img
+        src="/proof-logo.png"
+        alt="Proof"
+        className="rounded-full"
+        style={{ width: s.icon, height: s.icon }}
+      />
 
       {/* Wordmark */}
       {showWordmark && (
