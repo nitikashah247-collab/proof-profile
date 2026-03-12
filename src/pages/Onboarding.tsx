@@ -1,4 +1,5 @@
 import { useState, useCallback, useEffect } from "react";
+import { ProofLogo } from "@/components/brand/ProofLogo";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
