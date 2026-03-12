@@ -175,6 +175,17 @@ export const Hero = () => {
               <TrendingUp className="w-3.5 h-3.5" />
               Finance Executive
             </button>
+            <button
+              onClick={() => setActiveTab("engineering")}
+              className={`px-5 py-2.5 rounded-full text-sm font-medium transition-all duration-300 flex items-center gap-2 ${
+                activeTab === "engineering"
+                  ? "bg-foreground text-background shadow-lg shadow-black/10"
+                  : "bg-muted text-muted-foreground hover:text-foreground hover:bg-muted/80"
+              }`}
+            >
+              <Code2 className="w-3.5 h-3.5" />
+              Engineering Leader
+            </button>
           </div>
 
           <div className="relative rounded-2xl border border-border bg-card shadow-2xl shadow-black/5">

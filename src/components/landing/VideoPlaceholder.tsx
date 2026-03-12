@@ -3,7 +3,7 @@ import { Play, Upload, MessageSquare, Sparkles, Send } from "lucide-react";
 
 export const VideoPlaceholder = () => {
   return (
-    <section className="py-20 bg-muted">
+    <section id="how-it-works-video" className="py-20 bg-muted">
       <div className="container mx-auto px-6">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
