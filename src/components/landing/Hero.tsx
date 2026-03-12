@@ -242,14 +242,14 @@ export const Hero = () => {
                 >
                   <div className="flex flex-col md:flex-row items-start gap-6">
                     <div className="relative w-14 h-14 flex-shrink-0">
-                      {/* Pulsing ring */}
+                      {/* Pulsing ring — uses accent color */}
                       <span
-                        className="absolute inset-0 rounded-full border-2 border-foreground/30"
-                        style={{ inset: '-4px', animation: 'photo-ring 3s ease-in-out infinite' }}
+                        className="absolute rounded-full"
+                        style={{ inset: '-4px', border: `2px solid ${profile.accentColor}30`, animation: 'photo-ring 3s ease-in-out infinite' }}
                       />
                       <span
-                        className="absolute inset-0 rounded-full border border-foreground/20"
-                        style={{ inset: '-4px', animation: 'photo-ring 3s ease-in-out infinite 1.5s' }}
+                        className="absolute rounded-full"
+                        style={{ inset: '-4px', border: `1px solid ${profile.accentColor}20`, animation: 'photo-ring 3s ease-in-out infinite 1.5s' }}
                       />
                       <img
                         src={profile.photo}
