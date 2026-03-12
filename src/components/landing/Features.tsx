@@ -3,41 +3,41 @@ import {
   Sparkles, 
   Layers, 
   BarChart3, 
-  Palette, 
-  Zap, 
-  Share2 
+  Share2,
+  MessageSquare,
+  Eye
 } from "lucide-react";
 
 const features = [
   {
     icon: Sparkles,
-    title: "AI-Powered Content",
-    description: "Our AI interviews you and extracts your best stories, metrics, and proof points automatically.",
+    title: "AI-Powered Storytelling",
+    description: "Upload your resume, then have a short AI conversation. Proof extracts your best stories, metrics, and impact — no blank page, no writer's block.",
   },
   {
     icon: Layers,
-    title: "Infinite Tailored Versions",
-    description: "One base profile, unlimited job-specific versions. Each adapts to match what employers want.",
+    title: "Tailored for Every Role",
+    description: "One profile, infinite versions. Drop in a job description and your profile reshapes itself — surfacing the experience that matters most.",
   },
   {
-    icon: Palette,
-    title: "5 Role Archetypes",
-    description: "Executive, Creative, Technical, Sales, or Operations. Design that matches your professional identity.",
+    icon: MessageSquare,
+    title: "An AI Advocate in Your Corner",
+    description: "Every Proof profile comes with an AI that knows your career inside out. It guides visitors, answers questions, and makes your case — even when you're not in the room.",
   },
   {
     icon: BarChart3,
-    title: "Analytics Dashboard",
-    description: "See who's viewing your profile, which sections engage, and how long they stay.",
+    title: "Impact That Speaks for Itself",
+    description: "Your achievements rendered as visual evidence — charts, metrics, and case studies with real artifacts. Not bullet points. Proof.",
   },
   {
-    icon: Zap,
-    title: "Instant JD Analysis",
-    description: "Paste any job description. AI automatically re-weights your profile to match.",
+    icon: Eye,
+    title: "See Who's Looking",
+    description: "Know when someone views your profile, which sections they engage with, and how long they stay. Real-time analytics for your career.",
   },
   {
     icon: Share2,
-    title: "Custom URLs",
-    description: "Your profile lives at name.showproof.app. Share one link that tells your whole story.",
+    title: "One Link, Whole Story",
+    description: "Your profile lives at a clean custom URL. Share it with recruiters, drop it in applications, add it to your email signature.",
   },
 ];
 
@@ -79,7 +79,7 @@ export const Features = () => {
             <span className="italic">stand out</span>
           </h2>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-            Stop rewriting resumes. Start building a living portfolio that adapts to every opportunity.
+            Stop rewriting resumes. Start building a living profile that works as hard as you do.
           </p>
         </motion.div>
 

@@ -5,31 +5,32 @@ import { Check } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const freeFeatures = [
-  "1 base profile (live forever)",
-  "1 job-specific version (expires after 3 months)",
-  "Made with Proof badge",
+  "1 living career profile",
+  "AI-powered profile generation",
+  "AI advocate on your profile",
+  "1 job-tailored version",
 ];
 
 const proFeatures = [
   "Everything in Free, plus:",
-  "Unlimited job-specific versions (no expiry)",
-  "Remove \"Made with Proof\" badge",
+  "Unlimited job-tailored versions",
+  "Remove Proof branding",
   "Advanced analytics (views, engagement, insights)",
-  "Profile stays live forever (even after you cancel)",
+  "Priority AI generation",
 ];
 
 const faqItems = [
   {
     question: "What happens if I cancel Pro?",
-    answer: "Your profile stays live forever. Existing versions remain active. You just can't create new versions until you re-subscribe.",
+    answer: "Your profile stays live. Existing tailored versions remain active. You just can't create new versions until you re-subscribe.",
   },
   {
-    question: "What about the free job-specific version?",
-    answer: "Free users get one job-specific version that stays live for 3 months. Upgrade to Pro for unlimited versions with no expiry.",
+    question: "How does the AI advocate work?",
+    answer: "Every Proof profile includes an AI that knows your career story. When someone visits your profile, they can ask it questions about your experience — it's like having a personal representative available 24/7.",
   },
   {
     question: "Can I upgrade from Free to Pro later?",
-    answer: "Yes. Start free, upgrade to Pro anytime. Choose monthly ($18/mo) or annual ($180/year) billing.",
+    answer: "Absolutely. Start free, upgrade anytime. Your profile and all your data carries over seamlessly.",
   },
 ];
 

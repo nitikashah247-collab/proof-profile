@@ -24,7 +24,7 @@ const profilePreviews: Record<
   }
 > = {
   marketing: {
-    url: "sarah-chen.showproof.app",
+    url: "sarah-chen.proof.app",
     demoPath: "/demo",
     initials: "SC",
     name: "Sarah Chen",
@@ -35,7 +35,7 @@ const profilePreviews: Record<
     avatarBg: "icon-gradient-bg",
   },
   finance: {
-    url: "michael-zhang.showproof.app",
+    url: "michael-zhang.proof.app",
     demoPath: "/demo/finance",
     initials: "MZ",
     name: "Michael Zhang",
@@ -78,7 +78,7 @@ export const Hero = () => {
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#ada5a5] opacity-75"></span>
               <span className="relative inline-flex rounded-full h-2 w-2 bg-[#ada5a5]"></span>
             </span>
-            AI-powered career profiles
+            The career profile, reinvented
           </motion.div>
 
           {/* Main Headline */}
@@ -100,15 +100,14 @@ export const Hero = () => {
             <span className="italic">Show them who you really are.</span>
           </motion.p>
 
-          {/* Subheadline */}
+          {/* Description */}
           <motion.p
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.3 }}
-            className="text-xl md:text-2xl text-muted-foreground max-w-2xl mx-auto mb-12 leading-relaxed"
+            className="text-lg md:text-xl font-extralight text-muted-foreground max-w-2xl mx-auto mb-12 leading-relaxed"
           >
-            Create a living profile that adapts to every opportunity.
-            One identity, infinite versions.
+            Proof builds a living career profile from your resume and a short AI conversation. Evidence-backed. Beautifully designed. With an AI advocate that represents you — even when you're not in the room.
           </motion.p>
 
           {/* CTA Buttons */}
@@ -125,7 +124,7 @@ export const Hero = () => {
             <Link to={profile.demoPath}>
               <Button variant="outline" size="lg" className="rounded-full">
                 <Play className="w-4 h-4" />
-                See a demo profile
+                See it in action
               </Button>
             </Link>
           </motion.div>

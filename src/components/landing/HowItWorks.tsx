@@ -1,30 +1,30 @@
 import { motion } from "framer-motion";
-import { Upload, MessageSquare, Palette, Share } from "lucide-react";
+import { Upload, MessageSquare, Sparkles, Share } from "lucide-react";
 
 const steps = [
   {
     number: "01",
     icon: Upload,
     title: "Upload your resume",
-    description: "Drop your PDF or paste your LinkedIn. Our AI extracts all the important details.",
+    description: "Drop your PDF or paste your details. Our AI reads between the lines and extracts what matters.",
   },
   {
     number: "02",
     icon: MessageSquare,
-    title: "Chat with AI",
-    description: "A quick interview surfaces your best stories, impact metrics, and what makes you unique.",
+    title: "Have a conversation",
+    description: "A short AI interview draws out the stories, context, and impact that a resume can never capture.",
   },
   {
     number: "03",
-    icon: Palette,
-    title: "Choose your style",
-    description: "Select from 5 professional archetypes. Each one designed for your field.",
+    icon: Sparkles,
+    title: "Your profile generates",
+    description: "Impact visualisations, evidence-backed case studies, and an AI advocate — all built from your real experience.",
   },
   {
     number: "04",
     icon: Share,
-    title: "Share & tailor",
-    description: "Get your custom URL. Create job-specific versions in seconds.",
+    title: "Share and tailor",
+    description: "Get your custom URL. Paste any job description and your profile reshapes to match — instantly.",
   },
 ];
 
@@ -42,10 +42,10 @@ export const HowItWorks = () => {
         >
           <h2 className="text-4xl md:text-5xl font-bold tracking-tight mb-4 text-foreground">
             From resume to Proof in{" "}
-            <span className="bg-accent px-3 py-1 rounded-lg font-semibold">5 minutes</span>
+            <span className="bg-accent px-3 py-1 rounded-lg font-semibold italic">5 minutes</span>
           </h2>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            No design skills needed. Our AI does the heavy lifting.
+            No design skills needed. No writer's block. Just you.
           </p>
         </motion.div>
 

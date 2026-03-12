@@ -19,7 +19,7 @@ export const CTA = () => {
             <span className="italic">Start standing out.</span>
           </h2>
           <p className="text-xl text-muted-foreground mb-12 max-w-xl mx-auto leading-relaxed">
-            Join thousands of professionals who are landing dream jobs with dynamic, AI-powered career profiles.
+            Join professionals who are done being reduced to a PDF. Your career deserves more than a page.
           </p>
           <Link to="/signup">
             <Button size="xl" className="group rounded-full shadow-lg shadow-black/10">
