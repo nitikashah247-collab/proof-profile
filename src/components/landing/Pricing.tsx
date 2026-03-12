@@ -185,7 +185,7 @@ export const Pricing = () => {
           transition={{ duration: 0.5, delay: 0.3 }}
           className="text-center text-sm text-muted-foreground mb-16"
         >
-          Cancel anytime. Your profile stays live even after you cancel.
+          Cancel anytime. Your base profile stays live even after you cancel.
         </motion.p>
 
         {/* FAQ Section */}
