@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { Shield } from "lucide-react";
+import { ProofLogo } from "@/components/brand/ProofLogo";
 
 export const Footer = () => {
   return (
