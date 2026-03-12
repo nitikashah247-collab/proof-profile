@@ -25,8 +25,8 @@ import { ProcessFrameworks } from "@/components/profile/ProcessFrameworks";
 
 // Michael Zhang - CFO Profile Data
 const profileData = {
-  name: "Michael Zhang",
-  title: "Chief Financial Officer",
+  name: "Mateo Tavares",
+  title: "Finance Business Partner",
   location: "Auckland, New Zealand",
   company: "TechVentures",
   tagline:
