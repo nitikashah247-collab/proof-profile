@@ -5,9 +5,10 @@ import { Check } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const freeFeatures = [
-  "1 base profile (live forever)",
-  "1 job-specific version (expires after 3 months)",
-  "Made with Proof badge",
+  "1 living career profile",
+  "AI-powered profile generation",
+  "AI advocate on your profile",
+  "1 job-tailored version",
 ];
 
 const proFeatures = [
