@@ -37,7 +37,7 @@ export const Pricing = () => {
   const [isAnnual, setIsAnnual] = useState(false);
 
   return (
-    <section id="pricing" className="py-28 relative bg-muted/30">
+    <section id="pricing" className="py-28 relative bg-background">
       <div className="container mx-auto px-6">
         {/* Section Header */}
         <motion.div
@@ -48,7 +48,7 @@ export const Pricing = () => {
           className="text-center mb-16"
         >
           <h2 className="text-4xl md:text-5xl font-bold tracking-tight mb-6">
-            Simple, transparent <span className="italic">pricing</span>
+            Simple, transparent <span className="text-[#ada5a5]">pricing</span>
           </h2>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
             Start free. Upgrade when you're ready. Your profile stays live no matter what.

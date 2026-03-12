@@ -86,11 +86,19 @@ export const Hero = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
-            className="text-5xl md:text-7xl font-bold tracking-tight mb-6 leading-[1.1]"
+            className="text-5xl md:text-7xl font-bold tracking-tight mb-2 leading-[1.1]"
           >
-            Resumes are dead.{" "}
-            <span className="italic">Show them who you really are.</span>
+            Resumes are dead.
           </motion.h1>
+
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.25 }}
+            className="text-4xl md:text-6xl font-extralight tracking-tight mb-8 leading-[1.1] text-[#ada5a5]"
+          >
+            Show them who you really are.
+          </motion.p>
 
           {/* Subheadline */}
           <motion.p

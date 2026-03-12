@@ -64,7 +64,7 @@ const GradientIcon = ({ icon: Icon }: { icon: typeof Sparkles }) => (
 
 export const Features = () => {
   return (
-    <section id="features" className="py-28 relative bg-muted/30">
+    <section id="features" className="py-28 relative bg-background">
       <div className="container mx-auto px-6">
         {/* Section Header */}
         <motion.div
@@ -76,7 +76,7 @@ export const Features = () => {
         >
           <h2 className="text-4xl md:text-5xl font-bold tracking-tight mb-6">
             Everything you need to{" "}
-            <span className="italic">stand out</span>
+            <span className="text-[#ada5a5]">stand out</span>
           </h2>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
             Stop rewriting resumes. Start building a living portfolio that adapts to every opportunity.
