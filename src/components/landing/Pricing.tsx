@@ -22,15 +22,15 @@ const proFeatures = [
 const faqItems = [
   {
     question: "What happens if I cancel Pro?",
-    answer: "Your profile stays live forever. Existing versions remain active. You just can't create new versions until you re-subscribe.",
+    answer: "Your profile stays live. Existing tailored versions remain active. You just can't create new versions until you re-subscribe.",
   },
   {
-    question: "What about the free job-specific version?",
-    answer: "Free users get one job-specific version that stays live for 3 months. Upgrade to Pro for unlimited versions with no expiry.",
+    question: "How does the AI advocate work?",
+    answer: "Every Proof profile includes an AI that knows your career story. When someone visits your profile, they can ask it questions about your experience — it's like having a personal representative available 24/7.",
   },
   {
     question: "Can I upgrade from Free to Pro later?",
-    answer: "Yes. Start free, upgrade to Pro anytime. Choose monthly ($18/mo) or annual ($180/year) billing.",
+    answer: "Absolutely. Start free, upgrade anytime. Your profile and all your data carries over seamlessly.",
   },
 ];
 

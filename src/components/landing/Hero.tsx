@@ -124,7 +124,7 @@ export const Hero = () => {
             <Link to={profile.demoPath}>
               <Button variant="outline" size="lg" className="rounded-full">
                 <Play className="w-4 h-4" />
-                See a demo profile
+                See it in action
               </Button>
             </Link>
           </motion.div>

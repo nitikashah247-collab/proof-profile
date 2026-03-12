@@ -13,7 +13,7 @@ export const Footer = () => {
               <ProofLogo size="md" />
             </Link>
             <p className="text-muted-foreground max-w-xs mb-4">
-              Dynamic career profiles that adapt to every opportunity. Show them who you really are.
+              Career profiles that see what others miss.
             </p>
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
               <Shield className="w-4 h-4 text-[#ada5a5]" />
