@@ -211,6 +211,17 @@ export const Hero = () => {
               Finance Executive
             </button>
             <button
+              onClick={() => setActiveTab("sales")}
+              className={`px-5 py-2.5 rounded-full text-sm font-medium transition-all duration-300 flex items-center gap-2 ${
+                activeTab === "sales"
+                  ? "bg-foreground text-background shadow-lg shadow-black/10"
+                  : "bg-muted text-muted-foreground hover:text-foreground hover:bg-muted/80"
+              }`}
+            >
+              <HandshakeIcon className="w-3.5 h-3.5" />
+              Sales Professional
+            </button>
+            <button
               onClick={() => setActiveTab("engineering")}
               className={`px-5 py-2.5 rounded-full text-sm font-medium transition-all duration-300 flex items-center gap-2 ${
                 activeTab === "engineering"
