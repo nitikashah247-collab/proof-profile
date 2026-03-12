@@ -98,7 +98,7 @@ export const Pricing = () => {
   const [isAnnual, setIsAnnual] = useState(false);
 
   return (
-    <section id="pricing" className="py-28 relative bg-background">
+    <section id="pricing" className="py-20 relative bg-muted">
       <div className="container mx-auto px-6">
         {/* Section Header */}
         <motion.div
