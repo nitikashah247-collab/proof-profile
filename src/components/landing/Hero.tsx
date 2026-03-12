@@ -54,8 +54,9 @@ const profilePreviews: Record<
       { value: "8+", label: "Years Experience" },
       { value: "$12M", label: "Annual Budget Managed" },
       { value: "15%", label: "Cost Reduction Delivered" },
+      { value: "$2.8M", label: "Savings Identified" },
     ],
-    accentColor: "#111111",
+    accentColor: "#00470d",
   },
   engineering: {
     url: "james-whitfield.showproof.app",
@@ -70,8 +71,9 @@ const profilePreviews: Record<
       { value: "15+", label: "Years Experience" },
       { value: "80+", label: "Engineers Managed" },
       { value: "73%", label: "Faster Deploy Cycles" },
+      { value: "38%", label: "Reduction in Incident Response" },
     ],
-    accentColor: "#00470d",
+    accentColor: "#fea000",
   },
 };
 
