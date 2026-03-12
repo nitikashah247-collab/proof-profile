@@ -12,7 +12,7 @@ const features = [
   {
     icon: Sparkles,
     title: "AI-Powered Storytelling",
-    description: "Upload your resume, then have a short AI conversation. Proof extracts your best stories, metrics, and impact — no blank page, no writer's block.",
+    description: "Upload your resume, then have a short AI conversation. Proof draws out your best stories, metrics, and impact — turning your career into a compelling narrative.",
   },
   {
     icon: Layers,
