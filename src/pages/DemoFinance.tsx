@@ -476,6 +476,27 @@ const DemoFinance = () => {
       {/* Analytics */}
       <AnalyticsPreview data={profileData.analytics} isOwner={true} isOpen={false} onClose={() => {}} />
 
+      {/* AI Advocate */}
+      <VisitorCoachOrb
+        primaryColor="#111111"
+        currentInsight={null}
+        onDismissInsight={() => {}}
+        onOpenDrawer={() => setIsAdvocateOpen(true)}
+        profileName="Michael Zhang"
+      />
+      <VisitorCoachDrawer
+        isOpen={isAdvocateOpen}
+        onClose={() => setIsAdvocateOpen(false)}
+        profileData={{
+          full_name: "Michael Zhang",
+          headline: "Chief Financial Officer · Auckland, NZ",
+          industry: "Technology/SaaS",
+          bio: "15 years driving financial strategy and operational excellence in high-growth tech. I turn ambitious growth plans into sustainable, fundable business models.",
+        }}
+        sections={[]}
+        primaryColor="#111111"
+      />
+
       {/* Proof Badge */}
       <div className="fixed bottom-6 right-6 z-50">
         <Link
