@@ -14,47 +14,60 @@ const profilePreviews: Record<
   {
     url: string;
     demoPath: string;
-    initials: string;
+    photo: string;
     name: string;
     role: string;
     location: string;
     bio: string;
     tags: string[];
-    avatarBg: string;
+    stats: { value: string; label: string }[];
   }
 > = {
   marketing: {
-    url: "sarah-chen.proof.app",
+    url: "sarah-chen.showproof.app",
     demoPath: "/demo",
-    initials: "SC",
+    photo: "/demo-sarah.png",
     name: "Sarah Chen",
-    role: "Head of Product Marketing · San Francisco",
-    location: "San Francisco",
-    bio: "I turn complex products into stories that resonate. 8+ years driving growth for B2B SaaS companies through positioning, messaging, and go-to-market strategy.",
-    tags: ["Product Marketing", "GTM Strategy", "B2B SaaS"],
-    avatarBg: "icon-gradient-bg",
+    role: "Head of Product Marketing · London, UK",
+    location: "London",
+    bio: "Over a decade of turning complex B2B SaaS products into category-defining stories. I don't just market products — I build the strategic narratives that shift how markets think about a problem, then architect the go-to-market engine to capture it.",
+    tags: ["Product-Led Growth", "Category Creation", "Revenue Marketing"],
+    stats: [
+      { value: "10+", label: "Years Experience" },
+      { value: "$4.2M", label: "Pipeline Influenced" },
+      { value: "3x", label: "Product Adoption Growth" },
+      { value: "35%", label: "Shorter Sales Cycles" },
+    ],
   },
   finance: {
-    url: "mateo-tavares.proof.app",
+    url: "mateo-tavares.showproof.app",
     demoPath: "/demo/finance",
-    initials: "MT",
+    photo: "/demo-mateo.png",
     name: "Mateo Tavares",
-    role: "Finance Business Partner · Auckland, NZ",
-    location: "Auckland",
-    bio: "15 years driving financial strategy and operational excellence in high-growth tech. I turn ambitious growth plans into sustainable, fundable business models.",
-    tags: ["Financial Planning", "FP&A", "Business Partnering"],
-    avatarBg: "bg-foreground",
+    role: "Finance Business Partner · Sydney, AU",
+    location: "Sydney",
+    bio: "8+ years providing financial analysis and commercial insight to senior stakeholders across enterprise operations. I support decision-making through scenario modelling, variance analysis, and forecasting — ensuring capital allocation is grounded in data and aligned to strategic priorities.",
+    tags: ["Commercial Finance", "Forecasting & Planning", "Stakeholder Advisory"],
+    stats: [
+      { value: "8+", label: "Years Experience" },
+      { value: "$12M", label: "Annual Budget Managed" },
+      { value: "15%", label: "Cost Reduction Delivered" },
+    ],
   },
   engineering: {
-    url: "james-whitfield.proof.app",
+    url: "james-whitfield.showproof.app",
     demoPath: "/demo/engineering",
-    initials: "JW",
+    photo: "/demo-james.png",
     name: "James Whitfield",
     role: "VP of Engineering · Melbourne, AU",
     location: "Melbourne",
-    bio: "Engineering leader who scales teams and systems in equal measure. 12+ years building high-performance engineering orgs across fintech and health-tech, from Series A to IPO.",
-    tags: ["Engineering Leadership", "Platform Architecture", "Team Scaling"],
-    avatarBg: "bg-foreground",
+    bio: "15+ years shipping reliable systems at scale and building the teams behind them. I've taken platform infrastructure from monolith to microservices, stood up SRE practices from scratch, and scaled engineering orgs from 5 to 80+ across fintech and health-tech.",
+    tags: ["Platform Infrastructure", "Distributed Systems", "Engineering Operations"],
+    stats: [
+      { value: "15+", label: "Years Experience" },
+      { value: "80+", label: "Engineers Managed" },
+      { value: "73%", label: "Faster Deploy Cycles" },
+    ],
   },
 };
 
@@ -224,10 +237,21 @@ export const Hero = () => {
                   className="p-8 md:p-10 min-h-[320px] bg-background"
                 >
                   <div className="flex flex-col md:flex-row items-start gap-6">
-                    <div
-                      className={`w-20 h-20 rounded-2xl ${profile.avatarBg} flex items-center justify-center text-2xl font-bold text-primary-foreground shadow-lg shadow-black/10`}
-                    >
-                      {profile.initials}
+                    <div className="relative w-14 h-14 flex-shrink-0">
+                      {/* Pulsing ring */}
+                      <span
+                        className="absolute inset-0 rounded-full border-2 border-foreground/30"
+                        style={{ inset: '-4px', animation: 'photo-ring 3s ease-in-out infinite' }}
+                      />
+                      <span
+                        className="absolute inset-0 rounded-full border border-foreground/20"
+                        style={{ inset: '-4px', animation: 'photo-ring 3s ease-in-out infinite 1.5s' }}
+                      />
+                      <img
+                        src={profile.photo}
+                        alt={profile.name}
+                        className="w-14 h-14 rounded-full object-cover border-2 border-background shadow-sm"
+                      />
                     </div>
                     <div className="flex-1">
                       <h3 className="text-2xl font-bold mb-1">{profile.name}</h3>
@@ -246,30 +270,16 @@ export const Hero = () => {
                         ))}
                       </div>
 
-                      {/* Key Stats Row - Finance specific */}
-                      {activeTab === "finance" && (
-                        <motion.div
-                          initial={{ opacity: 0, y: 10 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          transition={{ delay: 0.2, duration: 0.4 }}
-                          className="flex flex-wrap gap-6 mt-6 pt-4 border-t border-border"
-                        >
-                          {[
-                            { value: "$85M", label: "Capital Raised" },
-                            { value: "22%", label: "Cost Reduction" },
-                            { value: "3x", label: "Revenue Growth" },
-                            { value: "12", label: "Team Built" },
-                          ].map((stat) => (
-                            <div key={stat.label} className="text-center">
-                              <span className="text-xl font-bold block text-foreground">
-                                {stat.value}
-                              </span>
-                              <span className="text-xs text-muted-foreground">
-                                {stat.label}
-                              </span>
+                      {/* Stats */}
+                      {profile.stats && (
+                        <div className="flex items-center gap-6 mt-4 pt-4 border-t border-border">
+                          {profile.stats.map((stat, i) => (
+                            <div key={i}>
+                              <p className="text-lg font-bold text-foreground">{stat.value}</p>
+                              <p className="text-[10px] text-muted-foreground uppercase tracking-wider">{stat.label}</p>
                             </div>
                           ))}
-                        </motion.div>
+                        </div>
                       )}
                     </div>
                   </div>
