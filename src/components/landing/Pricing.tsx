@@ -48,7 +48,7 @@ export const Pricing = () => {
           className="text-center mb-16"
         >
           <h2 className="text-4xl md:text-5xl font-bold tracking-tight mb-6">
-            Simple, transparent <span className="text-[#ada5a5]">pricing</span>
+            Simple, transparent <span className="italic">pricing</span>
           </h2>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
             Start free. Upgrade when you're ready. Your profile stays live no matter what.
