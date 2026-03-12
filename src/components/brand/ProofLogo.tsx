@@ -12,12 +12,10 @@ export const ProofLogo = ({ size = "md", variant = "light", showWordmark = true 
   };
 
   const s = sizes[size];
-  const bgColor = variant === "light" ? "#111" : "#fff";
   const textClass = variant === "light" ? "text-foreground" : "text-white";
 
   return (
     <div className={`flex items-center ${s.gap}`}>
-      {/* Hummingbird circle */}
       <img
         src="/proof-logo.png"
         alt="Proof"
@@ -25,11 +23,10 @@ export const ProofLogo = ({ size = "md", variant = "light", showWordmark = true 
         style={{ width: s.icon, height: s.icon }}
       />
 
-      {/* Wordmark */}
       {showWordmark && (
         <span
           className={`${s.font} ${textClass}`}
-          style={{ fontFamily: "'Outfit', sans-serif", fontWeight: 600 }}
+          style={{ fontFamily: "'Outfit', sans-serif", fontWeight: 600, letterSpacing: "-0.5px" }}
         >
           proof
         </span>
