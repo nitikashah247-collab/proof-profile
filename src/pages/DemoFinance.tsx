@@ -23,10 +23,10 @@ import { DealExperience } from "@/components/profile/DealExperience";
 import { AdvisoryRoles } from "@/components/profile/AdvisoryRoles";
 import { ProcessFrameworks } from "@/components/profile/ProcessFrameworks";
 
-// Michael Zhang - CFO Profile Data
+// Mateo Tavares - Finance Business Partner Profile Data
 const profileData = {
-  name: "Michael Zhang",
-  title: "Chief Financial Officer",
+  name: "Mateo Tavares",
+  title: "Finance Business Partner",
   location: "Auckland, New Zealand",
   company: "TechVentures",
   tagline:
@@ -367,7 +367,7 @@ const DemoFinance = () => {
           </Link>
           <div className="flex items-center gap-3">
             <span className="text-sm text-muted-foreground">
-              Viewing: michael-zhang.showproof.app
+              Viewing: mateo-tavares.showproof.app
             </span>
             <Button size="sm">Edit Profile</Button>
           </div>
@@ -482,14 +482,14 @@ const DemoFinance = () => {
         currentInsight={null}
         onDismissInsight={() => {}}
         onOpenDrawer={() => setIsAdvocateOpen(true)}
-        profileName="Michael Zhang"
+        profileName="Mateo Tavares"
       />
       <VisitorCoachDrawer
         isOpen={isAdvocateOpen}
         onClose={() => setIsAdvocateOpen(false)}
         profileData={{
-          full_name: "Michael Zhang",
-          headline: "Chief Financial Officer · Auckland, NZ",
+          full_name: "Mateo Tavares",
+          headline: "Finance Business Partner · Auckland, NZ",
           industry: "Technology/SaaS",
           bio: "15 years driving financial strategy and operational excellence in high-growth tech. I turn ambitious growth plans into sustainable, fundable business models.",
         }}

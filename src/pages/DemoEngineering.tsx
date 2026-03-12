@@ -25,7 +25,7 @@ const DemoEngineering = () => {
           </Link>
           <div className="flex items-center gap-3">
             <span className="text-sm text-muted-foreground">
-              Viewing: priya-patel.showproof.app
+              Viewing: james-whitfield.showproof.app
             </span>
             <Button size="sm">Edit Profile</Button>
           </div>
@@ -43,10 +43,10 @@ const DemoEngineering = () => {
             animate={{ opacity: 1, y: 0 }}
             className="w-28 h-28 rounded-2xl bg-foreground text-background flex items-center justify-center text-3xl font-bold shadow-xl border-4 border-background mb-6"
           >
-            PP
+            JW
           </motion.div>
 
-          <h1 className="text-4xl font-bold mb-2">Priya Patel</h1>
+          <h1 className="text-4xl font-bold mb-2">James Whitfield</h1>
           <p className="text-lg text-muted-foreground mb-4">
             VP of Engineering | Platform Architecture | Team Scaling
           </p>
@@ -164,13 +164,13 @@ const DemoEngineering = () => {
         currentInsight={null}
         onDismissInsight={() => {}}
         onOpenDrawer={() => setIsAdvocateOpen(true)}
-        profileName="Priya Patel"
+        profileName="James Whitfield"
       />
       <VisitorCoachDrawer
         isOpen={isAdvocateOpen}
         onClose={() => setIsAdvocateOpen(false)}
         profileData={{
-          full_name: "Priya Patel",
+          full_name: "James Whitfield",
           headline: "VP of Engineering · Melbourne, AU",
           industry: "Health-Tech / Fintech",
           bio: "Engineering leader who builds the teams that build the product. 12+ years scaling engineering organisations from 5 to 80+.",

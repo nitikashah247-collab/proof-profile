@@ -35,21 +35,21 @@ const profilePreviews: Record<
     avatarBg: "icon-gradient-bg",
   },
   finance: {
-    url: "michael-zhang.proof.app",
+    url: "mateo-tavares.proof.app",
     demoPath: "/demo/finance",
-    initials: "MZ",
-    name: "Michael Zhang",
-    role: "Chief Financial Officer · Auckland, NZ",
+    initials: "MT",
+    name: "Mateo Tavares",
+    role: "Finance Business Partner · Auckland, NZ",
     location: "Auckland",
     bio: "15 years driving financial strategy and operational excellence in high-growth tech. I turn ambitious growth plans into sustainable, fundable business models.",
-    tags: ["Capital Raising", "FP&A", "Financial Modeling"],
+    tags: ["Financial Planning", "FP&A", "Business Partnering"],
     avatarBg: "bg-foreground",
   },
   engineering: {
-    url: "priya-patel.proof.app",
+    url: "james-whitfield.proof.app",
     demoPath: "/demo/engineering",
-    initials: "PP",
-    name: "Priya Patel",
+    initials: "JW",
+    name: "James Whitfield",
     role: "VP of Engineering · Melbourne, AU",
     location: "Melbourne",
     bio: "Engineering leader who scales teams and systems in equal measure. 12+ years building high-performance engineering orgs across fintech and health-tech, from Series A to IPO.",
@@ -284,8 +284,7 @@ export const Hero = () => {
               to={profile.demoPath}
               className="text-sm text-muted-foreground hover:text-foreground transition-colors group"
             >
-              View full {activeTab === "marketing" ? "marketing" : "finance"}{" "}
-              profile →
+              View full {activeTab} profile →
             </Link>
           </div>
         </motion.div>
