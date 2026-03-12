@@ -23,7 +23,7 @@ import { DealExperience } from "@/components/profile/DealExperience";
 import { AdvisoryRoles } from "@/components/profile/AdvisoryRoles";
 import { ProcessFrameworks } from "@/components/profile/ProcessFrameworks";
 
-// Michael Zhang - CFO Profile Data
+// Mateo Tavares - Finance Business Partner Profile Data
 const profileData = {
   name: "Mateo Tavares",
   title: "Finance Business Partner",
