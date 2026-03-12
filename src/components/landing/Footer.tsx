@@ -16,7 +16,7 @@ export const Footer = () => {
               Dynamic career profiles that adapt to every opportunity. Show them who you really are.
             </p>
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              <Shield className="w-4 h-4 text-primary" />
+              <Shield className="w-4 h-4 text-[#ada5a5]" />
               <span>Your data is encrypted and secure</span>
             </div>
           </div>

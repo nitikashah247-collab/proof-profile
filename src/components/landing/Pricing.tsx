@@ -47,8 +47,8 @@ export const Pricing = () => {
           transition={{ duration: 0.6 }}
           className="text-center mb-16"
         >
-          <h2 className="text-4xl md:text-5xl font-bold mb-6">
-            Simple, transparent <span className="text-primary">pricing</span>
+          <h2 className="text-4xl md:text-5xl font-bold tracking-tight mb-6">
+            Simple, transparent <span className="italic">pricing</span>
           </h2>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
             Start free. Upgrade when you're ready. Your profile stays live no matter what.
@@ -86,7 +86,7 @@ export const Pricing = () => {
             </ul>
 
             <Link to="/signup" className="block">
-              <Button variant="outline" className="w-full" size="lg">
+              <Button variant="outline" className="w-full rounded-full" size="lg">
                 Get started free
               </Button>
             </Link>
@@ -98,10 +98,10 @@ export const Pricing = () => {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5, delay: 0.1 }}
-            className="relative rounded-2xl border-2 border-primary shadow-xl shadow-primary/10 p-8 bg-card md:scale-105"
+            className="relative rounded-2xl border-2 border-foreground shadow-xl shadow-black/10 p-8 bg-card md:scale-105"
           >
             <div className="absolute -top-4 left-1/2 -translate-x-1/2">
-              <span className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full icon-gradient-bg text-white text-sm font-medium shadow-lg shadow-primary/25">
+              <span className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-foreground text-background text-sm font-medium shadow-lg shadow-black/10">
                 Most Popular
               </span>
             </div>
@@ -119,7 +119,7 @@ export const Pricing = () => {
                 </button>
                 <button
                   onClick={() => setIsAnnual(!isAnnual)}
-                  className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors ${isAnnual ? "bg-primary" : "bg-input"}`}
+                  className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors ${isAnnual ? "bg-foreground" : "bg-input"}`}
                   role="switch"
                   aria-checked={isAnnual}
                 >
@@ -148,7 +148,7 @@ export const Pricing = () => {
                 <motion.span
                   initial={{ opacity: 0, scale: 0.9 }}
                   animate={{ opacity: 1, scale: 1 }}
-                  className="inline-block mt-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-semibold"
+                  className="inline-block mt-2 px-3 py-1 rounded-full bg-accent text-accent-foreground text-xs font-semibold"
                 >
                   Save $36/year
                 </motion.span>
@@ -169,7 +169,7 @@ export const Pricing = () => {
             </ul>
 
             <Link to="/signup" className="block">
-              <Button className="w-full shadow-lg shadow-primary/25" size="lg">
+              <Button className="w-full rounded-full shadow-lg shadow-black/10" size="lg">
                 Start Pro
               </Button>
             </Link>

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Play } from "lucide-react";
+import { ArrowRight, Play, Briefcase, TrendingUp } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
@@ -43,7 +43,7 @@ const profilePreviews: Record<
     location: "Auckland",
     bio: "15 years driving financial strategy and operational excellence in high-growth tech. I turn ambitious growth plans into sustainable, fundable business models.",
     tags: ["Capital Raising", "FP&A", "Financial Modeling"],
-    avatarBg: "bg-[hsl(222,47%,11%)]",
+    avatarBg: "bg-foreground",
   },
 };
 
@@ -72,11 +72,11 @@ export const Hero = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.1 }}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-medium mb-8"
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-accent text-foreground text-sm font-medium mb-8"
           >
             <span className="relative flex h-2 w-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#ada5a5] opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-[#ada5a5]"></span>
             </span>
             AI-powered career profiles
           </motion.div>
@@ -86,10 +86,10 @@ export const Hero = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
-            className="text-5xl md:text-7xl font-normal tracking-tight mb-6 leading-[1.1]"
+            className="text-5xl md:text-7xl font-bold tracking-tight mb-6 leading-[1.1]"
           >
             Resumes are dead.{" "}
-            <span className="text-primary">Show them who you really are.</span>
+            <span className="italic">Show them who you really are.</span>
           </motion.h1>
 
           {/* Subheadline */}
@@ -110,12 +110,12 @@ export const Hero = () => {
             transition={{ duration: 0.6, delay: 0.4 }}
             className="flex flex-col sm:flex-row items-center justify-center gap-4"
           >
-            <Button size="lg" className="group shadow-lg shadow-primary/25" onClick={handleCreateProof}>
+            <Button size="lg" className="group rounded-full shadow-lg shadow-black/10" onClick={handleCreateProof}>
               Create your Proof
               <ArrowRight className="w-5 h-5 transition-transform group-hover:translate-x-1" />
             </Button>
             <Link to={profile.demoPath}>
-              <Button variant="outline" size="lg">
+              <Button variant="outline" size="lg" className="rounded-full">
                 <Play className="w-4 h-4" />
                 See a demo profile
               </Button>
@@ -137,23 +137,25 @@ export const Hero = () => {
           <div className="flex items-center justify-center gap-2 mb-6">
             <button
               onClick={() => setActiveTab("marketing")}
-              className={`px-5 py-2.5 rounded-full text-sm font-medium transition-all duration-300 ${
+              className={`px-5 py-2.5 rounded-full text-sm font-medium transition-all duration-300 flex items-center gap-2 ${
                 activeTab === "marketing"
-                  ? "bg-primary text-primary-foreground shadow-lg shadow-primary/25"
+                  ? "bg-foreground text-background shadow-lg shadow-black/10"
                   : "bg-muted text-muted-foreground hover:text-foreground hover:bg-muted/80"
               }`}
             >
-              🎨 Marketing Leader
+              <Briefcase className="w-3.5 h-3.5" />
+              Marketing Leader
             </button>
             <button
               onClick={() => setActiveTab("finance")}
-              className={`px-5 py-2.5 rounded-full text-sm font-medium transition-all duration-300 ${
+              className={`px-5 py-2.5 rounded-full text-sm font-medium transition-all duration-300 flex items-center gap-2 ${
                 activeTab === "finance"
-                  ? "bg-[hsl(222,47%,11%)] text-white shadow-lg shadow-[hsl(222,47%,11%)]/25"
+                  ? "bg-foreground text-background shadow-lg shadow-black/10"
                   : "bg-muted text-muted-foreground hover:text-foreground hover:bg-muted/80"
               }`}
             >
-              📊 Finance Executive
+              <TrendingUp className="w-3.5 h-3.5" />
+              Finance Executive
             </button>
           </div>
 
@@ -194,11 +196,7 @@ export const Hero = () => {
                 >
                   <div className="flex flex-col md:flex-row items-start gap-6">
                     <div
-                      className={`w-20 h-20 rounded-2xl ${profile.avatarBg} flex items-center justify-center text-2xl font-bold text-white shadow-lg ${
-                        activeTab === "marketing"
-                          ? "shadow-primary/25"
-                          : "shadow-[hsl(222,47%,11%)]/25"
-                      }`}
+                      className={`w-20 h-20 rounded-2xl ${profile.avatarBg} flex items-center justify-center text-2xl font-bold text-primary-foreground shadow-lg shadow-black/10`}
                     >
                       {profile.initials}
                     </div>
@@ -212,11 +210,7 @@ export const Hero = () => {
                         {profile.tags.map((tag) => (
                           <span
                             key={tag}
-                            className={`px-3 py-1.5 rounded-full text-sm font-medium ${
-                              activeTab === "marketing"
-                                ? "bg-primary/10 text-primary"
-                                : "bg-[hsl(222,47%,11%)]/10 text-[hsl(222,47%,11%)]"
-                            }`}
+                            className="px-3 py-1.5 rounded-full text-sm font-medium bg-accent text-accent-foreground"
                           >
                             {tag}
                           </span>
@@ -238,10 +232,7 @@ export const Hero = () => {
                             { value: "12", label: "Team Built" },
                           ].map((stat) => (
                             <div key={stat.label} className="text-center">
-                              <span
-                                className="text-xl font-bold block"
-                                style={{ color: "hsl(38, 92%, 50%)" }}
-                              >
+                              <span className="text-xl font-bold block text-foreground">
                                 {stat.value}
                               </span>
                               <span className="text-xs text-muted-foreground">
@@ -262,7 +253,7 @@ export const Hero = () => {
           <div className="flex justify-center mt-6">
             <Link
               to={profile.demoPath}
-              className="text-sm text-muted-foreground hover:text-primary transition-colors group"
+              className="text-sm text-muted-foreground hover:text-foreground transition-colors group"
             >
               View full {activeTab === "marketing" ? "marketing" : "finance"}{" "}
               profile →
