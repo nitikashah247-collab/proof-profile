@@ -1,13 +1,13 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Play, Briefcase, TrendingUp, Code2 } from "lucide-react";
+import { ArrowRight, Play, Briefcase, TrendingUp, Code2, HandshakeIcon } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import { IndustryCarousel } from "@/components/landing/IndustryCarousel";
 
-type ProfileTab = "marketing" | "finance" | "engineering";
+type ProfileTab = "marketing" | "finance" | "sales" | "engineering";
 
 const profilePreviews: Record<
   ProfileTab,
@@ -57,6 +57,22 @@ const profilePreviews: Record<
       { value: "$2.8M", label: "Savings Identified" },
     ],
     accentColor: "#00470d",
+  },
+  sales: {
+    url: "laila-ahmadi.showproof.app",
+    demoPath: "/demo/sales",
+    photo: "/demo-laila.png",
+    name: "Laila Ahmadi",
+    role: "Junior Account Manager · Auckland, NZ",
+    location: "Auckland",
+    bio: "2 years embedded in client operations across professional services, bridging the gap between delivery teams and the accounts they serve. I run the rhythm of the relationship — onboarding coordination, QBR preparation, reporting — and work alongside senior account managers to make sure nothing falls through the cracks. 15+ accounts onboarded per quarter and counting.",
+    tags: ["Account Management", "Client Onboarding", "Reporting & Insights"],
+    stats: [
+      { value: "2+", label: "Years Experience" },
+      { value: "15+", label: "Accounts Onboarded / Qtr" },
+      { value: "94%", label: "Client Satisfaction Score" },
+    ],
+    accentColor: "#c4b0ef",
   },
   engineering: {
     url: "james-whitfield.showproof.app",
@@ -193,6 +209,17 @@ export const Hero = () => {
             >
               <TrendingUp className="w-3.5 h-3.5" />
               Finance Executive
+            </button>
+            <button
+              onClick={() => setActiveTab("sales")}
+              className={`px-5 py-2.5 rounded-full text-sm font-medium transition-all duration-300 flex items-center gap-2 ${
+                activeTab === "sales"
+                  ? "bg-foreground text-background shadow-lg shadow-black/10"
+                  : "bg-muted text-muted-foreground hover:text-foreground hover:bg-muted/80"
+              }`}
+            >
+              <HandshakeIcon className="w-3.5 h-3.5" />
+              Sales Professional
             </button>
             <button
               onClick={() => setActiveTab("engineering")}
