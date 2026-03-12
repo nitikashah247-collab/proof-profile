@@ -19,7 +19,7 @@ export const ProofLogo = ({ size = "md", variant = "light", showWordmark = true 
       <img
         src="/proof-logo.png"
         alt="Proof"
-        className="rounded-full"
+        className="rounded-full object-cover"
         style={{ width: s.icon, height: s.icon }}
       />
 

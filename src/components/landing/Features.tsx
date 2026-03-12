@@ -64,7 +64,7 @@ const GradientIcon = ({ icon: Icon }: { icon: typeof Sparkles }) => (
 
 export const Features = () => {
   return (
-    <section id="features" className="py-28 relative bg-background">
+    <section id="features" className="py-20 relative bg-background">
       <div className="container mx-auto px-6">
         {/* Section Header */}
         <motion.div

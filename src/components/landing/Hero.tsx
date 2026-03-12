@@ -74,9 +74,9 @@ export const Hero = () => {
             transition={{ duration: 0.5, delay: 0.1 }}
             className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-accent text-foreground text-sm font-medium mb-8"
           >
-            <span className="relative flex h-2 w-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#ada5a5] opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-[#ada5a5]"></span>
+             <span className="relative flex h-2.5 w-2.5">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-foreground opacity-50"></span>
+              <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-foreground"></span>
             </span>
             AI-Powered Career Profiles
           </motion.div>
@@ -257,7 +257,7 @@ export const Hero = () => {
           </div>
 
           {/* View full profile link */}
-          <div className="flex justify-center mt-6">
+          <div className="flex justify-center mt-6 mb-12">
             <Link
               to={profile.demoPath}
               className="text-sm text-muted-foreground hover:text-foreground transition-colors group"

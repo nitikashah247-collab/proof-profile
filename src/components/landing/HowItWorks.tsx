@@ -30,7 +30,7 @@ const steps = [
 
 export const HowItWorks = () => {
   return (
-    <section id="how-it-works" className="py-24 relative bg-muted">
+    <section id="how-it-works" className="py-20 relative bg-background">
       <div className="container mx-auto px-6">
         {/* Section Header */}
         <motion.div

@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 
 export const CTA = () => {
   return (
-    <section className="py-28 relative bg-muted">
+    <section className="py-20 relative bg-background">
       <div className="container mx-auto px-6 relative z-10">
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
@@ -15,7 +15,8 @@ export const CTA = () => {
           className="max-w-3xl mx-auto text-center"
         >
           <h2 className="text-4xl md:text-5xl font-bold tracking-tight mb-6">
-            Stop rewriting resumes.{" "}
+            Stop rewriting resumes.
+            <br />
             <span className="italic">Start standing out.</span>
           </h2>
           <p className="text-xl text-muted-foreground mb-12 max-w-xl mx-auto leading-relaxed">

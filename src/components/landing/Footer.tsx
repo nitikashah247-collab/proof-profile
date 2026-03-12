@@ -4,7 +4,7 @@ import { ProofLogo } from "@/components/brand/ProofLogo";
 
 export const Footer = () => {
   return (
-    <footer className="border-t border-border py-12 bg-secondary">
+    <footer className="border-t border-border py-12 bg-muted">
       <div className="container mx-auto px-6">
         <div className="grid md:grid-cols-4 gap-8">
           {/* Brand */}
