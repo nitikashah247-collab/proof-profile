@@ -164,13 +164,13 @@ const DemoEngineering = () => {
         currentInsight={null}
         onDismissInsight={() => {}}
         onOpenDrawer={() => setIsAdvocateOpen(true)}
-        profileName="Priya Patel"
+        profileName="James Whitfield"
       />
       <VisitorCoachDrawer
         isOpen={isAdvocateOpen}
         onClose={() => setIsAdvocateOpen(false)}
         profileData={{
-          full_name: "Priya Patel",
+          full_name: "James Whitfield",
           headline: "VP of Engineering · Melbourne, AU",
           industry: "Health-Tech / Fintech",
           bio: "Engineering leader who builds the teams that build the product. 12+ years scaling engineering organisations from 5 to 80+.",

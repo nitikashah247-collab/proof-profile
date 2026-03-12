@@ -284,8 +284,7 @@ export const Hero = () => {
               to={profile.demoPath}
               className="text-sm text-muted-foreground hover:text-foreground transition-colors group"
             >
-              View full {activeTab === "marketing" ? "marketing" : "finance"}{" "}
-              profile →
+              View full {activeTab} profile →
             </Link>
           </div>
         </motion.div>
