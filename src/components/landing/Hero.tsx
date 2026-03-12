@@ -78,7 +78,7 @@ export const Hero = () => {
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#ada5a5] opacity-75"></span>
               <span className="relative inline-flex rounded-full h-2 w-2 bg-[#ada5a5]"></span>
             </span>
-            AI-powered career profiles
+            The career profile, reinvented
           </motion.div>
 
           {/* Main Headline */}
