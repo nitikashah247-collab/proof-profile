@@ -1,17 +1,15 @@
 import { motion } from "framer-motion";
 import { ArrowLeft, FileText } from "lucide-react";
 import { Link } from "react-router-dom";
+import { ProofLogo } from "@/components/brand/ProofLogo";
 
 const TermsOfService = () => {
   return (
     <div className="min-h-screen bg-background">
       <header className="border-b border-border bg-background/95 backdrop-blur-sm sticky top-0 z-50">
         <div className="container mx-auto px-6 h-16 flex items-center">
-          <Link to="/" className="flex items-center gap-2">
-            <div className="h-8 w-8 rounded-md bg-primary flex items-center justify-center">
-              <span className="text-primary-foreground font-bold text-lg">P</span>
-            </div>
-            <span className="text-xl font-semibold text-foreground">Proof</span>
+          <Link to="/" className="flex items-center">
+            <ProofLogo size="md" />
           </Link>
         </div>
       </header>

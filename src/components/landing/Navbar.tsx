@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
+import { ProofLogo } from "@/components/brand/ProofLogo";
 
 export const Navbar = () => {
   return (
@@ -13,11 +14,8 @@ export const Navbar = () => {
       <div className="container mx-auto px-6">
         <div className="flex h-16 items-center justify-between">
           {/* Logo */}
-          <Link to="/" className="flex items-center gap-2">
-            <div className="h-8 w-8 rounded-md bg-primary flex items-center justify-center">
-              <span className="text-primary-foreground font-bold text-lg">P</span>
-            </div>
-            <span className="text-xl font-semibold text-foreground">Proof</span>
+          <Link to="/" className="flex items-center">
+            <ProofLogo size="md" />
           </Link>
 
           {/* Nav Links */}

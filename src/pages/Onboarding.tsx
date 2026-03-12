@@ -1,4 +1,5 @@
 import { useState, useCallback, useEffect } from "react";
+import { ProofLogo } from "@/components/brand/ProofLogo";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
@@ -603,12 +604,7 @@ const Onboarding = () => {
       <header className="fixed top-0 left-0 right-0 z-50 border-b border-border bg-background/80 backdrop-blur-xl">
         <div className="container mx-auto px-6">
           <div className="flex items-center justify-between h-16">
-            <div className="flex items-center gap-2">
-              <div className="h-8 w-8 rounded-lg icon-gradient-bg flex items-center justify-center">
-                <span className="text-white font-bold text-lg">P</span>
-              </div>
-              <span className="text-xl font-bold text-foreground">Proof</span>
-            </div>
+            <ProofLogo size="md" />
 
             <div className="flex items-center gap-4">
               {[1, 2, 3, 4, 5].map((s) => (
