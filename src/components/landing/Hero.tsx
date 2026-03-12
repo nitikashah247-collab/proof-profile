@@ -6,6 +6,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import { IndustryCarousel } from "@/components/landing/IndustryCarousel";
+import { ResumeTransform } from "./ResumeTransform";
 
 type ProfileTab = "marketing" | "finance" | "sales" | "engineering";
 
@@ -174,6 +175,9 @@ export const Hero = () => {
               </Button>
             </a>
           </motion.div>
+
+          {/* Resume → Profile transformation */}
+          <ResumeTransform />
 
           {/* Social Proof */}
           <IndustryCarousel />
