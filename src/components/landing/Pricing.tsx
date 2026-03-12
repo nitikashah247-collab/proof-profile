@@ -22,7 +22,7 @@ const proFeatures = [
 const faqItems = [
   {
     question: "What happens if I cancel Pro?",
-    answer: "Your profile stays live. Existing tailored versions remain active. You just can't create new versions until you re-subscribe.",
+    answer: "Your base profile stays live. Existing tailored versions remain active. You just can't create new versions until you re-subscribe.",
   },
   {
     question: "How does the AI advocate work?",
