@@ -95,9 +95,9 @@ export const Hero = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.25 }}
-            className="text-4xl md:text-6xl font-extralight tracking-tight mb-8 leading-[1.1] text-[#ada5a5]"
+            className="text-4xl md:text-6xl font-extralight tracking-tight mb-8 leading-[1.1]"
           >
-            Show them who you really are.
+            <span className="italic">Show them who you really are.</span>
           </motion.p>
 
           {/* Subheadline */}
