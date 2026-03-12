@@ -24,7 +24,7 @@ const profilePreviews: Record<
   }
 > = {
   marketing: {
-    url: "sarah-chen.showproof.app",
+    url: "sarah-chen.proof.app",
     demoPath: "/demo",
     initials: "SC",
     name: "Sarah Chen",
