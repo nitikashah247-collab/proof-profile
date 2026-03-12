@@ -2,6 +2,7 @@ import { Navbar } from "@/components/landing/Navbar";
 import { Hero } from "@/components/landing/Hero";
 import { VideoPlaceholder } from "@/components/landing/VideoPlaceholder";
 import { Features } from "@/components/landing/Features";
+import { AIShowcase } from "@/components/landing/AIShowcase";
 import { HowItWorks } from "@/components/landing/HowItWorks";
 import { Pricing } from "@/components/landing/Pricing";
 import { CTA } from "@/components/landing/CTA";
@@ -14,6 +15,7 @@ const Index = () => {
       <Hero />
       <VideoPlaceholder />
       <Features />
+      <AIShowcase />
       <HowItWorks />
       <Pricing />
       <CTA />
