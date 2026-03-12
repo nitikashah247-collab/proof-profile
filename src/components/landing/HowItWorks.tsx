@@ -42,7 +42,7 @@ export const HowItWorks = () => {
         >
           <h2 className="text-4xl md:text-5xl font-bold tracking-tight mb-4 text-foreground">
             From resume to Proof in{" "}
-            <span className="bg-accent px-3 py-1 rounded-lg font-semibold italic">5 minutes</span>
+            <span className="bg-accent px-3 py-1 rounded-lg font-semibold italic">10 minutes</span>
           </h2>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
             No design skills needed. No writer's block. Just you.
