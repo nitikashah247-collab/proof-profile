@@ -73,7 +73,7 @@ const profilePreviews: Record<
       { value: "73%", label: "Faster Deploy Cycles" },
       { value: "38%", label: "Reduction in Incident Response" },
     ],
-    accentColor: "#fea000",
+    accentColor: "#6d0000",
   },
 };
 
