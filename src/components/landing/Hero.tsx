@@ -72,7 +72,7 @@ const profilePreviews: Record<
       { value: "15+", label: "Accounts Onboarded / Qtr" },
       { value: "94%", label: "Client Satisfaction Score" },
     ],
-    accentColor: "#c4b0ef",
+    accentColor: "#997ad8",
   },
   engineering: {
     url: "james-whitfield.showproof.app",
