@@ -121,12 +121,12 @@ export const Hero = () => {
               Create your Proof
               <ArrowRight className="w-5 h-5 transition-transform group-hover:translate-x-1" />
             </Button>
-            <Link to={profile.demoPath}>
+            <a href="#how-it-works-video">
               <Button variant="outline" size="lg" className="rounded-full">
                 <Play className="w-4 h-4" />
                 See it in action
               </Button>
-            </Link>
+            </a>
           </motion.div>
 
           {/* Social Proof */}
