@@ -25,7 +25,7 @@ const DemoEngineering = () => {
           </Link>
           <div className="flex items-center gap-3">
             <span className="text-sm text-muted-foreground">
-              Viewing: priya-patel.showproof.app
+              Viewing: james-whitfield.showproof.app
             </span>
             <Button size="sm">Edit Profile</Button>
           </div>
