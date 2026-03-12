@@ -283,7 +283,7 @@ export const Hero = () => {
                         <div className="flex items-center gap-6 mt-4 pt-4 border-t border-border">
                           {profile.stats.map((stat, i) => (
                             <div key={i}>
-                              <p className="text-lg font-bold text-foreground">{stat.value}</p>
+                              <p className="text-lg font-bold" style={{ color: profile.accentColor }}>{stat.value}</p>
                               <p className="text-[10px] text-muted-foreground uppercase tracking-wider">{stat.label}</p>
                             </div>
                           ))}
