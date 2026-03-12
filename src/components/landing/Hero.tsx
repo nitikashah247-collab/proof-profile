@@ -58,6 +58,22 @@ const profilePreviews: Record<
     ],
     accentColor: "#00470d",
   },
+  sales: {
+    url: "laila-ahmadi.showproof.app",
+    demoPath: "/demo/sales",
+    photo: "/demo-laila.png",
+    name: "Laila Ahmadi",
+    role: "Junior Account Manager · Auckland, NZ",
+    location: "Auckland",
+    bio: "2 years embedded in client operations across professional services, bridging the gap between delivery teams and the accounts they serve. I run the rhythm of the relationship — onboarding coordination, QBR preparation, reporting — and work alongside senior account managers to make sure nothing falls through the cracks. 15+ accounts onboarded per quarter and counting.",
+    tags: ["Account Management", "Client Onboarding", "Reporting & Insights"],
+    stats: [
+      { value: "2+", label: "Years Experience" },
+      { value: "15+", label: "Accounts Onboarded / Qtr" },
+      { value: "94%", label: "Client Satisfaction Score" },
+    ],
+    accentColor: "#c4b0ef",
+  },
   engineering: {
     url: "james-whitfield.showproof.app",
     demoPath: "/demo/engineering",
