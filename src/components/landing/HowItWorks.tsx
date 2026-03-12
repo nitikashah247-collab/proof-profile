@@ -45,7 +45,7 @@ export const HowItWorks = () => {
             <span className="bg-accent px-3 py-1 rounded-lg font-semibold italic">10 minutes</span>
           </h2>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            No design skills needed. No writer's block. Just you.
+            No design skills needed. No fuss. Just you.
           </p>
         </motion.div>
 
