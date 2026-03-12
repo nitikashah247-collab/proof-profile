@@ -367,7 +367,7 @@ const DemoFinance = () => {
           </Link>
           <div className="flex items-center gap-3">
             <span className="text-sm text-muted-foreground">
-              Viewing: michael-zhang.showproof.app
+              Viewing: mateo-tavares.showproof.app
             </span>
             <Button size="sm">Edit Profile</Button>
           </div>
