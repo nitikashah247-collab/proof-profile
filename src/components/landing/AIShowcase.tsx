@@ -30,7 +30,7 @@ const ChatBubble = ({ role, text, isRight }: { role: string; text: string; isRig
 
 export const AIShowcase = () => {
   return (
-    <section className="py-28 relative bg-background">
+    <section className="py-20 relative bg-muted">
       <div className="container mx-auto px-6">
         <motion.div
           initial={{ opacity: 0, y: 20 }}

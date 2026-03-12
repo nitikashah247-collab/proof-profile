@@ -257,7 +257,7 @@ export const Hero = () => {
           </div>
 
           {/* View full profile link */}
-          <div className="flex justify-center mt-6">
+          <div className="flex justify-center mt-6 mb-12">
             <Link
               to={profile.demoPath}
               className="text-sm text-muted-foreground hover:text-foreground transition-colors group"
