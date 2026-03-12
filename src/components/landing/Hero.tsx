@@ -176,6 +176,9 @@ export const Hero = () => {
             </a>
           </motion.div>
 
+          {/* Resume → Profile transformation */}
+          <ResumeTransform />
+
           {/* Social Proof */}
           <IndustryCarousel />
         </div>
