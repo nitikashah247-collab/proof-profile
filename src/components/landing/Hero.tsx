@@ -54,8 +54,9 @@ const profilePreviews: Record<
       { value: "8+", label: "Years Experience" },
       { value: "$12M", label: "Annual Budget Managed" },
       { value: "15%", label: "Cost Reduction Delivered" },
+      { value: "$2.8M", label: "Savings Identified" },
     ],
-    accentColor: "#111111",
+    accentColor: "#00470d",
   },
   engineering: {
     url: "james-whitfield.showproof.app",
@@ -70,8 +71,9 @@ const profilePreviews: Record<
       { value: "15+", label: "Years Experience" },
       { value: "80+", label: "Engineers Managed" },
       { value: "73%", label: "Faster Deploy Cycles" },
+      { value: "38%", label: "Reduction in Incident Response" },
     ],
-    accentColor: "#00470d",
+    accentColor: "#fea000",
   },
 };
 
@@ -245,11 +247,11 @@ export const Hero = () => {
                       {/* Pulsing ring — uses accent color */}
                       <span
                         className="absolute rounded-full"
-                        style={{ inset: '-4px', border: `2px solid ${profile.accentColor}30`, animation: 'photo-ring 3s ease-in-out infinite' }}
+                        style={{ inset: '-4px', border: `2px solid ${profile.accentColor}70`, animation: 'photo-ring 3s ease-in-out infinite' }}
                       />
                       <span
                         className="absolute rounded-full"
-                        style={{ inset: '-4px', border: `1px solid ${profile.accentColor}20`, animation: 'photo-ring 3s ease-in-out infinite 1.5s' }}
+                        style={{ inset: '-4px', border: `1.5px solid ${profile.accentColor}50`, animation: 'photo-ring 3s ease-in-out infinite 1.5s' }}
                       />
                       <img
                         src={profile.photo}
