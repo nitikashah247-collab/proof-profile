@@ -13,10 +13,10 @@ const freeFeatures = [
 
 const proFeatures = [
   "Everything in Free, plus:",
-  "Unlimited job-specific versions (no expiry)",
-  "Remove \"Made with Proof\" badge",
+  "Unlimited job-tailored versions",
+  "Remove Proof branding",
   "Advanced analytics (views, engagement, insights)",
-  "Profile stays live forever (even after you cancel)",
+  "Priority AI generation",
 ];
 
 const faqItems = [
