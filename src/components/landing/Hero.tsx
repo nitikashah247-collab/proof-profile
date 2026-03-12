@@ -21,6 +21,7 @@ const profilePreviews: Record<
     bio: string;
     tags: string[];
     stats: { value: string; label: string }[];
+    accentColor: string;
   }
 > = {
   marketing: {
@@ -38,6 +39,7 @@ const profilePreviews: Record<
       { value: "3x", label: "Product Adoption Growth" },
       { value: "35%", label: "Shorter Sales Cycles" },
     ],
+    accentColor: "#002bfe",
   },
   finance: {
     url: "mateo-tavares.showproof.app",
@@ -53,14 +55,15 @@ const profilePreviews: Record<
       { value: "$12M", label: "Annual Budget Managed" },
       { value: "15%", label: "Cost Reduction Delivered" },
     ],
+    accentColor: "#111111",
   },
   engineering: {
     url: "james-whitfield.showproof.app",
     demoPath: "/demo/engineering",
     photo: "/demo-james.png",
     name: "James Whitfield",
-    role: "VP of Engineering · Melbourne, AU",
-    location: "Melbourne",
+    role: "VP of Engineering · Boston, US",
+    location: "Boston",
     bio: "15+ years shipping reliable systems at scale and building the teams behind them. I've taken platform infrastructure from monolith to microservices, stood up SRE practices from scratch, and scaled engineering orgs from 5 to 80+ across fintech and health-tech.",
     tags: ["Platform Infrastructure", "Distributed Systems", "Engineering Operations"],
     stats: [
@@ -68,6 +71,7 @@ const profilePreviews: Record<
       { value: "80+", label: "Engineers Managed" },
       { value: "73%", label: "Faster Deploy Cycles" },
     ],
+    accentColor: "#00470d",
   },
 };
 
