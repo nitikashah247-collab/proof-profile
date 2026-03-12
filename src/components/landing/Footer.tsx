@@ -9,11 +9,8 @@ export const Footer = () => {
         <div className="grid md:grid-cols-4 gap-8">
           {/* Brand */}
           <div className="md:col-span-2">
-            <Link to="/" className="flex items-center gap-2 mb-4">
-              <div className="h-8 w-8 rounded-md bg-primary flex items-center justify-center">
-                <span className="text-primary-foreground font-bold text-lg">P</span>
-              </div>
-              <span className="text-xl font-semibold text-foreground">Proof</span>
+            <Link to="/" className="flex items-center mb-4">
+              <ProofLogo size="md" />
             </Link>
             <p className="text-muted-foreground max-w-xs mb-4">
               Dynamic career profiles that adapt to every opportunity. Show them who you really are.

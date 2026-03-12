@@ -99,11 +99,8 @@ const Dashboard = () => {
     <div className="min-h-screen bg-background">
       {/* Sidebar */}
       <aside className="fixed left-0 top-0 bottom-0 w-64 border-r border-border bg-sidebar p-4 flex flex-col">
-        <Link to="/" className="flex items-center gap-2 mb-8">
-          <div className="h-8 w-8 rounded-lg icon-gradient-bg flex items-center justify-center">
-            <span className="text-white font-bold text-lg">P</span>
-          </div>
-          <span className="text-xl font-bold text-foreground">Proof</span>
+        <Link to="/" className="flex items-center mb-8">
+          <ProofLogo size="md" />
         </Link>
 
         <div className="p-3 rounded-xl bg-sidebar-accent mb-6">
