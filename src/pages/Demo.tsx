@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { VisitorCoachOrb } from "@/components/profile/VisitorCoachOrb";
+import { VisitorCoachDrawer } from "@/components/profile/VisitorCoachDrawer";
 import { ProofLogo } from "@/components/brand/ProofLogo";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
@@ -320,6 +322,7 @@ const profileData = {
 
 const Demo = () => {
   const [activeSkill, setActiveSkill] = useState<string | null>(null);
+  const [isAdvocateOpen, setIsAdvocateOpen] = useState(false);
 
   // Filter case studies based on active skill
   const filteredCaseStudies = activeSkill
@@ -458,6 +461,27 @@ const Demo = () => {
 
       {/* Analytics Preview (Owner Only) */}
       <AnalyticsPreview data={profileData.analytics} isOwner={true} isOpen={false} onClose={() => {}} />
+
+      {/* AI Advocate */}
+      <VisitorCoachOrb
+        primaryColor="#111111"
+        currentInsight={null}
+        onDismissInsight={() => {}}
+        onOpenDrawer={() => setIsAdvocateOpen(true)}
+        profileName="Sarah Chen"
+      />
+      <VisitorCoachDrawer
+        isOpen={isAdvocateOpen}
+        onClose={() => setIsAdvocateOpen(false)}
+        profileData={{
+          full_name: "Sarah Chen",
+          headline: "Head of Product Marketing · San Francisco",
+          industry: "SaaS/Technology",
+          bio: "I turn complex products into stories that resonate. 8+ years driving growth for B2B SaaS companies through positioning, messaging, and go-to-market strategy.",
+        }}
+        sections={[]}
+        primaryColor="#111111"
+      />
 
       {/* Proof Badge */}
       <div className="fixed bottom-6 right-6 z-50">

@@ -13,6 +13,7 @@ import Dashboard from "./pages/Dashboard";
 import Onboarding from "./pages/Onboarding";
 import Demo from "./pages/Demo";
 import DemoFinance from "./pages/DemoFinance";
+import DemoEngineering from "./pages/DemoEngineering";
 import EditProfile from "./pages/EditProfile";
 import NotFound from "./pages/NotFound";
 import PublicProfile from "./pages/PublicProfile";
@@ -61,6 +62,7 @@ const App = () => (
             />
             <Route path="/demo" element={<Demo />} />
             <Route path="/demo/finance" element={<DemoFinance />} />
+            <Route path="/demo/engineering" element={<DemoEngineering />} />
             <Route path="/p/:slug" element={<PublicProfile />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />

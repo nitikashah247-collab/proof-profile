@@ -1,13 +1,13 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Play, Briefcase, TrendingUp } from "lucide-react";
+import { ArrowRight, Play, Briefcase, TrendingUp, Code2 } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import { IndustryCarousel } from "@/components/landing/IndustryCarousel";
 
-type ProfileTab = "marketing" | "finance";
+type ProfileTab = "marketing" | "finance" | "engineering";
 
 const profilePreviews: Record<
   ProfileTab,
@@ -43,6 +43,17 @@ const profilePreviews: Record<
     location: "Auckland",
     bio: "15 years driving financial strategy and operational excellence in high-growth tech. I turn ambitious growth plans into sustainable, fundable business models.",
     tags: ["Capital Raising", "FP&A", "Financial Modeling"],
+    avatarBg: "bg-foreground",
+  },
+  engineering: {
+    url: "priya-patel.proof.app",
+    demoPath: "/demo/engineering",
+    initials: "PP",
+    name: "Priya Patel",
+    role: "VP of Engineering · Melbourne, AU",
+    location: "Melbourne",
+    bio: "Engineering leader who scales teams and systems in equal measure. 12+ years building high-performance engineering orgs across fintech and health-tech, from Series A to IPO.",
+    tags: ["Engineering Leadership", "Platform Architecture", "Team Scaling"],
     avatarBg: "bg-foreground",
   },
 };
@@ -121,12 +132,12 @@ export const Hero = () => {
               Create your Proof
               <ArrowRight className="w-5 h-5 transition-transform group-hover:translate-x-1" />
             </Button>
-            <Link to={profile.demoPath}>
+            <a href="#how-it-works-video">
               <Button variant="outline" size="lg" className="rounded-full">
                 <Play className="w-4 h-4" />
                 See it in action
               </Button>
-            </Link>
+            </a>
           </motion.div>
 
           {/* Social Proof */}
@@ -163,6 +174,17 @@ export const Hero = () => {
             >
               <TrendingUp className="w-3.5 h-3.5" />
               Finance Executive
+            </button>
+            <button
+              onClick={() => setActiveTab("engineering")}
+              className={`px-5 py-2.5 rounded-full text-sm font-medium transition-all duration-300 flex items-center gap-2 ${
+                activeTab === "engineering"
+                  ? "bg-foreground text-background shadow-lg shadow-black/10"
+                  : "bg-muted text-muted-foreground hover:text-foreground hover:bg-muted/80"
+              }`}
+            >
+              <Code2 className="w-3.5 h-3.5" />
+              Engineering Leader
             </button>
           </div>
 
