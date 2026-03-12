@@ -35,7 +35,7 @@ const profilePreviews: Record<
     avatarBg: "icon-gradient-bg",
   },
   finance: {
-    url: "michael-zhang.showproof.app",
+    url: "michael-zhang.proof.app",
     demoPath: "/demo/finance",
     initials: "MZ",
     name: "Michael Zhang",
