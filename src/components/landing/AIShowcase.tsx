@@ -3,13 +3,13 @@ import { User, Eye } from "lucide-react";
 
 const coachMessages = [
   { role: "assistant", text: "I noticed your resume mentions leading a pricing transformation — that's a powerful story. Want me to create an impact story section around it?" },
-  { role: "user", text: "Yes! It resulted in 27% revenue uplift." },
-  { role: "assistant", text: "Perfect. I've added it with a visual metric card. I'd also suggest adding the customer retention data — zero churn during a pricing change is remarkable." },
+  { role: "user", text: "Yes! It resulted in a 27% revenue uplift, and we had zero churn throughout." },
+  { role: "assistant", text: "Perfect. I've added it with a visual metric card. I'd also suggest highlighting the zero churn separately — maintaining retention through a pricing change is remarkable and worth calling out." },
 ];
 
 const advocateMessages = [
   { role: "visitor", text: "I'm hiring for a Head of Growth. What makes Sarah a fit?" },
-  { role: "assistant", text: "Great question. Sarah grew acquisition by 44% at Mercury while managing a $1.2M budget — that's exactly the scale you're operating at. She also built Datacom's entire SaaS marketing function from zero." },
+  { role: "assistant", text: "Great question. Sarah grew digital acquisition by 31% at a Series B SaaS company while managing a seven-figure budget — that's exactly the scale you're operating at. She also built an entire product marketing function from the ground up." },
   { role: "visitor", text: "Does she have pricing strategy experience?" },
   { role: "assistant", text: "Absolutely. She led a pricing transformation that delivered 27% revenue uplift with zero customer churn. Want me to walk you through that case study?" },
 ];
