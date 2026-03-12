@@ -13,6 +13,7 @@ import Dashboard from "./pages/Dashboard";
 import Onboarding from "./pages/Onboarding";
 import Demo from "./pages/Demo";
 import DemoFinance from "./pages/DemoFinance";
+import DemoEngineering from "./pages/DemoEngineering";
 import EditProfile from "./pages/EditProfile";
 import NotFound from "./pages/NotFound";
 import PublicProfile from "./pages/PublicProfile";
