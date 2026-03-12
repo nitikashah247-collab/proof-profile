@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { ArrowLeft, Shield } from "lucide-react";
 import { Link } from "react-router-dom";
+import { ProofLogo } from "@/components/brand/ProofLogo";
 
 const PrivacyPolicy = () => {
   return (
