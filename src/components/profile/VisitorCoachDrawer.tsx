@@ -71,7 +71,7 @@ export const VisitorCoachDrawer = ({
   const [messages, setMessages] = useState<Message[]>([
     {
       role: "assistant",
-      content: `Hi! I'm ${firstName}'s AI advocate. I know their career inside and out. Ask me anything — what role are you hiring for? I can show you exactly why ${firstName} might be your perfect fit. You can also paste a job description and I'll map their experience to it.`,
+      content: `Hi! I'm ${firstName}'s AI ambassador. I know their career inside and out. Ask me anything — what role are you hiring for? I can show you exactly why ${firstName} might be your perfect fit. You can also paste a job description and I'll map their experience to it.`,
     },
   ]);
   const [input, setInput] = useState("");
