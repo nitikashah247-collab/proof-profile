@@ -75,7 +75,9 @@ export const ResumeTransform = () => {
               <span className="relative flex h-1.5 w-1.5">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full opacity-40" style={{ backgroundColor: "#e8e2e2" }} />
               <span className="relative inline-flex rounded-full h-1.5 w-1.5" style={{ backgroundColor: "#e8e2e2" }} />
-            </span>
+              </span>
+            </div>
+            <span className="text-[9px] text-muted-foreground mt-0.5">Helps you build your best profile</span>
           </motion.div>
 
           {/* Whisper bubble — only visible when coach is active */}
