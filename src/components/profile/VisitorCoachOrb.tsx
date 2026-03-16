@@ -85,7 +85,7 @@ export const VisitorCoachOrb = ({
                 <LoveKnotIcon />
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-xs font-medium text-primary">{firstName}'s AI Advocate</p>
+                <p className="text-xs font-medium text-primary">{firstName}'s AI Ambassador</p>
                 <p className="text-sm text-foreground mt-1 leading-relaxed">
                   {currentInsight.message}
                 </p>

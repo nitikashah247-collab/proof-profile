@@ -1192,7 +1192,7 @@ const PublicProfile = () => {
         </section>
       )}
 
-      {/* Visitor AI Advocate — only for visitors */}
+      {/* Visitor AI Ambassador — only for visitors */}
       {!isOwner && (
         <>
           <VisitorCoachOrb

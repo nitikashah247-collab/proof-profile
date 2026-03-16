@@ -34,7 +34,7 @@ const faqItems = [
   },
   {
     question: "How is this different from LinkedIn?",
-    answer: "LinkedIn is a social feed. Proof is a living career profile built from evidence. Your Proof profile has impact visualisations, case studies with real artifacts, and an AI advocate that actively makes your case to visitors. LinkedIn shows what you've done. Proof shows what you're capable of.",
+    answer: "LinkedIn is a social feed. Proof is a living career profile built from evidence. Your Proof profile has impact visualisations, case studies with real artifacts, and an AI ambassador that actively makes your case to visitors. LinkedIn shows what you've done. Proof shows what you're capable of.",
   },
   {
     question: "What if my resume is outdated or incomplete?",

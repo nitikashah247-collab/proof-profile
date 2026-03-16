@@ -158,17 +158,17 @@ const DemoEngineering = () => {
         </div>
       </section>
 
-      {/* AI Advocate */}
+      {/* AI Ambassador */}
       <VisitorCoachOrb
         primaryColor="#111111"
         currentInsight={null}
         onDismissInsight={() => {}}
-        onOpenDrawer={() => setIsAdvocateOpen(true)}
+        onOpenDrawer={() => setIsAmbassadorOpen(true)}
         profileName="James Whitfield"
       />
       <VisitorCoachDrawer
-        isOpen={isAdvocateOpen}
-        onClose={() => setIsAdvocateOpen(false)}
+        isOpen={isAmbassadorOpen}
+        onClose={() => setIsAmbassadorOpen(false)}
         profileData={{
           full_name: "James Whitfield",
           headline: "VP of Engineering · Melbourne, AU",

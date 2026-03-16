@@ -476,17 +476,17 @@ const DemoFinance = () => {
       {/* Analytics */}
       <AnalyticsPreview data={profileData.analytics} isOwner={true} isOpen={false} onClose={() => {}} />
 
-      {/* AI Advocate */}
+      {/* AI Ambassador */}
       <VisitorCoachOrb
         primaryColor="#111111"
         currentInsight={null}
         onDismissInsight={() => {}}
-        onOpenDrawer={() => setIsAdvocateOpen(true)}
+        onOpenDrawer={() => setIsAmbassadorOpen(true)}
         profileName="Mateo Tavares"
       />
       <VisitorCoachDrawer
-        isOpen={isAdvocateOpen}
-        onClose={() => setIsAdvocateOpen(false)}
+        isOpen={isAmbassadorOpen}
+        onClose={() => setIsAmbassadorOpen(false)}
         profileData={{
           full_name: "Mateo Tavares",
           headline: "Finance Business Partner · Auckland, NZ",

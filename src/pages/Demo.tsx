@@ -462,17 +462,17 @@ const Demo = () => {
       {/* Analytics Preview (Owner Only) */}
       <AnalyticsPreview data={profileData.analytics} isOwner={true} isOpen={false} onClose={() => {}} />
 
-      {/* AI Advocate */}
+      {/* AI Ambassador */}
       <VisitorCoachOrb
         primaryColor="#111111"
         currentInsight={null}
         onDismissInsight={() => {}}
-        onOpenDrawer={() => setIsAdvocateOpen(true)}
+        onOpenDrawer={() => setIsAmbassadorOpen(true)}
         profileName="Sarah Chen"
       />
       <VisitorCoachDrawer
-        isOpen={isAdvocateOpen}
-        onClose={() => setIsAdvocateOpen(false)}
+        isOpen={isAmbassadorOpen}
+        onClose={() => setIsAmbassadorOpen(false)}
         profileData={{
           full_name: "Sarah Chen",
           headline: "Head of Product Marketing · San Francisco",

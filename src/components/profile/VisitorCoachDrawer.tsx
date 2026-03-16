@@ -183,7 +183,7 @@ export const VisitorCoachDrawer = ({
           {/* Header */}
           <div className="flex items-center justify-between px-4 py-3 border-b border-border bg-muted/30">
             <div>
-              <h3 className="font-semibold text-sm text-foreground">{firstName}'s AI Advocate</h3>
+              <h3 className="font-semibold text-sm text-foreground">{firstName}'s AI Ambassador</h3>
               <p className="text-xs text-muted-foreground">Ask anything about their experience</p>
             </div>
             <Button variant="ghost" size="icon" onClick={onClose} className="h-8 w-8">
