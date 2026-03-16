@@ -65,17 +65,19 @@ export const ResumeTransform = () => {
         <div className="hidden md:flex flex-col items-end justify-start w-52 flex-shrink-0 mr-6">
           {/* Label — always visible */}
           <motion.div
-            className="flex items-center gap-2 mb-2.5"
+            className="flex flex-col items-end mb-2.5"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 1, duration: 0.5 }}
           >
-            <img src="/proof-logo.png" alt="" className="w-5 h-5 rounded-full" />
-            <span className="text-[10px] font-semibold text-foreground">AI Coach</span>
-            <span className="relative flex h-1.5 w-1.5">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full opacity-40" style={{ backgroundColor: "#e8e2e2" }} />
+            <div className="flex items-center gap-2">
+              <span className="text-[10px] font-semibold text-foreground">AI Coach</span>
+              <span className="relative flex h-1.5 w-1.5">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full opacity-40" style={{ backgroundColor: "#e8e2e2" }} />
               <span className="relative inline-flex rounded-full h-1.5 w-1.5" style={{ backgroundColor: "#e8e2e2" }} />
-            </span>
+              </span>
+            </div>
+            <span className="text-[9px] text-muted-foreground mt-0.5">Helps you build your best profile</span>
           </motion.div>
 
           {/* Whisper bubble — only visible when coach is active */}
@@ -176,17 +178,19 @@ export const ResumeTransform = () => {
         <div className="hidden md:flex flex-col items-start justify-start w-52 flex-shrink-0 ml-6">
           {/* Label — always visible */}
           <motion.div
-            className="flex items-center gap-2 mb-2.5"
+            className="flex flex-col items-start mb-2.5"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 2.5, duration: 0.5 }}
           >
-            <span className="relative flex h-1.5 w-1.5">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-foreground opacity-40" />
-              <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-foreground" />
-            </span>
-            <span className="text-[10px] font-semibold text-muted-foreground">AI Ambassador</span>
-            <img src="/proof-logo.png" alt="" className="w-5 h-5 rounded-full" />
+            <div className="flex items-center gap-2">
+              <span className="relative flex h-1.5 w-1.5">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-foreground opacity-40" />
+                <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-foreground" />
+              </span>
+              <span className="text-[10px] font-semibold text-muted-foreground">AI Ambassador</span>
+            </div>
+            <span className="text-[9px] text-muted-foreground mt-0.5">Represents you to every visitor</span>
           </motion.div>
 
           {/* Whisper bubble — only visible when ambassador is active */}
@@ -209,15 +213,6 @@ export const ResumeTransform = () => {
         </div>
       </div>
 
-      {/* Subtle labels */}
-      <div className="hidden md:flex justify-between max-w-3xl mx-auto mt-3 px-4">
-        <motion.p className="text-[9px] text-muted-foreground/60" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 2 }}>
-          Helps you build your best profile
-        </motion.p>
-        <motion.p className="text-[9px] text-muted-foreground/60" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 3 }}>
-          Represents you to every visitor
-        </motion.p>
-      </div>
     </div>
   );
 };
