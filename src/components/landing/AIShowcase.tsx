@@ -98,7 +98,7 @@ export const AIShowcase = () => {
             </div>
 
             <div className="p-6 min-h-[280px]">
-              {advocateMessages.map((msg, i) => (
+              {ambassadorMessages.map((msg, i) => (
                 <ChatBubble key={i} role={msg.role} text={msg.text} isRight={msg.role === "visitor"} />
               ))}
             </div>
