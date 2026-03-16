@@ -9,7 +9,7 @@ import { VisitorCoachOrb } from "@/components/profile/VisitorCoachOrb";
 import { VisitorCoachDrawer } from "@/components/profile/VisitorCoachDrawer";
 
 const DemoEngineering = () => {
-  const [isAdvocateOpen, setIsAdvocateOpen] = useState(false);
+  const [isAmbassadorOpen, setIsAmbassadorOpen] = useState(false);
 
   return (
     <div className="min-h-screen bg-background">
