@@ -154,7 +154,7 @@ export const Hero = () => {
             transition={{ duration: 0.6, delay: 0.3 }}
             className="text-lg md:text-xl font-normal text-muted-foreground max-w-2xl mx-auto mb-12 leading-relaxed"
           >
-            Proof builds a living career profile from your resume and a short AI conversation. Evidence-backed. Beautifully designed. With an AI advocate that represents you — even when you're not in the room.
+            Proof builds a living career profile from your resume and a short AI conversation. Evidence-backed. Beautifully designed. With an AI ambassador that represents you — even when you're not in the room.
           </motion.p>
 
           {/* Resume → Profile transformation */}

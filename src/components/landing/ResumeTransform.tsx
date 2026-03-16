@@ -213,15 +213,6 @@ export const ResumeTransform = () => {
         </div>
       </div>
 
-      {/* Subtle labels */}
-      <div className="hidden md:flex justify-between max-w-3xl mx-auto mt-3 px-4">
-        <motion.p className="text-[9px] text-muted-foreground/60" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 2 }}>
-          Helps you build your best profile
-        </motion.p>
-        <motion.p className="text-[9px] text-muted-foreground/60" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 3 }}>
-          Represents you to every visitor
-        </motion.p>
-      </div>
     </div>
   );
 };
