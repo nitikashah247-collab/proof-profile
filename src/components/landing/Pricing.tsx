@@ -7,7 +7,7 @@ import { Link } from "react-router-dom";
 const freeFeatures = [
   "1 living career profile",
   "AI-powered profile generation",
-  "AI advocate on your profile",
+  "AI ambassador on your profile",
   "1 job-tailored version",
 ];
 
