@@ -65,15 +65,15 @@ export const ResumeTransform = () => {
         <div className="hidden md:flex flex-col items-end justify-start w-52 flex-shrink-0 mr-6">
           {/* Label — always visible */}
           <motion.div
-            className="flex items-center gap-2 mb-2.5"
+            className="flex flex-col items-end mb-2.5"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 1, duration: 0.5 }}
           >
-            <img src="/proof-logo.png" alt="" className="w-5 h-5 rounded-full" />
-            <span className="text-[10px] font-semibold text-foreground">AI Coach</span>
-            <span className="relative flex h-1.5 w-1.5">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full opacity-40" style={{ backgroundColor: "#e8e2e2" }} />
+            <div className="flex items-center gap-2">
+              <span className="text-[10px] font-semibold text-foreground">AI Coach</span>
+              <span className="relative flex h-1.5 w-1.5">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full opacity-40" style={{ backgroundColor: "#e8e2e2" }} />
               <span className="relative inline-flex rounded-full h-1.5 w-1.5" style={{ backgroundColor: "#e8e2e2" }} />
             </span>
           </motion.div>
