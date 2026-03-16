@@ -7,7 +7,7 @@ const coachMessages = [
   { role: "assistant", text: "Perfect. I've added it with a visual metric card. I'd also suggest highlighting the zero churn separately — maintaining retention through a pricing change is remarkable and worth calling out." },
 ];
 
-const advocateMessages = [
+const ambassadorMessages = [
   { role: "visitor", text: "I'm hiring for a Head of Growth. What makes Sarah a fit?" },
   { role: "assistant", text: "Great question. Sarah grew digital acquisition by 31% at a Series B SaaS company while managing a seven-figure budget — that's exactly the scale you're operating at. She also built an entire product marketing function from the ground up." },
   { role: "visitor", text: "Does she have pricing strategy experience?" },
