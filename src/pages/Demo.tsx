@@ -322,7 +322,7 @@ const profileData = {
 
 const Demo = () => {
   const [activeSkill, setActiveSkill] = useState<string | null>(null);
-  const [isAdvocateOpen, setIsAdvocateOpen] = useState(false);
+  const [isAmbassadorOpen, setIsAmbassadorOpen] = useState(false);
 
   // Filter case studies based on active skill
   const filteredCaseStudies = activeSkill
