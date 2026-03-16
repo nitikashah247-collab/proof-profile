@@ -79,7 +79,7 @@ export const AIShowcase = () => {
             </div>
           </motion.div>
 
-          {/* AI Career Advocate — for the visitor */}
+          {/* AI Ambassador — for the visitor */}
           <motion.div
             initial={{ opacity: 0, x: 30 }}
             whileInView={{ opacity: 1, x: 0 }}
