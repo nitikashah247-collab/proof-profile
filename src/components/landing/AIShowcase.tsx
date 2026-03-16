@@ -92,7 +92,7 @@ export const AIShowcase = () => {
                 <Eye className="w-4 h-4 text-background" />
               </div>
               <div>
-                <p className="font-semibold text-sm text-foreground">AI Career Advocate</p>
+                <p className="font-semibold text-sm text-foreground">AI Ambassador</p>
                 <p className="text-xs text-muted-foreground">For visitors — recruiters & hiring managers</p>
               </div>
             </div>
