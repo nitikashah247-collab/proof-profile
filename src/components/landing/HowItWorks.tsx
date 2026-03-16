@@ -18,7 +18,7 @@ const steps = [
     number: "03",
     icon: Sparkles,
     title: "Your profile generates",
-    description: "Impact visualisations, evidence-backed case studies, and an AI advocate — all built from your real experience.",
+    description: "Impact visualisations, evidence-backed case studies, and an AI ambassador — all built from your real experience.",
   },
   {
     number: "04",

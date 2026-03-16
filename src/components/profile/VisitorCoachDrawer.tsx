@@ -71,7 +71,7 @@ export const VisitorCoachDrawer = ({
   const [messages, setMessages] = useState<Message[]>([
     {
       role: "assistant",
-      content: `Hi! I'm ${firstName}'s AI advocate. I know their career inside and out. Ask me anything — what role are you hiring for? I can show you exactly why ${firstName} might be your perfect fit. You can also paste a job description and I'll map their experience to it.`,
+      content: `Hi! I'm ${firstName}'s AI ambassador. I know their career inside and out. Ask me anything — what role are you hiring for? I can show you exactly why ${firstName} might be your perfect fit. You can also paste a job description and I'll map their experience to it.`,
     },
   ]);
   const [input, setInput] = useState("");
@@ -183,7 +183,7 @@ export const VisitorCoachDrawer = ({
           {/* Header */}
           <div className="flex items-center justify-between px-4 py-3 border-b border-border bg-muted/30">
             <div>
-              <h3 className="font-semibold text-sm text-foreground">{firstName}'s AI Advocate</h3>
+              <h3 className="font-semibold text-sm text-foreground">{firstName}'s AI Ambassador</h3>
               <p className="text-xs text-muted-foreground">Ask anything about their experience</p>
             </div>
             <Button variant="ghost" size="icon" onClick={onClose} className="h-8 w-8">

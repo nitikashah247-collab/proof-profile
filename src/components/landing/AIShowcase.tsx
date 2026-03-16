@@ -7,7 +7,7 @@ const coachMessages = [
   { role: "assistant", text: "Perfect. I've added it with a visual metric card. I'd also suggest highlighting the zero churn separately — maintaining retention through a pricing change is remarkable and worth calling out." },
 ];
 
-const advocateMessages = [
+const ambassadorMessages = [
   { role: "visitor", text: "I'm hiring for a Head of Growth. What makes Sarah a fit?" },
   { role: "assistant", text: "Great question. Sarah grew digital acquisition by 31% at a Series B SaaS company while managing a seven-figure budget — that's exactly the scale you're operating at. She also built an entire product marketing function from the ground up." },
   { role: "visitor", text: "Does she have pricing strategy experience?" },
@@ -43,7 +43,7 @@ export const AIShowcase = () => {
             Two AIs. One unfair advantage.
           </h2>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-            An AI coach that helps you build the perfect profile. An AI advocate that sells you when you're not in the room.
+            An AI coach that helps you build the perfect profile. An AI ambassador that sells you when you're not in the room.
           </p>
         </motion.div>
 
@@ -79,7 +79,7 @@ export const AIShowcase = () => {
             </div>
           </motion.div>
 
-          {/* AI Career Advocate — for the visitor */}
+          {/* AI Ambassador — for the visitor */}
           <motion.div
             initial={{ opacity: 0, x: 30 }}
             whileInView={{ opacity: 1, x: 0 }}
@@ -92,13 +92,13 @@ export const AIShowcase = () => {
                 <Eye className="w-4 h-4 text-background" />
               </div>
               <div>
-                <p className="font-semibold text-sm text-foreground">AI Career Advocate</p>
+                <p className="font-semibold text-sm text-foreground">AI Ambassador</p>
                 <p className="text-xs text-muted-foreground">For visitors — recruiters & hiring managers</p>
               </div>
             </div>
 
             <div className="p-6 min-h-[280px]">
-              {advocateMessages.map((msg, i) => (
+              {ambassadorMessages.map((msg, i) => (
                 <ChatBubble key={i} role={msg.role} text={msg.text} isRight={msg.role === "visitor"} />
               ))}
             </div>

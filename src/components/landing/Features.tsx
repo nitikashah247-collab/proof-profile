@@ -21,8 +21,8 @@ const features = [
   },
   {
     icon: MessageSquare,
-    title: "An AI Advocate in Your Corner",
-    description: "Every Proof profile comes with an AI advocate that knows your career inside out. It guides visitors, answers questions, and makes your case — even when you're not in the room.",
+    title: "An AI Ambassador in Your Corner",
+    description: "Every Proof profile comes with an AI ambassador that knows your career inside out. It guides visitors, answers questions, and makes your case — even when you're not in the room.",
   },
   {
     icon: BarChart3,

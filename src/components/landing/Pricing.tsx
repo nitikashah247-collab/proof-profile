@@ -7,7 +7,7 @@ import { Link } from "react-router-dom";
 const freeFeatures = [
   "1 living career profile",
   "AI-powered profile generation",
-  "AI advocate on your profile",
+  "AI ambassador on your profile",
   "1 job-tailored version",
 ];
 
@@ -25,8 +25,8 @@ const faqItems = [
     answer: "Your base profile stays live. Existing tailored versions remain active. You just can't create new versions until you re-subscribe.",
   },
   {
-    question: "How does the AI advocate work?",
-    answer: "Every Proof profile includes an AI advocate that knows your career story. When someone visits your profile, they can ask it questions about your experience — it's like having a personal representative available 24/7.",
+    question: "How does the AI ambassador work?",
+    answer: "Every Proof profile includes an AI ambassador that knows your career story. When someone visits your profile, they can ask it questions about your experience — it's like having a personal representative available 24/7.",
   },
   {
     question: "Can I upgrade from Free to Pro later?",
@@ -34,7 +34,7 @@ const faqItems = [
   },
   {
     question: "How is this different from LinkedIn?",
-    answer: "LinkedIn is a social feed. Proof is a living career profile built from evidence. Your Proof profile has impact visualisations, case studies with real artifacts, and an AI advocate that actively makes your case to visitors. LinkedIn shows what you've done. Proof shows what you're capable of.",
+    answer: "LinkedIn is a social feed. Proof is a living career profile built from evidence. Your Proof profile has impact visualisations, case studies with real artifacts, and an AI ambassador that actively makes your case to visitors. LinkedIn shows what you've done. Proof shows what you're capable of.",
   },
   {
     question: "What if my resume is outdated or incomplete?",
