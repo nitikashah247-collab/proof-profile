@@ -345,7 +345,7 @@ const profileData = {
 
 const DemoFinance = () => {
   const [activeSkill, setActiveSkill] = useState<string | null>(null);
-  const [isAdvocateOpen, setIsAdvocateOpen] = useState(false);
+  const [isAmbassadorOpen, setIsAmbassadorOpen] = useState(false);
 
   const filteredCaseStudies = activeSkill
     ? profileData.caseStudies.filter((study) =>
