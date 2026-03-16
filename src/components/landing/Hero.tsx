@@ -157,6 +157,9 @@ export const Hero = () => {
             Proof builds a living career profile from your resume and a short AI conversation. Evidence-backed. Beautifully designed. With an AI advocate that represents you — even when you're not in the room.
           </motion.p>
 
+          {/* Resume → Profile transformation */}
+          <ResumeTransform />
+
           {/* CTA Buttons */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -175,9 +178,6 @@ export const Hero = () => {
               </Button>
             </a>
           </motion.div>
-
-          {/* Resume → Profile transformation */}
-          <ResumeTransform />
 
           {/* Social Proof */}
           <IndustryCarousel />
