@@ -43,7 +43,7 @@ export const AIShowcase = () => {
             Two AIs. One unfair advantage.
           </h2>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-            An AI coach that helps you build the perfect profile. An AI advocate that sells you when you're not in the room.
+            An AI coach that helps you build the perfect profile. An AI ambassador that sells you when you're not in the room.
           </p>
         </motion.div>
 
